@@ -1,0 +1,2 @@
+db:
+  connection_string: "postgresql://user:password@localhost:5432/cinema_keeper?sslmode=disable"

@@ -1,0 +1,8 @@
+services:
+  service:
+    profiles:
+      - donotstart
+
+  db:
+    ports:
+      - 5432:5432
