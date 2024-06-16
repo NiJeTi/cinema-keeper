@@ -26,9 +26,6 @@ go.work
 # JetBrains IDE
 .idea/
 
-# Build configurations
-build/
-
 # TLS certificates
 cert/
 

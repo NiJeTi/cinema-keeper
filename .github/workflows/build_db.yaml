@@ -1,0 +1,39 @@
+name: 'Build database'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: 'Database version'
+        
+env: 
+  IMAGE: 'cinema-keeper/db'
+  DOCKERFILE: 'build/db/Dockerfile'
+  
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+        
+      - name: 'Login to container registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_TOKEN }}
+          
+      - name: 'Build and push'
+        uses: docker/build-push-action@v5
+        with:
+          file: ${{ env.DOCKERFILE }}
+          context: .
+          tags: ${{ env.IMAGE }}:${{ github.events.input.version }}
+          push: true
