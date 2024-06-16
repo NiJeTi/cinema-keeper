@@ -8,7 +8,7 @@ on:
       - 'v*.*.*'
 
 env:
-  IMAGE: 'cinema-keeper/service'
+  IMAGE: 'ghcr.io/nijeti/cinema-keeper/service'
   DOCKERFILE: 'build/service/Dockerfile'
 
 jobs:
