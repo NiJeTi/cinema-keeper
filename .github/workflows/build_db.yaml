@@ -35,5 +35,5 @@ jobs:
         with:
           file: ${{ env.DOCKERFILE }}
           context: .
-          tags: ${{ env.IMAGE }}:${{ github.events.input.version }}
+          tags: ${{ env.IMAGE }}:${{ inputs.version }}
           push: true
