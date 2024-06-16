@@ -19,10 +19,7 @@ func Config() {
 	}
 
 	viper.SetConfigName("config.private.yaml")
-	err = viper.MergeInConfig()
-	if err != nil {
-		log.Fatalln("failed to merge private config file", err)
-	}
+	_ = viper.MergeInConfig()
 }
 
 func DB(cs string) *sql.DB {
