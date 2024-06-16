@@ -1,6 +1,6 @@
 services:
   service:
-    image: cinema-keeper/service:${VERSION-latest}
+    image: ghcr.io/nijeti/cinema-keeper/service:${VERSION-latest}
     restart: unless-stopped
     networks:
       - network
@@ -8,7 +8,7 @@ services:
       - 8080:8080
     
   db:
-    image: cinema-keeper/db:1
+    image: ghcr.io/nijeti/cinema-keeper/db:1
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
