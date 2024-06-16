@@ -2,6 +2,8 @@ services:
   service:
     image: ghcr.io/nijeti/cinema-keeper-service:${VERSION-latest}
     restart: unless-stopped
+    depends_on:
+      - db
     networks:
       - network
     volumes:
