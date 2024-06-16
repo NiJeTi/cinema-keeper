@@ -8,7 +8,7 @@ on:
         description: 'Database version'
         
 env: 
-  IMAGE: 'cinema-keeper/db'
+  IMAGE: 'ghcr.io/nijeti/cinema-keeper/db'
   DOCKERFILE: 'build/db/Dockerfile'
   
 jobs: 
