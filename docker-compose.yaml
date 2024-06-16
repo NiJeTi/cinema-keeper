@@ -1,6 +1,6 @@
 services:
   service:
-    image: ghcr.io/nijeti/cinema-keeper/service:${VERSION-latest}
+    image: ghcr.io/nijeti/cinema-keeper-service:${VERSION-latest}
     restart: unless-stopped
     networks:
       - network
@@ -8,7 +8,7 @@ services:
       - ./config.yaml:/app/config.yaml
     
   db:
-    image: ghcr.io/nijeti/cinema-keeper/db:${VERSION-latest}
+    image: ghcr.io/nijeti/cinema-keeper-db:${VERSION-latest}
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}

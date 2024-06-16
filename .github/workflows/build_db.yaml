@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'
         
 env: 
-  IMAGE: 'ghcr.io/nijeti/cinema-keeper/db'
+  IMAGE: 'ghcr.io/nijeti/cinema-keeper-db'
   DOCKERFILE: 'build/db/Dockerfile'
   
 jobs: 
