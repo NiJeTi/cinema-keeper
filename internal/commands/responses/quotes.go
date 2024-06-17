@@ -10,11 +10,13 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/pkg/utils"
 )
 
-func QuotesEmpty() *discordgo.InteractionResponse {
+func QuotesEmpty(author *discordgo.Member) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: "No quotes found for this user",
+			Content: fmt.Sprintf(
+				"%s doesn't have any quotes", author.Mention(),
+			),
 		},
 	}
 }
