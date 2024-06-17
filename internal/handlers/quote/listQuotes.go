@@ -23,7 +23,7 @@ func (h Handler) listQuotes(
 	}
 
 	if len(quotes) == 0 {
-		_ = h.utils.Respond(h.ctx, s, i, responses.QuotesEmpty())
+		_ = h.utils.Respond(h.ctx, s, i, responses.QuotesEmpty(author))
 		return
 	}
 
