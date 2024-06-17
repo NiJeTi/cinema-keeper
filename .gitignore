@@ -23,5 +23,5 @@ go.work
 # TLS certificates
 cert/
 
-# Private configuration
-config.private.yaml
+# Service configuration
+config.yaml

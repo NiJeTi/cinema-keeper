@@ -4,6 +4,9 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+    environment:
+      SERVICE_DISCORD_TOKEN: ${SERVICE_DISCORD_TOKEN}
+      SERVICE_DB_CONNECTION_STRING: ${SERVICE_DB_CONNECTION_STRING}
     networks:
       - network
     volumes:

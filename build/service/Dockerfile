@@ -9,6 +9,5 @@ FROM alpine:3.20 as app
 WORKDIR /app
 
 COPY --from=build /build/service .
-COPY --from=build /build/cmd/service/config.yaml .
 
 CMD ./service
