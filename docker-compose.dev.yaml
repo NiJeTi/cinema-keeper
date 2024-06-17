@@ -4,5 +4,9 @@ services:
       - donotstart
 
   db:
+    image: !reset null
+    build:
+      dockerfile: ./build/db/Dockerfile
+      context: .
     ports:
       - 5432:5432

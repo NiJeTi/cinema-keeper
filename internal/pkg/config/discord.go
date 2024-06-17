@@ -11,7 +11,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
-func Connect(token string) *discordgo.Session {
+func DiscordConnect(token string) *discordgo.Session {
 	discordgo.Marshal = sonic.Marshal
 	discordgo.Unmarshal = sonic.Unmarshal
 
@@ -28,13 +28,13 @@ func Connect(token string) *discordgo.Session {
 
 	err = discord.Open()
 	if err != nil {
-		log.Fatalln("failed to open Connect session", err)
+		log.Fatalln("failed to open Discord session", err)
 	}
 
 	return discord
 }
 
-func RegisterCommands(
+func DiscordRegisterCommands(
 	discord *discordgo.Session,
 	cmds map[string]*commands.Command,
 	guildID types.ID,
@@ -67,7 +67,7 @@ func RegisterCommands(
 	)
 }
 
-func UnregisterCommands(
+func DiscordUnregisterCommands(
 	discord *discordgo.Session,
 	cmds map[string]*commands.Command,
 	guildID types.ID,

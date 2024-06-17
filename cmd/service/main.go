@@ -6,10 +6,6 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/spf13/viper"
-
-	_ "github.com/lib/pq"
-
 	"github.com/nijeti/cinema-keeper/internal/commands"
 	"github.com/nijeti/cinema-keeper/internal/db"
 	"github.com/nijeti/cinema-keeper/internal/handlers/cast"
@@ -18,11 +14,10 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	"github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
-	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
 func main() {
-	config.Config()
+	cfg := config.ReadConfig()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -35,12 +30,12 @@ func main() {
 	cmdLogger := logger.WithGroup("command")
 
 	// db
-	dbConn := config.DB(viper.GetString("db.connection_string"))
+	dbConn := config.DbConnect(cfg.DB.ConnectionString)
 	defer dbConn.Close()
 	txWrapper := dbUtils.NewTxWrapper(dbLogger, dbConn)
 
 	// discord
-	discord := config.Connect(viper.GetString("discord.token"))
+	discord := config.DiscordConnect(cfg.Discord.Token)
 	defer discord.Close()
 
 	// repos
@@ -67,9 +62,8 @@ func main() {
 	}
 
 	// handlers
-	guildID := types.ID(viper.GetString("discord.guild"))
-	config.RegisterCommands(discord, cmds, guildID)
-	defer config.UnregisterCommands(discord, cmds, guildID)
+	config.DiscordRegisterCommands(discord, cmds, cfg.Discord.Guild)
+	defer config.DiscordUnregisterCommands(discord, cmds, cfg.Discord.Guild)
 
 	// run
 	<-stop

@@ -29,8 +29,8 @@ go.work
 # TLS certificates
 cert/
 
-# Private configuration
-config.private.yaml
+# Configuration
+config.yaml
 
 # Root files
 .env
