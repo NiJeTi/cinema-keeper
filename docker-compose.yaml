@@ -9,8 +9,6 @@ services:
       SERVICE_DB_CONNECTION_STRING: ${SERVICE_DB_CONNECTION_STRING}
     networks:
       - network
-    volumes:
-      - ./config.yaml:/app/config.yaml
     
   db:
     image: ghcr.io/nijeti/cinema-keeper-db:${VERSION-latest}
