@@ -13,6 +13,9 @@ By using command `/cast` you can mention all users in the specific voice channel
 #### Quotes store
 By using command `/quote` you can store and list quotes of the server members.
 
+#### Dice roll
+By using command `/roll` you can roll up to 10 dice.
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to
