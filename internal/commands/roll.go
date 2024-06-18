@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"sort"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nijeti/cinema-keeper/internal/pkg/die"
@@ -36,6 +38,11 @@ func buildRoll() *discordgo.ApplicationCommand {
 		}
 		choices = append(choices, c)
 	}
+
+	sort.Slice(
+		choices, func(i, j int) bool {
+			return choices[i].Value.(die.Size) < choices[j].Value.(die.Size)
+		})
 
 	return &discordgo.ApplicationCommand{
 		Name:        RollName,
