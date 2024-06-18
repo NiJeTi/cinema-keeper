@@ -11,6 +11,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/cast"
 	"github.com/nijeti/cinema-keeper/internal/handlers/lock"
 	"github.com/nijeti/cinema-keeper/internal/handlers/quote"
+	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	"github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
@@ -58,6 +59,10 @@ func main() {
 		commands.UnlockName: {
 			Description: commands.Unlock,
 			Handler:     unlock.New(ctx, cmdLogger),
+		},
+		commands.RollName: {
+			Description: commands.Roll,
+			Handler:     roll.New(ctx, cmdLogger),
 		},
 	}
 
