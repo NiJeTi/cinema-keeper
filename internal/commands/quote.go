@@ -12,7 +12,7 @@ const (
 
 var Quote = &discordgo.ApplicationCommand{
 	Name:        QuoteName,
-	Description: "Manage the mos stunning quotes of the specified user",
+	Description: "Manage the most stunning quotes of the specified user",
 	Options: []*discordgo.ApplicationCommandOption{
 		{
 			Name:        QuoteOptionAuthor,
