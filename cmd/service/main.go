@@ -16,6 +16,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/healthcheck"
 )
 
 type config struct {
@@ -25,11 +26,11 @@ type config struct {
 
 func main() {
 	log.Println("starting")
+	defer log.Println("shutdown complete")
 
 	cfg := cfgPkg.ReadConfig[config]()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 
@@ -37,15 +38,18 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	dbLogger := logger.WithGroup("db")
 	cmdLogger := logger.WithGroup("command")
+	hcLogger := logger.WithGroup("healthcheck")
 
 	// db
 	dbConn := db.Connect(cfg.DB)
 	defer dbConn.Close()
+	dbProbe := db.NewProbe(dbConn)
 	txWrapper := dbUtils.NewTxWrapper(dbLogger, dbConn)
 
 	// discord
 	discordConn := discord.Connect(cfg.Discord.Token)
 	defer discordConn.Close()
+	discordProbe := discord.NewProbe(discordConn)
 
 	// repos
 	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn, txWrapper)
@@ -78,8 +82,20 @@ func main() {
 	discord.RegisterCommands(discordConn, cmds, cfg.Discord.Guild)
 	defer discord.UnregisterCommands(discordConn, cmds, cfg.Discord.Guild)
 
+	// healthcheck
+	hc := healthcheck.New(
+		hcLogger,
+		healthcheck.WithProbe("db", dbProbe),
+		healthcheck.WithProbe("discord", discordProbe),
+	)
+	hcServer := hc.Serve(":8080")
+	defer hcServer.Shutdown()
+
 	// run
-	log.Println("started")
+	log.Println("startup complete")
 	<-stop
+
+	// shutdown
 	log.Println("shutting down")
+	cancel()
 }

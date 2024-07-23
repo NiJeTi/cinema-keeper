@@ -22,7 +22,7 @@ func NewMigrator(
 	txWrapper dbUtils.TxWrapper,
 ) Migrator {
 	return Migrator{
-		log:       log,
+		log:       log.With("type", "migrator"),
 		db:        db,
 		txWrapper: txWrapper,
 	}
