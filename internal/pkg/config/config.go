@@ -10,7 +10,7 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
-func ReadConfig[T any]() T {
+func ReadConfig[T any]() *T {
 	k := koanf.New(".")
 
 	if err := k.Load(file.Provider("config.yaml"), yaml.Parser()); err != nil {
@@ -24,8 +24,8 @@ func ReadConfig[T any]() T {
 		log.Println("environment variables have not been loaded")
 	}
 
-	var cfg T
-	err := k.UnmarshalWithConf("", &cfg, koanf.UnmarshalConf{Tag: "conf"})
+	cfg := new(T)
+	err := k.UnmarshalWithConf("", cfg, koanf.UnmarshalConf{Tag: "conf"})
 	if err != nil {
 		log.Fatalln("failed to unmarshal config:", err)
 	}

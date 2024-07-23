@@ -24,7 +24,7 @@ func main() {
 	dbLogger := logger.WithGroup("db")
 
 	// db
-	dbConn := db.Connect(cfg.DB)
+	dbConn := db.Connect(cfg.DB.ConnectionString)
 	defer dbConn.Close()
 	txWrapper := dbUtils.NewTxWrapper(dbLogger, dbConn)
 	dbMigrator := db.NewMigrator(dbLogger, dbConn, txWrapper)

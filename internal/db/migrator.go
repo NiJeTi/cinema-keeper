@@ -20,15 +20,15 @@ func NewMigrator(
 	log *slog.Logger,
 	db *sql.DB,
 	txWrapper dbUtils.TxWrapper,
-) Migrator {
-	return Migrator{
+) *Migrator {
+	return &Migrator{
 		log:       log.With("type", "migrator"),
 		db:        db,
 		txWrapper: txWrapper,
 	}
 }
 
-func (m Migrator) Migrate() error {
+func (m *Migrator) Migrate() error {
 	err := m.createMigrationTable()
 	if err != nil {
 		m.log.Error(
@@ -90,7 +90,7 @@ func (m Migrator) Migrate() error {
 	return nil
 }
 
-func (m Migrator) createMigrationTable() error {
+func (m *Migrator) createMigrationTable() error {
 	return m.txWrapper.Wrap(
 		context.Background(), func(_ context.Context, tx *sql.Tx) error {
 			_, err := tx.Exec(
@@ -105,7 +105,7 @@ func (m Migrator) createMigrationTable() error {
 	)
 }
 
-func (m Migrator) registerAppliedMigration(migration string) error {
+func (m *Migrator) registerAppliedMigration(migration string) error {
 	return m.txWrapper.Wrap(
 		context.Background(), func(_ context.Context, tx *sql.Tx) error {
 			_, err := tx.Exec(
@@ -117,7 +117,7 @@ func (m Migrator) registerAppliedMigration(migration string) error {
 	)
 }
 
-func (m Migrator) checkMigration(migration string) (bool, error) {
+func (m *Migrator) checkMigration(migration string) (bool, error) {
 	rows, err := m.db.Query(
 		`select exists(select 1 from "migrations" where "name" = $1)`,
 		migration,

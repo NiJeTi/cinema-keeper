@@ -5,7 +5,7 @@ import (
 )
 
 type Handler interface {
-	Handle(s *discordgo.Session, i *discordgo.InteractionCreate)
+	Handle(i *discordgo.InteractionCreate)
 }
 
 type Command struct {

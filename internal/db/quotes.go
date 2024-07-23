@@ -21,15 +21,15 @@ func NewQuotesRepo(
 	log *slog.Logger,
 	db *sql.DB,
 	txWrapper dbUtils.TxWrapper,
-) QuotesRepo {
-	return QuotesRepo{
+) *QuotesRepo {
+	return &QuotesRepo{
 		log:       log.With("repo", "quotes"),
 		db:        db,
 		txWrapper: txWrapper,
 	}
 }
 
-func (r QuotesRepo) GetUserQuotesOnGuild(
+func (r *QuotesRepo) GetUserQuotesOnGuild(
 	ctx context.Context,
 	authorID types.ID,
 	guildID types.ID,
@@ -73,7 +73,7 @@ func (r QuotesRepo) GetUserQuotesOnGuild(
 	return quotes, nil
 }
 
-func (r QuotesRepo) AddUserQuoteOnGuild(
+func (r *QuotesRepo) AddUserQuoteOnGuild(
 	ctx context.Context,
 	quote *models.Quote,
 ) error {

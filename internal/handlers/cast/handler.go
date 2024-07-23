@@ -14,36 +14,36 @@ import (
 )
 
 type Handler struct {
-	ctx   context.Context
-	log   *slog.Logger
-	utils discordUtils.Utils
+	ctx     context.Context
+	log     *slog.Logger
+	session *discordgo.Session
+	utils   discordUtils.Utils
 }
 
 func New(
 	ctx context.Context,
 	log *slog.Logger,
-) Handler {
+	session *discordgo.Session,
+) *Handler {
 	log = log.With("command", discord.CastName)
 
-	return Handler{
-		ctx:   ctx,
-		log:   log,
-		utils: discordUtils.New(log),
+	return &Handler{
+		ctx:     ctx,
+		log:     log,
+		session: session,
+		utils:   discordUtils.New(ctx, log, session),
 	}
 }
 
-func (h Handler) Handle(
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
-) {
-	channelID, err := h.getChannelID(s, i)
+func (h *Handler) Handle(i *discordgo.InteractionCreate) {
+	channelID, err := h.getChannelID(i)
 	if err != nil && !errors.Is(err, discordgo.ErrStateNotFound) {
 		h.log.Error("failed to get channel ID", "error", err)
 		return
 	}
 
 	channelUsers, err := h.utils.GetVoiceChannelUsers(
-		s, types.ID(i.GuildID), types.ID(channelID),
+		types.ID(i.GuildID), types.ID(channelID),
 	)
 	if err != nil {
 		h.log.Error("failed to get channel users", "error", err)
@@ -52,31 +52,26 @@ func (h Handler) Handle(
 
 	if (len(channelUsers) == 1 && channelUsers[0].User.ID == i.Member.User.ID) ||
 		len(channelUsers) == 0 {
-		_ = h.utils.Respond(h.ctx, s, i, responses.CastNoUsers())
+		_ = h.utils.Respond(i, responses.CastNoUsers())
+	} else {
+		_ = h.utils.Respond(i, responses.CastUsers(i.Member, channelUsers))
 	}
-
-	_ = h.utils.Respond(
-		h.ctx, s, i, responses.CastUsers(i.Member, channelUsers),
-	)
 }
 
-func (h Handler) getChannelID(
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
-) (string, error) {
+func (h *Handler) getChannelID(i *discordgo.InteractionCreate) (string, error) {
 	optionsMap := discordUtils.OptionsMap(i)
 
 	if opt, ok := optionsMap[discord.CastOptionChannel]; ok {
-		return opt.ChannelValue(s).ID, nil
+		return opt.ChannelValue(h.session).ID, nil
 	}
 
-	voiceState, err := s.State.VoiceState(i.GuildID, i.Member.User.ID)
+	voiceState, err := h.session.State.VoiceState(i.GuildID, i.Member.User.ID)
 
 	switch {
 	case err == nil:
 		return voiceState.ChannelID, nil
 	case errors.Is(err, discordgo.ErrStateNotFound):
-		_ = h.utils.Respond(h.ctx, s, i, responses.UserNotInVoiceChannel())
+		_ = h.utils.Respond(i, responses.UserNotInVoiceChannel())
 		return "", err
 	default:
 		return "", errors.New("failed to get user voice state")

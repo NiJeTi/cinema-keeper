@@ -8,8 +8,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
-func (h Handler) addQuote(
-	s *discordgo.Session,
+func (h *Handler) addQuote(
 	i *discordgo.InteractionCreate,
 	author *discordgo.Member,
 	text string,
@@ -28,5 +27,5 @@ func (h Handler) addQuote(
 	quote.Author = author
 	quote.AddedBy = i.Interaction.Member
 
-	_ = h.utils.Respond(h.ctx, s, i, responses.QuoteAdded(quote))
+	_ = h.utils.Respond(i, responses.QuoteAdded(quote))
 }

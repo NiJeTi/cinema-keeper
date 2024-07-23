@@ -7,18 +7,18 @@ import (
 )
 
 type Probe struct {
-	discord *discordgo.Session
+	session *discordgo.Session
 }
 
 func NewProbe(
-	discord *discordgo.Session,
-) Probe {
-	return Probe{
-		discord: discord,
+	session *discordgo.Session,
+) *Probe {
+	return &Probe{
+		session: session,
 	}
 }
 
-func (p Probe) Check(_ context.Context) error {
-	_, err := p.discord.User("@me")
+func (p *Probe) Check(_ context.Context) error {
+	_, err := p.session.User("@me")
 	return err
 }

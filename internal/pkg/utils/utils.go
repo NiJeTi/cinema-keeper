@@ -5,6 +5,6 @@ import (
 )
 
 func RandomColor() int {
-	const maxColorValue = 16777215
+	const maxColorValue = 0xffffff
 	return rand.IntN(maxColorValue + 1)
 }

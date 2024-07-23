@@ -20,33 +20,33 @@ func Connect(token string) *discordgo.Session {
 	discordgo.Unmarshal = sonic.Unmarshal
 
 	cs := fmt.Sprintf("Bot %s", token)
-	discord, err := discordgo.New(cs)
+	session, err := discordgo.New(cs)
 	if err != nil {
-		log.Fatalln("failed to create discord client:", err)
+		log.Fatalln("failed to create Discord client:", err)
 	}
 
-	discord.Identify.Intents = discordgo.IntentGuilds |
+	session.Identify.Intents = discordgo.IntentGuilds |
 		discordgo.IntentGuildPresences |
 		discordgo.IntentGuildMembers |
 		discordgo.IntentGuildVoiceStates
 
-	err = discord.Open()
+	err = session.Open()
 	if err != nil {
 		log.Fatalln("failed to open Discord session:", err)
 	}
 
-	return discord
+	return session
 }
 
 func RegisterCommands(
-	discord *discordgo.Session,
-	cmds map[string]*Command,
+	session *discordgo.Session,
+	commands map[string]*Command,
 	guildID types.ID,
 ) {
-	appID := discord.State.Application.ID
+	appID := session.State.Application.ID
 
-	for name, cmd := range cmds {
-		createdCmd, err := discord.ApplicationCommandCreate(
+	for name, cmd := range commands {
+		createdCmd, err := session.ApplicationCommandCreate(
 			appID, guildID.String(), cmd.Description,
 		)
 		if err != nil {
@@ -56,31 +56,31 @@ func RegisterCommands(
 		cmd.Description = createdCmd
 	}
 
-	discord.AddHandler(
-		func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	session.AddHandler(
+		func(_ *discordgo.Session, i *discordgo.InteractionCreate) {
 			defer func() {
 				if err := recover(); err != nil {
 					log.Println("panic:", err)
 				}
 			}()
 
-			if cmd, ok := cmds[i.ApplicationCommandData().Name]; ok {
-				cmd.Handler.Handle(s, i)
+			if cmd, ok := commands[i.ApplicationCommandData().Name]; ok {
+				cmd.Handler.Handle(i)
 			}
 		},
 	)
 }
 
 func UnregisterCommands(
-	discord *discordgo.Session,
-	cmds map[string]*Command,
+	session *discordgo.Session,
+	commands map[string]*Command,
 	guildID types.ID,
 ) {
-	appID := discord.State.Application.ID
+	appID := session.State.Application.ID
 
 	failedCmds := map[string]error{}
-	for name, cmd := range cmds {
-		err := discord.ApplicationCommandDelete(
+	for name, cmd := range commands {
+		err := session.ApplicationCommandDelete(
 			appID, guildID.String(), cmd.Description.ID,
 		)
 		if err != nil {
