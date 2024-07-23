@@ -8,8 +8,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/commands"
-	"github.com/nijeti/cinema-keeper/internal/commands/responses"
+	"github.com/nijeti/cinema-keeper/internal/discord"
+	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
 )
 
@@ -23,7 +23,7 @@ func New(
 	ctx context.Context,
 	log *slog.Logger,
 ) Handler {
-	log = log.With("command", commands.UnlockName)
+	log = log.With("command", discord.UnlockName)
 
 	return Handler{
 		ctx:   ctx,

@@ -1,4 +1,4 @@
-package config
+package discord
 
 import (
 	"fmt"
@@ -7,18 +7,22 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bytedance/sonic"
 
-	"github.com/nijeti/cinema-keeper/internal/commands"
 	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
-func DiscordConnect(token string) *discordgo.Session {
+type Config struct {
+	Token string   `conf:"token"`
+	Guild types.ID `conf:"guild"`
+}
+
+func Connect(token string) *discordgo.Session {
 	discordgo.Marshal = sonic.Marshal
 	discordgo.Unmarshal = sonic.Unmarshal
 
 	cs := fmt.Sprintf("Bot %s", token)
 	discord, err := discordgo.New(cs)
 	if err != nil {
-		log.Fatalln("failed to create discord client", err)
+		log.Fatalln("failed to create discord client:", err)
 	}
 
 	discord.Identify.Intents = discordgo.IntentGuilds |
@@ -28,15 +32,15 @@ func DiscordConnect(token string) *discordgo.Session {
 
 	err = discord.Open()
 	if err != nil {
-		log.Fatalln("failed to open Discord session", err)
+		log.Fatalln("failed to open Discord session:", err)
 	}
 
 	return discord
 }
 
-func DiscordRegisterCommands(
+func RegisterCommands(
 	discord *discordgo.Session,
-	cmds map[string]*commands.Command,
+	cmds map[string]*Command,
 	guildID types.ID,
 ) {
 	appID := discord.State.Application.ID
@@ -46,7 +50,7 @@ func DiscordRegisterCommands(
 			appID, guildID.String(), cmd.Description,
 		)
 		if err != nil {
-			log.Fatalln("failed to register command", name, err)
+			log.Fatalln("failed to register command:", name, err)
 		}
 
 		cmd.Description = createdCmd
@@ -56,7 +60,7 @@ func DiscordRegisterCommands(
 		func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			defer func() {
 				if err := recover(); err != nil {
-					log.Println("panic", err)
+					log.Println("panic:", err)
 				}
 			}()
 
@@ -67,9 +71,9 @@ func DiscordRegisterCommands(
 	)
 }
 
-func DiscordUnregisterCommands(
+func UnregisterCommands(
 	discord *discordgo.Session,
-	cmds map[string]*commands.Command,
+	cmds map[string]*Command,
 	guildID types.ID,
 ) {
 	appID := discord.State.Application.ID
@@ -85,6 +89,6 @@ func DiscordUnregisterCommands(
 	}
 
 	if len(failedCmds) != 0 {
-		log.Fatalln("failed to unregister handlers", failedCmds)
+		log.Fatalln("failed to unregister handlers:", failedCmds)
 	}
 }

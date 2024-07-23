@@ -1,48 +1,33 @@
 package config
 
 import (
-	"errors"
 	"log"
 	"strings"
 
-	"github.com/spf13/viper"
-
-	"github.com/nijeti/cinema-keeper/internal/types"
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/env"
+	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/v2"
 )
 
-type DiscordCfg struct {
-	Token string   `mapstructure:"token"`
-	Guild types.ID `mapstructure:"guild"`
-}
+func ReadConfig[T any]() T {
+	k := koanf.New(".")
 
-type DbCfg struct {
-	ConnectionString string `mapstructure:"connection_string"`
-}
-
-type Config struct {
-	Discord DiscordCfg `mapstructure:"discord"`
-	DB      DbCfg      `mapstructure:"db"`
-}
-
-func ReadConfig() *Config {
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("./cmd/service/")
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-
-	err := viper.ReadInConfig()
-	if err != nil && !errors.As(err, &viper.ConfigFileNotFoundError{}) {
-		log.Fatalln("failed to read config file", err)
+	if err := k.Load(file.Provider("config.yaml"), yaml.Parser()); err != nil {
+		log.Println("config file has not been loaded")
 	}
 
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("service")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	cb := func(s string) string {
+		return strings.Replace(strings.ToLower(s), "__", ".", -1)
+	}
+	if err := k.Load(env.Provider("", ".", cb), nil); err != nil {
+		log.Println("environment variables have not been loaded")
+	}
 
-	cfg := &Config{}
-	err = viper.Unmarshal(cfg)
+	var cfg T
+	err := k.UnmarshalWithConf("", &cfg, koanf.UnmarshalConf{Tag: "conf"})
 	if err != nil {
-		log.Fatalln("failed to unmarshal config", err)
+		log.Fatalln("failed to unmarshal config:", err)
 	}
 	return cfg
 }

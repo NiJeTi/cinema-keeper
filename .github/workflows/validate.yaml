@@ -9,6 +9,7 @@ on:
       - 'internal/**'
 
 env:
+  MIGRATOR: 'cmd/migrator/main.go'
   SERVICE: 'cmd/service/main.go'
 
 jobs:
@@ -30,7 +31,10 @@ jobs:
       - name: 'Install dependencies'
         run: go mod download
 
-      - name: 'Build'
+      - name: 'Build migrator'
+        run: go build ${{ env.MIGRATOR }}
+        
+      - name: 'Build service'
         run: go build ${{ env.SERVICE }}
 
       - name: 'Test'

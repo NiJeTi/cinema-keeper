@@ -6,8 +6,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/commands"
-	"github.com/nijeti/cinema-keeper/internal/commands/responses"
+	"github.com/nijeti/cinema-keeper/internal/discord"
+	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
 )
 
@@ -21,7 +21,7 @@ func New(
 	ctx context.Context,
 	log *slog.Logger,
 ) Handler {
-	log = log.With("command", commands.LockName)
+	log = log.With("command", discord.LockName)
 
 	return Handler{
 		ctx:   ctx,
@@ -56,7 +56,7 @@ func (h Handler) Handle(
 	}
 
 	limit := channels[channelID]
-	if opt, ok := discordUtils.OptionsMap(i)[commands.LockOptionLimit]; ok {
+	if opt, ok := discordUtils.OptionsMap(i)[discord.LockOptionLimit]; ok {
 		limit = int(opt.IntValue())
 	}
 

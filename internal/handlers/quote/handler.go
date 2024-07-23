@@ -6,7 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/commands"
+	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
 )
 
@@ -22,7 +22,7 @@ func New(
 	log *slog.Logger,
 	db db,
 ) Handler {
-	log = log.With("command", commands.QuoteName)
+	log = log.With("command", discord.QuoteName)
 
 	return Handler{
 		ctx:   ctx,
@@ -54,14 +54,14 @@ func (h Handler) getOptions(
 ) (*discordgo.Member, string, error) {
 	optionsMap := discordUtils.OptionsMap(i)
 
-	authorID := optionsMap[commands.QuoteOptionAuthor].UserValue(s).ID
+	authorID := optionsMap[discord.QuoteOptionAuthor].UserValue(s).ID
 	author, err := s.State.Member(i.GuildID, authorID)
 	if err != nil {
 		return nil, "", err
 	}
 
 	var text string
-	if opt, ok := optionsMap[commands.QuoteOptionText]; ok {
+	if opt, ok := optionsMap[discord.QuoteOptionText]; ok {
 		text = opt.StringValue()
 	}
 
