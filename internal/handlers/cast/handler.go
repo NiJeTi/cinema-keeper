@@ -7,8 +7,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/commands"
-	"github.com/nijeti/cinema-keeper/internal/commands/responses"
+	"github.com/nijeti/cinema-keeper/internal/discord"
+	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
 	"github.com/nijeti/cinema-keeper/internal/types"
 )
@@ -23,7 +23,7 @@ func New(
 	ctx context.Context,
 	log *slog.Logger,
 ) Handler {
-	log = log.With("command", commands.CastName)
+	log = log.With("command", discord.CastName)
 
 	return Handler{
 		ctx:   ctx,
@@ -66,7 +66,7 @@ func (h Handler) getChannelID(
 ) (string, error) {
 	optionsMap := discordUtils.OptionsMap(i)
 
-	if opt, ok := optionsMap[commands.CastOptionChannel]; ok {
+	if opt, ok := optionsMap[discord.CastOptionChannel]; ok {
 		return opt.ChannelValue(s).ID, nil
 	}
 

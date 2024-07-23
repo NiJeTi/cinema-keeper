@@ -6,8 +6,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/commands"
-	"github.com/nijeti/cinema-keeper/internal/commands/responses"
+	"github.com/nijeti/cinema-keeper/internal/discord"
+	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/pkg/die"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
 )
@@ -22,7 +22,7 @@ func New(
 	ctx context.Context,
 	log *slog.Logger,
 ) Handler {
-	log = log.With("command", commands.RollName)
+	log = log.With("command", discord.RollName)
 
 	return Handler{
 		ctx:   ctx,
@@ -35,14 +35,14 @@ func (h Handler) Handle(
 	s *discordgo.Session,
 	i *discordgo.InteractionCreate,
 ) {
-	size := commands.RollOptionSizeDefault
-	count := commands.RollOptionCountDefault
+	size := discord.RollOptionSizeDefault
+	count := discord.RollOptionCountDefault
 
 	optionsMap := discordUtils.OptionsMap(i)
-	if opt, ok := optionsMap[commands.RollOptionSize]; ok {
+	if opt, ok := optionsMap[discord.RollOptionSize]; ok {
 		size = die.Size(opt.IntValue())
 	}
-	if opt, ok := optionsMap[commands.RollOptionCount]; ok {
+	if opt, ok := optionsMap[discord.RollOptionCount]; ok {
 		count = int(opt.IntValue())
 	}
 
@@ -52,8 +52,8 @@ func (h Handler) Handle(
 	}
 
 	var response *discordgo.InteractionResponse
-	if len(results) == commands.RollOptionCountDefault {
-		if size == commands.RollOptionSizeDefault {
+	if len(results) == discord.RollOptionCountDefault {
+		if size == discord.RollOptionSizeDefault {
 			response = responses.RollSingleDefault(results[0])
 		} else {
 			response = responses.RollSingle(size, results[0])

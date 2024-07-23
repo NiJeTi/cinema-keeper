@@ -3,7 +3,7 @@ package quote
 import (
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/commands/responses"
+	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/models"
 	"github.com/nijeti/cinema-keeper/internal/types"
 )

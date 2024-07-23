@@ -3,10 +3,11 @@ services:
     image: ghcr.io/nijeti/cinema-keeper-service:${VERSION-latest}
     restart: unless-stopped
     depends_on:
-      - db
+      migrator:
+        condition: service_completed_successfully
     environment:
-      SERVICE_DISCORD_TOKEN: ${SERVICE_DISCORD_TOKEN}
-      SERVICE_DB_CONNECTION_STRING: ${SERVICE_DB_CONNECTION_STRING}
+      DISCORD__TOKEN: ${SERVICE_DISCORD_TOKEN}
+      DB__CONNECTION_STRING: ${DB_CONNECTION_STRING}
     networks:
       - network
     
@@ -21,6 +22,16 @@ services:
       - network
     volumes:
       - db:/var/lib/postgresql/data
+  
+  migrator:
+    image: ghcr.io/nijeti/cinema-keeper-migrator:${VERSION-latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB__CONNECTION_STRING: ${DB_CONNECTION_STRING}
+    networks:
+      - network
 
 volumes:
   db:
