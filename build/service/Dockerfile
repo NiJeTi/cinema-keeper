@@ -10,4 +10,13 @@ WORKDIR /app
 
 COPY --from=build /build/service .
 
+RUN apk --no-cache add curl
+HEALTHCHECK \
+    --start-period=10s \
+    --start-interval=1s \
+    --interval=1m \
+    --timeout=20s \
+    --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
 CMD ./service
