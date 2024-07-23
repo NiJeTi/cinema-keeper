@@ -11,8 +11,8 @@ type Config struct {
 	ConnectionString string `conf:"connection_string"`
 }
 
-func Connect(cfg Config) *sql.DB {
-	db, err := sql.Open("postgres", cfg.ConnectionString)
+func Connect(cs string) *sql.DB {
+	db, err := sql.Open("postgres", cs)
 	if err != nil {
 		log.Fatalln("failed to open database connection:", err)
 	}

@@ -12,29 +12,29 @@ import (
 )
 
 type Handler struct {
-	ctx   context.Context
-	log   *slog.Logger
-	utils discordUtils.Utils
+	ctx     context.Context
+	log     *slog.Logger
+	session *discordgo.Session
+	utils   discordUtils.Utils
 }
 
 func New(
 	ctx context.Context,
 	log *slog.Logger,
-) Handler {
+	session *discordgo.Session,
+) *Handler {
 	log = log.With("command", discord.LockName)
 
-	return Handler{
-		ctx:   ctx,
-		log:   log,
-		utils: discordUtils.New(log),
+	return &Handler{
+		ctx:     ctx,
+		log:     log,
+		session: session,
+		utils:   discordUtils.New(ctx, log, session),
 	}
 }
 
-func (h Handler) Handle(
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
-) {
-	guild, err := s.State.Guild(i.GuildID)
+func (h *Handler) Handle(i *discordgo.InteractionCreate) {
+	guild, err := h.session.State.Guild(i.GuildID)
 	if err != nil {
 		h.log.ErrorContext(h.ctx, "failed to get guild", "error", err)
 		return
@@ -51,7 +51,7 @@ func (h Handler) Handle(
 	}
 
 	if channelID == "" {
-		_ = h.utils.Respond(h.ctx, s, i, responses.UserNotInVoiceChannel())
+		_ = h.utils.Respond(i, responses.UserNotInVoiceChannel())
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h Handler) Handle(
 		limit = int(opt.IntValue())
 	}
 
-	channel, err := s.ChannelEdit(
+	channel, err := h.session.ChannelEdit(
 		channelID, &discordgo.ChannelEdit{
 			UserLimit: limit,
 		},
@@ -70,5 +70,5 @@ func (h Handler) Handle(
 		return
 	}
 
-	_ = h.utils.Respond(h.ctx, s, i, responses.LockedChannel(channel, limit))
+	_ = h.utils.Respond(i, responses.LockedChannel(channel, limit))
 }

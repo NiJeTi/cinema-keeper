@@ -41,46 +41,43 @@ func main() {
 	hcLogger := logger.WithGroup("healthcheck")
 
 	// db
-	dbConn := db.Connect(cfg.DB)
+	dbConn := db.Connect(cfg.DB.ConnectionString)
 	defer dbConn.Close()
 	dbProbe := db.NewProbe(dbConn)
 	txWrapper := dbUtils.NewTxWrapper(dbLogger, dbConn)
 
-	// discord
-	discordConn := discord.Connect(cfg.Discord.Token)
-	defer discordConn.Close()
-	discordProbe := discord.NewProbe(discordConn)
-
-	// repos
 	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn, txWrapper)
 
-	// handlers
-	cmds := map[string]*discord.Command{
+	// discord
+	discordSession := discord.Connect(cfg.Discord.Token)
+	defer discordSession.Close()
+
+	commands := map[string]*discord.Command{
 		discord.QuoteName: {
 			Description: discord.Quote,
-			Handler:     quote.New(ctx, cmdLogger, quotesRepo),
+			Handler:     quote.New(ctx, cmdLogger, discordSession, quotesRepo),
 		},
 		discord.CastName: {
 			Description: discord.Cast,
-			Handler:     cast.New(ctx, cmdLogger),
+			Handler:     cast.New(ctx, cmdLogger, discordSession),
 		},
 		discord.LockName: {
 			Description: discord.Lock,
-			Handler:     lock.New(ctx, cmdLogger),
+			Handler:     lock.New(ctx, cmdLogger, discordSession),
 		},
 		discord.UnlockName: {
 			Description: discord.Unlock,
-			Handler:     unlock.New(ctx, cmdLogger),
+			Handler:     unlock.New(ctx, cmdLogger, discordSession),
 		},
 		discord.RollName: {
 			Description: discord.Roll,
-			Handler:     roll.New(ctx, cmdLogger),
+			Handler:     roll.New(ctx, cmdLogger, discordSession),
 		},
 	}
+	discord.RegisterCommands(discordSession, commands, cfg.Discord.Guild)
+	defer discord.UnregisterCommands(discordSession, commands, cfg.Discord.Guild)
 
-	// handlers
-	discord.RegisterCommands(discordConn, cmds, cfg.Discord.Guild)
-	defer discord.UnregisterCommands(discordConn, cmds, cfg.Discord.Guild)
+	discordProbe := discord.NewProbe(discordSession)
 
 	// healthcheck
 	hc := healthcheck.New(

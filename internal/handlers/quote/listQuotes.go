@@ -8,8 +8,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
-func (h Handler) listQuotes(
-	s *discordgo.Session,
+func (h *Handler) listQuotes(
 	i *discordgo.InteractionCreate,
 	author *discordgo.Member,
 ) {
@@ -23,16 +22,16 @@ func (h Handler) listQuotes(
 	}
 
 	if len(quotes) == 0 {
-		_ = h.utils.Respond(h.ctx, s, i, responses.QuotesEmpty(author))
+		_ = h.utils.Respond(i, responses.QuotesEmpty(author))
 		return
 	}
 
-	err = h.enrichQuotes(s, i, quotes, author)
+	err = h.enrichQuotes(i, quotes, author)
 	if err != nil {
 		return
 	}
 
-	err = h.utils.Respond(h.ctx, s, i, responses.QuotesHeader(author))
+	err = h.utils.Respond(i, responses.QuotesHeader(author))
 	if err != nil {
 		return
 	}
@@ -43,15 +42,14 @@ func (h Handler) listQuotes(
 			limit = len(quotes)
 		}
 
-		err = h.sendEmbeds(s, i, responses.Quotes(quotes[index:limit]))
+		err = h.sendEmbeds(i, responses.Quotes(quotes[index:limit]))
 		if err != nil {
 			return
 		}
 	}
 }
 
-func (h Handler) enrichQuotes(
-	s *discordgo.Session,
+func (h *Handler) enrichQuotes(
 	i *discordgo.InteractionCreate,
 	quotes []*models.Quote,
 	author *discordgo.Member,
@@ -59,7 +57,7 @@ func (h Handler) enrichQuotes(
 	for _, q := range quotes {
 		q.Author = author
 
-		addedBy, err := s.State.Member(i.GuildID, q.AddedByID.String())
+		addedBy, err := h.session.State.Member(i.GuildID, q.AddedByID.String())
 		if err != nil {
 			h.log.ErrorContext(h.ctx, "failed to get member", "error", err)
 			return err
@@ -69,12 +67,13 @@ func (h Handler) enrichQuotes(
 	return nil
 }
 
-func (h Handler) sendEmbeds(
-	s *discordgo.Session,
+func (h *Handler) sendEmbeds(
 	i *discordgo.InteractionCreate,
 	embeds []*discordgo.MessageEmbed,
 ) error {
-	_, err := s.ChannelMessageSendEmbeds(i.Interaction.ChannelID, embeds)
+	_, err := h.session.ChannelMessageSendEmbeds(
+		i.Interaction.ChannelID, embeds,
+	)
 	if err != nil {
 		h.log.ErrorContext(h.ctx, "failed to send embeds", "error", err)
 	}

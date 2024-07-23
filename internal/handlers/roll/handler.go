@@ -13,28 +13,28 @@ import (
 )
 
 type Handler struct {
-	ctx   context.Context
-	log   *slog.Logger
-	utils discordUtils.Utils
+	ctx     context.Context
+	log     *slog.Logger
+	session *discordgo.Session
+	utils   discordUtils.Utils
 }
 
 func New(
 	ctx context.Context,
 	log *slog.Logger,
-) Handler {
+	session *discordgo.Session,
+) *Handler {
 	log = log.With("command", discord.RollName)
 
-	return Handler{
-		ctx:   ctx,
-		log:   log,
-		utils: discordUtils.New(log),
+	return &Handler{
+		ctx:     ctx,
+		log:     log,
+		session: session,
+		utils:   discordUtils.New(ctx, log, session),
 	}
 }
 
-func (h Handler) Handle(
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
-) {
+func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	size := discord.RollOptionSizeDefault
 	count := discord.RollOptionCountDefault
 
@@ -62,5 +62,5 @@ func (h Handler) Handle(
 		response = responses.RollMultiple(size, results)
 	}
 
-	_ = h.utils.Respond(h.ctx, s, i, response)
+	_ = h.utils.Respond(i, response)
 }

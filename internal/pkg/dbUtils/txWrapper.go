@@ -25,7 +25,7 @@ func NewTxWrapper(
 	}
 }
 
-func (w txWrapper) Wrap(
+func (w *txWrapper) Wrap(
 	ctx context.Context,
 	operation Operation,
 ) error {
@@ -53,7 +53,7 @@ func (w txWrapper) Wrap(
 	return nil
 }
 
-func (w txWrapper) rollbackTx(ctx context.Context, tx *sql.Tx) {
+func (w *txWrapper) rollbackTx(ctx context.Context, tx *sql.Tx) {
 	err := tx.Rollback()
 	if err != nil {
 		w.log.ErrorContext(ctx, "failed to rollback transaction", "error", err)

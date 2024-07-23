@@ -14,56 +14,54 @@ import (
 )
 
 type Handler struct {
-	ctx   context.Context
-	log   *slog.Logger
-	utils discordUtils.Utils
+	ctx     context.Context
+	log     *slog.Logger
+	session *discordgo.Session
+	utils   discordUtils.Utils
 }
 
 func New(
 	ctx context.Context,
 	log *slog.Logger,
-) Handler {
+	session *discordgo.Session,
+) *Handler {
 	log = log.With("command", discord.UnlockName)
 
-	return Handler{
-		ctx:   ctx,
-		log:   log,
-		utils: discordUtils.New(log),
+	return &Handler{
+		ctx:     ctx,
+		log:     log,
+		session: session,
+		utils:   discordUtils.New(ctx, log, session),
 	}
 }
 
-func (h Handler) Handle(
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
-) {
-	voiceState, err := s.State.VoiceState(i.GuildID, i.Member.User.ID)
+func (h *Handler) Handle(i *discordgo.InteractionCreate) {
+	voiceState, err := h.session.State.VoiceState(i.GuildID, i.Member.User.ID)
 	if err != nil && !errors.Is(err, discordgo.ErrStateNotFound) {
 		h.log.ErrorContext(h.ctx, "failed to get voice state", "error", err)
 		return
 	}
 
 	if errors.Is(err, discordgo.ErrStateNotFound) {
-		_ = h.utils.Respond(h.ctx, s, i, responses.UserNotInVoiceChannel())
+		_ = h.utils.Respond(i, responses.UserNotInVoiceChannel())
 		return
 	}
 
-	channel, err := h.unlockChannel(s, voiceState.ChannelID)
+	channel, err := h.unlockChannel(voiceState.ChannelID)
 	if err != nil {
 		h.log.Error("failed to remove user limit", "error", err)
 		return
 	}
 
-	_ = h.utils.Respond(h.ctx, s, i, responses.UnlockedChannel(channel))
+	_ = h.utils.Respond(i, responses.UnlockedChannel(channel))
 }
 
-func (h Handler) unlockChannel(
-	s *discordgo.Session,
-	channelID string,
-) (*discordgo.Channel, error) {
+// unlockChannel Workaround method for removing channel user limit
+func (h *Handler) unlockChannel(channelID string) (*discordgo.Channel, error) {
 	type request struct {
 		UserLimit int `json:"user_limit"`
 	}
-	resp, err := s.RequestWithBucketID(
+	resp, err := h.session.RequestWithBucketID(
 		http.MethodPatch,
 		discordgo.EndpointChannel(channelID),
 		request{UserLimit: 0},

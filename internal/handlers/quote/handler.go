@@ -11,51 +11,50 @@ import (
 )
 
 type Handler struct {
-	ctx   context.Context
-	log   *slog.Logger
-	utils discordUtils.Utils
-	db    db
+	ctx     context.Context
+	log     *slog.Logger
+	session *discordgo.Session
+	db      db
+	utils   discordUtils.Utils
 }
 
 func New(
 	ctx context.Context,
 	log *slog.Logger,
+	session *discordgo.Session,
 	db db,
-) Handler {
+) *Handler {
 	log = log.With("command", discord.QuoteName)
 
-	return Handler{
-		ctx:   ctx,
-		log:   log,
-		utils: discordUtils.New(log),
-		db:    db,
+	return &Handler{
+		ctx:     ctx,
+		log:     log,
+		session: session,
+		db:      db,
+		utils:   discordUtils.New(ctx, log, session),
 	}
 }
 
-func (h Handler) Handle(
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
-) {
-	author, text, err := h.getOptions(s, i)
+func (h *Handler) Handle(i *discordgo.InteractionCreate) {
+	author, text, err := h.getOptions(i)
 	if err != nil {
 		h.log.ErrorContext(h.ctx, "failed to get options", "error", err)
 	}
 
 	if text == "" {
-		h.listQuotes(s, i, author)
+		h.listQuotes(i, author)
 	} else {
-		h.addQuote(s, i, author, text)
+		h.addQuote(i, author, text)
 	}
 }
 
-func (h Handler) getOptions(
-	s *discordgo.Session,
+func (h *Handler) getOptions(
 	i *discordgo.InteractionCreate,
 ) (*discordgo.Member, string, error) {
 	optionsMap := discordUtils.OptionsMap(i)
 
-	authorID := optionsMap[discord.QuoteOptionAuthor].UserValue(s).ID
-	author, err := s.State.Member(i.GuildID, authorID)
+	authorID := optionsMap[discord.QuoteOptionAuthor].UserValue(h.session).ID
+	author, err := h.session.State.Member(i.GuildID, authorID)
 	if err != nil {
 		return nil, "", err
 	}

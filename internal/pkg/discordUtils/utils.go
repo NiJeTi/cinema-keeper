@@ -10,20 +10,37 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
-type Utils struct {
-	log *slog.Logger
+type Utils interface {
+	GetVoiceChannelUsers(
+		guild types.ID,
+		channel types.ID,
+	) ([]*discordgo.Member, error)
+
+	Respond(
+		interaction *discordgo.InteractionCreate,
+		response *discordgo.InteractionResponse,
+	) error
+}
+
+type utils struct {
+	ctx     context.Context
+	log     *slog.Logger
+	session *discordgo.Session
 }
 
 func New(
+	ctx context.Context,
 	log *slog.Logger,
+	session *discordgo.Session,
 ) Utils {
-	return Utils{
-		log: log,
+	return &utils{
+		ctx:     ctx,
+		log:     log,
+		session: session,
 	}
 }
 
-func (u Utils) GetVoiceChannelUsers(
-	s *discordgo.Session,
+func (u *utils) GetVoiceChannelUsers(
 	guild types.ID,
 	channel types.ID,
 ) ([]*discordgo.Member, error) {
@@ -34,7 +51,7 @@ func (u Utils) GetVoiceChannelUsers(
 
 	var after string
 	for {
-		members, err := s.GuildMembers(guildID, after, 1000)
+		members, err := u.session.GuildMembers(guildID, after, 1000)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +61,9 @@ func (u Utils) GetVoiceChannelUsers(
 		}
 
 		for _, member := range members {
-			voiceState, err := s.State.VoiceState(guildID, member.User.ID)
+			voiceState, err := u.session.State.VoiceState(
+				guildID, member.User.ID,
+			)
 			if err != nil {
 				if errors.Is(err, discordgo.ErrStateNotFound) {
 					continue
@@ -65,15 +84,13 @@ func (u Utils) GetVoiceChannelUsers(
 	return users, nil
 }
 
-func (u Utils) Respond(
-	ctx context.Context,
-	s *discordgo.Session,
-	i *discordgo.InteractionCreate,
+func (u *utils) Respond(
+	interaction *discordgo.InteractionCreate,
 	response *discordgo.InteractionResponse,
 ) error {
-	err := s.InteractionRespond(i.Interaction, response)
+	err := u.session.InteractionRespond(interaction.Interaction, response)
 	if err != nil {
-		u.log.ErrorContext(ctx, "failed to respond", "error", err)
+		u.log.ErrorContext(u.ctx, "failed to respond", "error", err)
 	}
 	return err
 }
