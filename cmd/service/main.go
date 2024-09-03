@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/nijeti/healthcheck"
+
 	"github.com/nijeti/cinema-keeper/internal/db"
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/handlers/cast"
@@ -16,7 +18,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
-	"github.com/nijeti/cinema-keeper/internal/pkg/healthcheck"
+	"github.com/nijeti/cinema-keeper/internal/pkg/hcServer"
 )
 
 type config struct {
@@ -81,12 +83,12 @@ func main() {
 
 	// healthcheck
 	hc := healthcheck.New(
-		hcLogger,
+		healthcheck.WithLogger(hcLogger),
 		healthcheck.WithProbe("db", dbProbe),
 		healthcheck.WithProbe("discord", discordProbe),
 	)
-	hcServer := hc.Serve(":8080")
-	defer hcServer.Shutdown()
+	hcs := hcServer.Serve(":8080", hc)
+	defer hcs.Shutdown()
 
 	// run
 	log.Println("startup complete")
