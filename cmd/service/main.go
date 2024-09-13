@@ -8,6 +8,7 @@ import (
 	"os/signal"
 
 	"github.com/nijeti/healthcheck"
+	"github.com/nijeti/healthcheck/servers/fasthttp"
 
 	"github.com/nijeti/cinema-keeper/internal/db"
 	"github.com/nijeti/cinema-keeper/internal/discord"
@@ -18,7 +19,6 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
-	"github.com/nijeti/cinema-keeper/internal/pkg/hcServer"
 )
 
 type config struct {
@@ -77,7 +77,9 @@ func main() {
 		},
 	}
 	discord.RegisterCommands(discordSession, commands, cfg.Discord.Guild)
-	defer discord.UnregisterCommands(discordSession, commands, cfg.Discord.Guild)
+	defer discord.UnregisterCommands(
+		discordSession, commands, cfg.Discord.Guild,
+	)
 
 	discordProbe := discord.NewProbe(discordSession)
 
@@ -87,8 +89,14 @@ func main() {
 		healthcheck.WithProbe("db", dbProbe),
 		healthcheck.WithProbe("discord", discordProbe),
 	)
-	hcs := hcServer.Serve(":8080", hc)
-	defer hcs.Shutdown()
+	hcs := fasthttp.New(
+		hc,
+		fasthttp.WithLogger(hcLogger),
+		fasthttp.WithAddress(":8080"),
+		fasthttp.WithRoute("/health"),
+	)
+	hcs.Start()
+	defer hcs.Stop()
 
 	// run
 	log.Println("startup complete")
