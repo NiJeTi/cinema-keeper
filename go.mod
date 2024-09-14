@@ -11,7 +11,7 @@ require (
 	github.com/knadh/koanf/v2 v2.1.1
 	github.com/lib/pq v1.10.9
 	github.com/nijeti/healthcheck v1.0.0-beta.2
-	github.com/nijeti/healthcheck/servers/fasthttp v1.0.0-beta.2
+	github.com/nijeti/healthcheck/servers/fasthttp v1.0.0-beta.3
 	github.com/stretchr/testify v1.9.0
 )
 
