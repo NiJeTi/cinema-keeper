@@ -1,6 +1,8 @@
 package quote
 
 import (
+	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
@@ -36,9 +38,10 @@ func (h *Handler) listQuotes(
 		return
 	}
 
-	for index := 0; index < len(quotes); index += 10 {
-		limit := index + 10
-		if index+10 >= len(quotes) {
+	const pageSize = 10
+	for index := 0; index < len(quotes); index += pageSize {
+		limit := index + pageSize
+		if index+pageSize >= len(quotes) {
 			limit = len(quotes)
 		}
 
@@ -60,7 +63,7 @@ func (h *Handler) enrichQuotes(
 		addedBy, err := h.session.State.Member(i.GuildID, q.AddedByID.String())
 		if err != nil {
 			h.log.ErrorContext(h.ctx, "failed to get member", "error", err)
-			return err
+			return fmt.Errorf("failed to get member: %w", err)
 		}
 		q.AddedBy = addedBy
 	}
@@ -77,5 +80,5 @@ func (h *Handler) sendEmbeds(
 	if err != nil {
 		h.log.ErrorContext(h.ctx, "failed to send embeds", "error", err)
 	}
-	return err
+	return fmt.Errorf("failed to send embeds: %w", err)
 }

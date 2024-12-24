@@ -9,6 +9,7 @@ const (
 	CastOptionChannel = "channel"
 )
 
+//nolint:gochecknoglobals // pending rework
 var Cast = &discordgo.ApplicationCommand{
 	Name:        CastName,
 	Description: "Mention all users in a voice channel",

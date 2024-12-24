@@ -28,8 +28,10 @@ jobs:
       - name: 'Install dependencies'
         run: go mod download
 
-      - name: 'Vet'
-        run: go vet ./...
+      - name: 'Run linters'
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.62.2
 
       - name: 'Build migrator'
         run: go build ${{ env.MIGRATOR }}

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
-func ReadConfig[T any]() *T {
+func ReadConfig[T any]() (*T, error) {
 	k := koanf.New(".")
 
 	if err := k.Load(file.Provider("config.yaml"), yaml.Parser()); err != nil {
@@ -18,7 +19,7 @@ func ReadConfig[T any]() *T {
 	}
 
 	cb := func(s string) string {
-		return strings.Replace(strings.ToLower(s), "__", ".", -1)
+		return strings.ReplaceAll(strings.ToLower(s), "__", ".")
 	}
 	if err := k.Load(env.Provider("", ".", cb), nil); err != nil {
 		log.Println("environment variables have not been loaded")
@@ -27,7 +28,7 @@ func ReadConfig[T any]() *T {
 	cfg := new(T)
 	err := k.UnmarshalWithConf("", cfg, koanf.UnmarshalConf{Tag: "conf"})
 	if err != nil {
-		log.Fatalln("failed to unmarshal config:", err)
+		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
-	return cfg
+	return cfg, nil
 }

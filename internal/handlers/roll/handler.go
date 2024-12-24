@@ -9,14 +9,14 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/pkg/die"
-	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/discordutils"
 )
 
 type Handler struct {
 	ctx     context.Context
 	log     *slog.Logger
 	session *discordgo.Session
-	utils   discordUtils.Utils
+	utils   discordutils.Utils
 }
 
 func New(
@@ -30,7 +30,7 @@ func New(
 		ctx:     ctx,
 		log:     log,
 		session: session,
-		utils:   discordUtils.New(ctx, log, session),
+		utils:   discordutils.New(ctx, log, session),
 	}
 }
 
@@ -38,7 +38,7 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	size := discord.RollOptionSizeDefault
 	count := discord.RollOptionCountDefault
 
-	optionsMap := discordUtils.OptionsMap(i)
+	optionsMap := discordutils.OptionsMap(i)
 	if opt, ok := optionsMap[discord.RollOptionSize]; ok {
 		size = die.Size(opt.IntValue())
 	}
@@ -47,7 +47,7 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	}
 
 	results := make([]int, 0, count)
-	for index := 0; index < count; index++ {
+	for range count {
 		results = append(results, die.Roll(size))
 	}
 

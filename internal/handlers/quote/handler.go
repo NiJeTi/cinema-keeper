@@ -2,12 +2,13 @@ package quote
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nijeti/cinema-keeper/internal/discord"
-	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/discordutils"
 )
 
 type Handler struct {
@@ -15,7 +16,7 @@ type Handler struct {
 	log     *slog.Logger
 	session *discordgo.Session
 	db      db
-	utils   discordUtils.Utils
+	utils   discordutils.Utils
 }
 
 func New(
@@ -31,7 +32,7 @@ func New(
 		log:     log,
 		session: session,
 		db:      db,
-		utils:   discordUtils.New(ctx, log, session),
+		utils:   discordutils.New(ctx, log, session),
 	}
 }
 
@@ -51,12 +52,12 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 func (h *Handler) getOptions(
 	i *discordgo.InteractionCreate,
 ) (*discordgo.Member, string, error) {
-	optionsMap := discordUtils.OptionsMap(i)
+	optionsMap := discordutils.OptionsMap(i)
 
 	authorID := optionsMap[discord.QuoteOptionAuthor].UserValue(h.session).ID
 	author, err := h.session.State.Member(i.GuildID, authorID)
 	if err != nil {
-		return nil, "", err
+		return nil, "", fmt.Errorf("failed to get author: %w", err)
 	}
 
 	var text string

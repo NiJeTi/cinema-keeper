@@ -20,9 +20,9 @@ func (_m *MockHandler) EXPECT() *MockHandler_Expecter {
 	return &MockHandler_Expecter{mock: &_m.Mock}
 }
 
-// Handle provides a mock function with given fields: s, i
-func (_m *MockHandler) Handle(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	_m.Called(s, i)
+// Handle provides a mock function with given fields: i
+func (_m *MockHandler) Handle(i *discordgo.InteractionCreate) {
+	_m.Called(i)
 }
 
 // MockHandler_Handle_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Handle'
@@ -31,15 +31,14 @@ type MockHandler_Handle_Call struct {
 }
 
 // Handle is a helper method to define mock.On call
-//   - s *discordgo.Session
 //   - i *discordgo.InteractionCreate
-func (_e *MockHandler_Expecter) Handle(s interface{}, i interface{}) *MockHandler_Handle_Call {
-	return &MockHandler_Handle_Call{Call: _e.mock.On("Handle", s, i)}
+func (_e *MockHandler_Expecter) Handle(i interface{}) *MockHandler_Handle_Call {
+	return &MockHandler_Handle_Call{Call: _e.mock.On("Handle", i)}
 }
 
-func (_c *MockHandler_Handle_Call) Run(run func(s *discordgo.Session, i *discordgo.InteractionCreate)) *MockHandler_Handle_Call {
+func (_c *MockHandler_Handle_Call) Run(run func(i *discordgo.InteractionCreate)) *MockHandler_Handle_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(*discordgo.Session), args[1].(*discordgo.InteractionCreate))
+		run(args[0].(*discordgo.InteractionCreate))
 	})
 	return _c
 }
@@ -49,8 +48,8 @@ func (_c *MockHandler_Handle_Call) Return() *MockHandler_Handle_Call {
 	return _c
 }
 
-func (_c *MockHandler_Handle_Call) RunAndReturn(run func(*discordgo.Session, *discordgo.InteractionCreate)) *MockHandler_Handle_Call {
-	_c.Call.Return(run)
+func (_c *MockHandler_Handle_Call) RunAndReturn(run func(*discordgo.InteractionCreate)) *MockHandler_Handle_Call {
+	_c.Run(run)
 	return _c
 }
 

@@ -16,5 +16,5 @@ func NewProbe(db *sql.DB) *Probe {
 }
 
 func (p *Probe) Check(ctx context.Context) error {
-	return p.db.PingContext(ctx)
+	return p.db.PingContext(ctx) //nolint:wrapcheck // error passthrough
 }

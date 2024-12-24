@@ -6,7 +6,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func UnlockedChannel(channel *discordgo.Channel) *discordgo.InteractionResponse {
+func UnlockedChannel(
+	channel *discordgo.Channel,
+) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{

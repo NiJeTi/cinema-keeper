@@ -1,0 +1,172 @@
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - copyloopvar
+    - decorder
+    - dupl
+    - errcheck
+    - errname
+    - errorlint
+    - exhaustive
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - gocritic
+    - gocyclo
+    - godot
+    - gofmt
+    - gofumpt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - inamedparam
+    - ineffassign
+    - intrange
+    - ireturn
+    - lll
+    - makezero
+    - mnd
+    - nilerr
+    - nilnil
+    - nolintlint
+    - paralleltest
+    #    - prealloc # Use in case of performance problems
+    - revive
+    - rowserrcheck
+    - sloglint
+    - sqlclosecheck
+    - staticcheck
+    - stylecheck
+    - tagalign
+    - tagliatelle
+    - testifylint
+    - testpackage
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - wastedassign
+    - whitespace
+    - wrapcheck
+linters-settings:
+  copyloopvar:
+    check-alias: true
+  dupl:
+    threshold: 100
+  errcheck:
+    check-type-assertions: true
+  exhaustive:
+    default-signifies-exhaustive: true
+    default-case-required: true
+  gci:
+    sections:
+      - standard
+      - default
+      - localmodule
+    custom-order: true
+  gocognit:
+    min-complexity: 20
+  gocritic:
+    enable-all: true
+    disabled-checks:
+      - deferInLoop
+      - hugeParam
+      - paramTypeCombine
+      - tooManyResultsChecker
+  gocyclo:
+    min-complexity: 20
+  gofmt:
+    rewrite-rules:
+      - pattern: "interface{}"
+        replacement: "any"
+  gofumpt:
+    extra-rules: true
+  gosimple:
+    checks: [ "all" ]
+  govet:
+    enable-all: true
+  ireturn:
+    reject:
+      - anon
+  lll:
+    line-length: 80
+  nolintlint:
+    require-explanation: true
+    require-specific: true
+  paralleltest:
+    ignore-missing-subtests: true
+  revive:
+    enable-all-rules: true
+    rules:
+      - name: add-constant
+        arguments:
+          - maxLitCount: "4"
+            allowStrs: "\"\""
+            allowInts: "-1,0,1,2"
+            allowFloats: "-1.0,-1.,0.0,0.,1.0,1.,2.0,2."
+            ignoreFuncs: "os\\.*,fmt\\.Println,make"
+      - name: argument-limit
+        disabled: true
+      - name: banned-characters
+        disabled: true
+      - name: bare-return
+        disabled: true
+      - name: cognitive-complexity
+        arguments: [ 20 ]
+      - name: comments-density
+        disabled: true
+      - name: cyclomatic
+        arguments: [ 20 ]
+      - name: enforce-map-style
+        arguments: [ "make" ]
+      - name: enforce-repeated-arg-type-style
+        disabled: true
+      - name: enforce-slice-style
+        arguments: [ "make" ]
+      - name: file-header
+        disabled: true
+      - name: file-length-limit
+        disabled: true
+      - name: filename-format
+        disabled: true
+      - name: function-length
+        disabled: true
+      - name: function-result-limit
+        arguments: [ 3 ]
+      - name: imports-blocklist
+        disabled: true
+      - name: line-length-limit
+        arguments: [ 80 ]
+      - name: max-control-nesting
+        disabled: true
+      - name: max-public-structs
+        disabled: true
+      - name: nested-structs
+        disabled: true
+      - name: range
+        disabled: true
+      - name: string-format
+        disabled: true
+      - name: unchecked-type-assertion
+        disabled: true
+  sloglint:
+    no-global: all
+    context: scope
+    static-msg: true
+    key-naming-case: snake
+  staticcheck:
+    checks: [ "all", "-S1008" ]
+  stylecheck:
+    checks: [ "all" ]
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        json: snake
+        yaml: kebab
+  testifylint:
+    enable-all: true

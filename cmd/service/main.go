@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/nijeti/healthcheck"
 	"github.com/nijeti/healthcheck/servers/fasthttp"
@@ -17,8 +18,13 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/quote"
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
-	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
-	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
+	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
+	"github.com/nijeti/cinema-keeper/internal/pkg/dbutils"
+)
+
+const (
+	codeOk  = 0
+	codeErr = 1
 )
 
 type config struct {
@@ -27,14 +33,24 @@ type config struct {
 }
 
 func main() {
+	code := run()
+	os.Exit(code)
+}
+
+func run() int {
 	log.Println("starting")
 	defer log.Println("shutdown complete")
 
-	cfg := cfgPkg.ReadConfig[config]()
+	cfg, err := cfgpkg.ReadConfig[config]()
+	if err != nil {
+		log.Println("failed to read config:", err)
+		return codeErr
+	}
 
+	// todo: https://github.com/NiJeTi/cinema-keeper/issues/29
 	ctx, cancel := context.WithCancel(context.Background())
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	// logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
@@ -43,15 +59,25 @@ func main() {
 	hcLogger := logger.WithGroup("healthcheck")
 
 	// db
-	dbConn := db.Connect(cfg.DB.ConnectionString)
+	dbConn, err := db.Connect(cfg.DB.ConnectionString)
+	if err != nil {
+		log.Println("failed to connect to db:", err)
+		cancel()
+		return codeErr
+	}
 	defer dbConn.Close()
 	dbProbe := db.NewProbe(dbConn)
-	txWrapper := dbUtils.NewTxWrapper(dbLogger, dbConn)
+	txWrapper := dbutils.NewTxWrapper(dbLogger, dbConn)
 
 	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn, txWrapper)
 
 	// discord
-	discordSession := discord.Connect(cfg.Discord.Token)
+	discordSession, err := discord.Connect(cfg.Discord.Token)
+	if err != nil {
+		log.Println("failed to connect to Discord:", err)
+		cancel()
+		return codeErr
+	}
 	defer discordSession.Close()
 
 	commands := map[string]*discord.Command{
@@ -76,7 +102,14 @@ func main() {
 			Handler:     roll.New(ctx, cmdLogger, discordSession),
 		},
 	}
-	discord.RegisterCommands(discordSession, commands, cfg.Discord.Guild)
+
+	err = discord.RegisterCommands(discordSession, commands, cfg.Discord.Guild)
+	if err != nil {
+		log.Println("failed to register commands:", err)
+		cancel()
+		return codeErr
+	}
+	//nolint:errcheck // call is deferred
 	defer discord.UnregisterCommands(
 		discordSession, commands, cfg.Discord.Guild,
 	)
@@ -105,4 +138,6 @@ func main() {
 	// shutdown
 	log.Println("shutting down")
 	cancel()
+
+	return codeOk
 }

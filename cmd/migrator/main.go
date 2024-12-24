@@ -6,8 +6,13 @@ import (
 	"os"
 
 	"github.com/nijeti/cinema-keeper/internal/db"
-	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
-	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
+	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
+	"github.com/nijeti/cinema-keeper/internal/pkg/dbutils"
+)
+
+const (
+	codeOk  = 0
+	codeErr = 1
 )
 
 type config struct {
@@ -15,27 +20,42 @@ type config struct {
 }
 
 func main() {
+	code := run()
+	os.Exit(code)
+}
+
+func run() int {
 	log.Println("starting")
 
-	cfg := cfgPkg.ReadConfig[config]()
+	cfg, err := cfgpkg.ReadConfig[config]()
+	if err != nil {
+		log.Println("failed to read config:", err)
+		return codeErr
+	}
 
 	// logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	dbLogger := logger.WithGroup("db")
 
 	// db
-	dbConn := db.Connect(cfg.DB.ConnectionString)
+	dbConn, err := db.Connect(cfg.DB.ConnectionString)
+	if err != nil {
+		log.Println("failed to connect to db:", err)
+		return codeErr
+	}
 	defer dbConn.Close()
-	txWrapper := dbUtils.NewTxWrapper(dbLogger, dbConn)
+	txWrapper := dbutils.NewTxWrapper(dbLogger, dbConn)
 	dbMigrator := db.NewMigrator(dbLogger, dbConn, txWrapper)
 
 	// perform migrations
 	log.Println("begin database migration")
 
-	err := dbMigrator.Migrate()
+	err = dbMigrator.Migrate()
 	if err != nil {
-		log.Fatalln("failed to migrate db:", err)
+		log.Println("failed to migrate db:", err)
+		return codeErr
 	}
 
 	log.Println("database migration complete")
+	return codeOk
 }
