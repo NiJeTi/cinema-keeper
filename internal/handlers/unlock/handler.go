@@ -3,6 +3,7 @@ package unlock
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -10,14 +11,14 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
-	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/discordutils"
 )
 
 type Handler struct {
 	ctx     context.Context
 	log     *slog.Logger
 	session *discordgo.Session
-	utils   discordUtils.Utils
+	utils   discordutils.Utils
 }
 
 func New(
@@ -31,7 +32,7 @@ func New(
 		ctx:     ctx,
 		log:     log,
 		session: session,
-		utils:   discordUtils.New(ctx, log, session),
+		utils:   discordutils.New(ctx, log, session),
 	}
 }
 
@@ -56,7 +57,7 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	_ = h.utils.Respond(i, responses.UnlockedChannel(channel))
 }
 
-// unlockChannel Workaround method for removing channel user limit
+// unlockChannel Workaround method for removing channel user limit.
 func (h *Handler) unlockChannel(channelID string) (*discordgo.Channel, error) {
 	type request struct {
 		UserLimit int `json:"user_limit"`
@@ -68,10 +69,10 @@ func (h *Handler) unlockChannel(channelID string) (*discordgo.Channel, error) {
 		discordgo.EndpointChannel(channelID),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("channel unlock request failed: %w", err)
 	}
 
 	channel := &discordgo.Channel{}
 	err = discordgo.Unmarshal(resp, channel)
-	return channel, err
+	return channel, fmt.Errorf("failed to unmarshall response: %w", err)
 }

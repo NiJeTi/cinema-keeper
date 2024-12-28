@@ -10,6 +10,7 @@ const (
 	QuoteOptionText   = "text"
 )
 
+//nolint:gochecknoglobals // pending rework
 var Quote = &discordgo.ApplicationCommand{
 	Name:        QuoteName,
 	Description: "Manage the most stunning quotes of the specified user",

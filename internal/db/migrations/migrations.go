@@ -5,8 +5,8 @@ import (
 )
 
 type Migration struct {
-	Name    string
 	Execute func(tx *sql.Tx) error
+	Name    string
 }
 
 func Migrations() []Migration {
@@ -26,14 +26,14 @@ func Migrations() []Migration {
 					)`,
 				)
 				if err != nil {
-					return err
+					return err //nolint:wrapcheck // error passthrough
 				}
 
 				_, err = tx.Exec(
 					`create index if not exists "quotes_author_id"
     					on "quotes" using hash ("author_id")`,
 				)
-				return err
+				return err //nolint:wrapcheck // error passthrough
 			},
 		},
 	}

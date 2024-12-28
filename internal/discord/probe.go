@@ -20,5 +20,5 @@ func NewProbe(
 
 func (p *Probe) Check(_ context.Context) error {
 	_, err := p.session.User("@me")
-	return err
+	return err //nolint:wrapcheck // error passthrough
 }

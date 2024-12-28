@@ -1,8 +1,9 @@
-package discordUtils
+package discordutils
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
@@ -51,9 +52,10 @@ func (u *utils) GetVoiceChannelUsers(
 
 	var after string
 	for {
-		members, err := u.session.GuildMembers(guildID, after, 1000)
+		const maxMembers = 1000
+		members, err := u.session.GuildMembers(guildID, after, maxMembers)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get guild members: %w", err)
 		}
 
 		if len(members) == 0 {
@@ -68,7 +70,7 @@ func (u *utils) GetVoiceChannelUsers(
 				if errors.Is(err, discordgo.ErrStateNotFound) {
 					continue
 				}
-				return nil, err
+				return nil, fmt.Errorf("failed to get voice state: %w", err)
 			}
 
 			if voiceState.ChannelID != channelID {
@@ -92,5 +94,5 @@ func (u *utils) Respond(
 	if err != nil {
 		u.log.ErrorContext(u.ctx, "failed to respond", "error", err)
 	}
-	return err
+	return fmt.Errorf("failed to respond: %w", err)
 }

@@ -10,10 +10,10 @@ import (
 
 type Quote struct {
 	Author    *discordgo.Member
-	AuthorID  types.ID
-	Text      string
-	GuildID   types.ID
 	AddedBy   *discordgo.Member
-	AddedByID types.ID
+	Text      string
 	Timestamp time.Time
+	AuthorID  types.ID
+	AddedByID types.ID
+	GuildID   types.ID
 }

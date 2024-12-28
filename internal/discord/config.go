@@ -15,14 +15,14 @@ type Config struct {
 	Guild types.ID `conf:"guild"`
 }
 
-func Connect(token string) *discordgo.Session {
+func Connect(token string) (*discordgo.Session, error) {
 	discordgo.Marshal = sonic.Marshal
 	discordgo.Unmarshal = sonic.Unmarshal
 
 	cs := fmt.Sprintf("Bot %s", token)
 	session, err := discordgo.New(cs)
 	if err != nil {
-		log.Fatalln("failed to create Discord client:", err)
+		return nil, fmt.Errorf("failed to create Discord client: %w", err)
 	}
 
 	session.Identify.Intents = discordgo.IntentGuilds |
@@ -32,17 +32,17 @@ func Connect(token string) *discordgo.Session {
 
 	err = session.Open()
 	if err != nil {
-		log.Fatalln("failed to open Discord session:", err)
+		return nil, fmt.Errorf("failed to open Discord session: %w", err)
 	}
 
-	return session
+	return session, nil
 }
 
 func RegisterCommands(
 	session *discordgo.Session,
 	commands map[string]*Command,
 	guildID types.ID,
-) {
+) error {
 	appID := session.State.Application.ID
 
 	for name, cmd := range commands {
@@ -50,7 +50,7 @@ func RegisterCommands(
 			appID, guildID.String(), cmd.Description,
 		)
 		if err != nil {
-			log.Fatalln("failed to register command:", name, err)
+			return fmt.Errorf("failed to register command '%s': %w", name, err)
 		}
 
 		cmd.Description = createdCmd
@@ -69,16 +69,18 @@ func RegisterCommands(
 			}
 		},
 	)
+
+	return nil
 }
 
 func UnregisterCommands(
 	session *discordgo.Session,
 	commands map[string]*Command,
 	guildID types.ID,
-) {
+) error {
 	appID := session.State.Application.ID
 
-	failedCmds := map[string]error{}
+	failedCmds := make(map[string]error)
 	for name, cmd := range commands {
 		err := session.ApplicationCommandDelete(
 			appID, guildID.String(), cmd.Description.ID,
@@ -89,6 +91,8 @@ func UnregisterCommands(
 	}
 
 	if len(failedCmds) != 0 {
-		log.Fatalln("failed to unregister handlers:", failedCmds)
+		return fmt.Errorf("failed to unregister handlers: %v", failedCmds)
 	}
+
+	return nil
 }

@@ -4,22 +4,23 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 
 	"github.com/nijeti/cinema-keeper/internal/db/migrations"
-	"github.com/nijeti/cinema-keeper/internal/pkg/dbUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/dbutils"
 )
 
 type Migrator struct {
 	log       *slog.Logger
 	db        *sql.DB
-	txWrapper dbUtils.TxWrapper
+	txWrapper dbutils.TxWrapper
 }
 
 func NewMigrator(
 	log *slog.Logger,
 	db *sql.DB,
-	txWrapper dbUtils.TxWrapper,
+	txWrapper dbutils.TxWrapper,
 ) *Migrator {
 	return &Migrator{
 		log:       log.With("type", "migrator"),
@@ -100,7 +101,7 @@ func (m *Migrator) createMigrationTable() error {
 					"name" varchar(32) not null
 				)`,
 			)
-			return err
+			return err //nolint:wrapcheck // error passthrough
 		},
 	)
 }
@@ -112,18 +113,17 @@ func (m *Migrator) registerAppliedMigration(migration string) error {
 				`insert into "migrations"(name) values ($1)`,
 				migration,
 			)
-			return err
+			return err //nolint:wrapcheck // error passthrough
 		},
 	)
 }
 
 func (m *Migrator) checkMigration(migration string) (bool, error) {
-	rows, err := m.db.Query(
-		`select exists(select 1 from "migrations" where "name" = $1)`,
-		migration,
-	)
+	const query = `select exists(select 1 from "migrations" where name = $1)`
+
+	rows, err := m.db.Query(query, migration)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("failed to query db: %w", err)
 	}
 	defer rows.Close()
 
@@ -131,13 +131,13 @@ func (m *Migrator) checkMigration(migration string) (bool, error) {
 		return false, errors.New("failed to retrieve rows")
 	}
 	if rows.Err() != nil {
-		return false, err
+		return false, fmt.Errorf("failed to read row: %w", rows.Err())
 	}
 
 	var applied bool
 	err = rows.Scan(&applied)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("failed to scan row: %w", err)
 	}
 
 	return applied, nil

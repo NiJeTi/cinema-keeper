@@ -2,25 +2,25 @@ package db
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // postgres driver
 )
 
 type Config struct {
 	ConnectionString string `conf:"connection_string"`
 }
 
-func Connect(cs string) *sql.DB {
+func Connect(cs string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", cs)
 	if err != nil {
-		log.Fatalln("failed to open database connection:", err)
+		return nil, fmt.Errorf("failed to open database connection: %w", err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatalln("failed to ping database:", err)
+		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	return db
+	return db, nil
 }

@@ -1,4 +1,4 @@
-package discordUtils
+package discordutils
 
 import (
 	"github.com/bwmarrin/discordgo"
@@ -10,7 +10,9 @@ func OptionsMap(
 	options := i.ApplicationCommandData().Options
 
 	if len(options) == 0 {
-		return make(map[string]*discordgo.ApplicationCommandInteractionDataOption)
+		return make(
+			map[string]*discordgo.ApplicationCommandInteractionDataOption,
+		)
 	}
 
 	optionsMap := make(

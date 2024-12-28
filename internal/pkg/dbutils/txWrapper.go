@@ -1,8 +1,9 @@
-package dbUtils
+package dbutils
 
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
 )
 
@@ -32,13 +33,13 @@ func (w *txWrapper) Wrap(
 	tx, err := w.db.BeginTx(ctx, nil)
 	if err != nil {
 		w.log.ErrorContext(ctx, "failed to begin transaction", "error", err)
-		return err
+		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	err = operation(ctx, tx)
 	if err != nil {
 		w.rollbackTx(ctx, tx)
-		return err
+		return fmt.Errorf("failed to execute operation: %w", err)
 	}
 
 	err = tx.Commit()
@@ -47,7 +48,7 @@ func (w *txWrapper) Wrap(
 
 		w.rollbackTx(ctx, tx)
 
-		return err
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return nil

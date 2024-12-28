@@ -6,6 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nijeti/cinema-keeper/internal/pkg/die"
+	"github.com/nijeti/cinema-keeper/internal/pkg/utils"
 )
 
 const (
@@ -19,11 +20,12 @@ const (
 	RollOptionCountDefault = 1
 )
 
-var (
+const (
 	rollOptionCountMinValue float64 = 1
 	rollOptionCountMaxValue float64 = 10
 )
 
+//nolint:gochecknoglobals // pending rework
 var Roll = buildRoll()
 
 func buildRoll() *discordgo.ApplicationCommand {
@@ -41,8 +43,10 @@ func buildRoll() *discordgo.ApplicationCommand {
 
 	sort.Slice(
 		choices, func(i, j int) bool {
+			//nolint:errcheck // value is assigned above
 			return choices[i].Value.(die.Size) < choices[j].Value.(die.Size)
-		})
+		},
+	)
 
 	return &discordgo.ApplicationCommand{
 		Name:        RollName,
@@ -58,7 +62,7 @@ func buildRoll() *discordgo.ApplicationCommand {
 				Name:        RollOptionCount,
 				Description: "Number of dice",
 				Type:        discordgo.ApplicationCommandOptionInteger,
-				MinValue:    &rollOptionCountMinValue,
+				MinValue:    utils.Ptr(rollOptionCountMinValue),
 				MaxValue:    rollOptionCountMaxValue,
 			},
 		},

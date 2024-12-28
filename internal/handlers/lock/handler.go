@@ -8,14 +8,14 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
-	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/discordutils"
 )
 
 type Handler struct {
 	ctx     context.Context
 	log     *slog.Logger
 	session *discordgo.Session
-	utils   discordUtils.Utils
+	utils   discordutils.Utils
 }
 
 func New(
@@ -29,7 +29,7 @@ func New(
 		ctx:     ctx,
 		log:     log,
 		session: session,
-		utils:   discordUtils.New(ctx, log, session),
+		utils:   discordutils.New(ctx, log, session),
 	}
 }
 
@@ -41,7 +41,7 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	}
 
 	channelID := ""
-	channels := map[string]int{}
+	channels := make(map[string]int)
 	for _, vs := range guild.VoiceStates {
 		channels[vs.ChannelID]++
 
@@ -56,7 +56,7 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	}
 
 	limit := channels[channelID]
-	if opt, ok := discordUtils.OptionsMap(i)[discord.LockOptionLimit]; ok {
+	if opt, ok := discordutils.OptionsMap(i)[discord.LockOptionLimit]; ok {
 		limit = int(opt.IntValue())
 	}
 
