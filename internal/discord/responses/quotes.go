@@ -10,7 +10,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/pkg/utils"
 )
 
-func QuotesEmpty(author *discordgo.Member) *discordgo.InteractionResponse {
+func QuotesEmpty(author discordgo.Member) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -21,7 +21,7 @@ func QuotesEmpty(author *discordgo.Member) *discordgo.InteractionResponse {
 	}
 }
 
-func QuotesHeader(author *discordgo.Member) *discordgo.InteractionResponse {
+func QuotesHeader(author discordgo.Member) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{

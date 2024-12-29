@@ -57,6 +57,8 @@ linters:
 linters-settings:
   copyloopvar:
     check-alias: true
+  decorder:
+    disable-dec-order-check: false
   dupl:
     threshold: 100
   errcheck:
@@ -85,8 +87,6 @@ linters-settings:
     rewrite-rules:
       - pattern: "interface{}"
         replacement: "any"
-  gofumpt:
-    extra-rules: true
   gosimple:
     checks: [ "all" ]
   govet:

@@ -10,8 +10,8 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
+	"github.com/nijeti/cinema-keeper/internal/models"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordutils"
-	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
 type Handler struct {
@@ -44,7 +44,7 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	}
 
 	channelUsers, err := h.utils.GetVoiceChannelUsers(
-		types.ID(i.GuildID), types.ID(channelID),
+		models.ID(i.GuildID), models.ID(channelID),
 	)
 	if err != nil {
 		h.log.Error("failed to get channel users", "error", err)

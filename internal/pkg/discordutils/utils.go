@@ -8,13 +8,13 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/nijeti/cinema-keeper/internal/types"
+	"github.com/nijeti/cinema-keeper/internal/models"
 )
 
 type Utils interface {
 	GetVoiceChannelUsers(
-		guild types.ID,
-		channel types.ID,
+		guild models.ID,
+		channel models.ID,
 	) ([]*discordgo.Member, error)
 
 	Respond(
@@ -42,8 +42,8 @@ func New(
 }
 
 func (u *utils) GetVoiceChannelUsers(
-	guild types.ID,
-	channel types.ID,
+	guild models.ID,
+	channel models.ID,
 ) ([]*discordgo.Member, error) {
 	guildID := guild.String()
 	channelID := channel.String()
