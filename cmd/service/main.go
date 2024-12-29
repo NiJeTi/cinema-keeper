@@ -66,10 +66,10 @@ func run() int {
 		return codeErr
 	}
 	defer dbConn.Close()
-	dbProbe := db.NewProbe(dbConn)
-	txWrapper := dbutils.NewTxWrapper(dbLogger, dbConn)
+	dbProbe := db.NewProbe(dbConn.DB)
+	txWrapper := dbutils.NewTxWrapper(dbLogger, dbConn.DB)
 
-	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn, txWrapper)
+	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn.DB, txWrapper)
 
 	// discord
 	discordSession, err := discord.Connect(cfg.Discord.Token)

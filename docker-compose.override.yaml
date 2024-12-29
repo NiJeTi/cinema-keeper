@@ -1,0 +1,23 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  migrator:
+    image: !reset null
+    build:
+      dockerfile: ./build/migrator/Dockerfile
+      context: .
+
+  service:
+    image: !reset null
+    build:
+      dockerfile: ./build/service/Dockerfile
+      context: .
+    environment:
+      DISCORD__TOKEN: !reset null
+      DB__CONNECTION_STRING: !reset null
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.yaml:/app/config.yaml
