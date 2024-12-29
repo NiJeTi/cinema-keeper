@@ -11,14 +11,14 @@ import (
 	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 )
 
+type config struct {
+	DB db.Config `conf:"db"`
+}
+
 const (
 	codeOk  = 0
 	codeErr = 1
 )
-
-type config struct {
-	DB db.Config `conf:"db"`
-}
 
 const migrationsTable = "migrations"
 

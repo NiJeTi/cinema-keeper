@@ -19,18 +19,17 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
-	"github.com/nijeti/cinema-keeper/internal/pkg/dbutils"
-)
-
-const (
-	codeOk  = 0
-	codeErr = 1
 )
 
 type config struct {
 	Discord discord.Config `conf:"discord"`
 	DB      db.Config      `conf:"db"`
 }
+
+const (
+	codeOk  = 0
+	codeErr = 1
+)
 
 func main() {
 	code := run()
@@ -52,7 +51,6 @@ func run() int {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	// logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	dbLogger := logger.WithGroup("db")
 	cmdLogger := logger.WithGroup("command")
@@ -65,11 +63,9 @@ func run() int {
 		cancel()
 		return codeErr
 	}
-	defer dbConn.Close()
 	dbProbe := db.NewProbe(dbConn.DB)
-	txWrapper := dbutils.NewTxWrapper(dbLogger, dbConn.DB)
 
-	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn.DB, txWrapper)
+	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn)
 
 	// discord
 	discordSession, err := discord.Connect(cfg.Discord.Token)
@@ -103,7 +99,9 @@ func run() int {
 		},
 	}
 
-	err = discord.RegisterCommands(discordSession, commands, cfg.Discord.Guild)
+	err = discord.RegisterCommands(
+		discordSession, commands, cfg.Discord.GuildID,
+	)
 	if err != nil {
 		log.Println("failed to register commands:", err)
 		cancel()
@@ -111,7 +109,7 @@ func run() int {
 	}
 	//nolint:errcheck // call is deferred
 	defer discord.UnregisterCommands(
-		discordSession, commands, cfg.Discord.Guild,
+		discordSession, commands, cfg.Discord.GuildID,
 	)
 
 	discordProbe := discord.NewProbe(discordSession)

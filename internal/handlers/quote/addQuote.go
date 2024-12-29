@@ -5,19 +5,18 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
 func (h *Handler) addQuote(
 	i *discordgo.InteractionCreate,
-	author *discordgo.Member,
+	author discordgo.Member,
 	text string,
 ) {
 	quote := &models.Quote{
-		AuthorID:  types.ID(author.User.ID),
-		Text:      text,
-		GuildID:   types.ID(i.GuildID),
-		AddedByID: types.ID(i.Member.User.ID),
+		Author:  author,
+		Text:    text,
+		GuildID: models.ID(i.GuildID),
+		AddedBy: *i.Member,
 	}
 	err := h.db.AddUserQuoteOnGuild(h.ctx, quote)
 	if err != nil {
@@ -25,7 +24,7 @@ func (h *Handler) addQuote(
 	}
 
 	quote.Author = author
-	quote.AddedBy = i.Interaction.Member
+	quote.AddedBy = *i.Interaction.Member
 
 	_ = h.utils.Respond(i, responses.QuoteAdded(quote))
 }

@@ -43,9 +43,9 @@ func (h *Handler) Handle(i *discordgo.InteractionCreate) {
 	}
 
 	if text == "" {
-		h.listQuotes(i, author)
+		h.listQuotes(i, *author)
 	} else {
-		h.addQuote(i, author, text)
+		h.addQuote(i, *author, text)
 	}
 }
 

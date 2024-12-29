@@ -7,17 +7,14 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord/responses"
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
 func (h *Handler) listQuotes(
 	i *discordgo.InteractionCreate,
-	author *discordgo.Member,
+	author discordgo.Member,
 ) {
 	quotes, err := h.db.GetUserQuotesOnGuild(
-		h.ctx,
-		types.ID(author.User.ID),
-		types.ID(i.GuildID),
+		h.ctx, models.ID(author.User.ID), models.ID(i.GuildID),
 	)
 	if err != nil {
 		return
@@ -55,17 +52,17 @@ func (h *Handler) listQuotes(
 func (h *Handler) enrichQuotes(
 	i *discordgo.InteractionCreate,
 	quotes []*models.Quote,
-	author *discordgo.Member,
+	author discordgo.Member,
 ) error {
 	for _, q := range quotes {
 		q.Author = author
 
-		addedBy, err := h.session.State.Member(i.GuildID, q.AddedByID.String())
+		addedBy, err := h.session.State.Member(i.GuildID, q.AddedBy.User.ID)
 		if err != nil {
 			h.log.ErrorContext(h.ctx, "failed to get member", "error", err)
 			return fmt.Errorf("failed to get member: %w", err)
 		}
-		q.AddedBy = addedBy
+		q.AddedBy = *addedBy
 	}
 	return nil
 }

@@ -2,108 +2,110 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log/slog"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/jmoiron/sqlx"
+
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/pkg/dbutils"
-	"github.com/nijeti/cinema-keeper/internal/types"
 )
 
 type QuotesRepo struct {
-	log       *slog.Logger
-	db        *sql.DB
-	txWrapper dbutils.TxWrapper
+	logger *slog.Logger
+	db     *sqlx.DB
+}
+
+type quoteRow struct {
+	Timestamp time.Time `db:"timestamp"`
+	AuthorID  string    `db:"author_id"`
+	AddedByID string    `db:"added_by_id"`
+	GuildID   string    `db:"guild_id"`
+	Text      string    `db:"text"`
 }
 
 func NewQuotesRepo(
-	log *slog.Logger,
-	db *sql.DB,
-	txWrapper dbutils.TxWrapper,
+	logger *slog.Logger,
+	db *sqlx.DB,
 ) *QuotesRepo {
 	return &QuotesRepo{
-		log:       log.With("repo", "quotes"),
-		db:        db,
-		txWrapper: txWrapper,
+		logger: logger.With("repo", "quotes"),
+		db:     db,
 	}
 }
 
 func (r *QuotesRepo) GetUserQuotesOnGuild(
-	ctx context.Context,
-	authorID types.ID,
-	guildID types.ID,
+	ctx context.Context, authorID models.ID, guildID models.ID,
 ) ([]*models.Quote, error) {
 	const query = `
 		select author_id, text, guild_id, added_by_id, timestamp from quotes
 		where author_id = $1 and guild_id = $2
 		order by timestamp`
 
-	rows, err := r.db.QueryContext(
-		ctx,
-		query,
-		authorID.String(), guildID.String(),
-	)
+	rows := make([]quoteRow, 0)
+
+	err := r.db.SelectContext(ctx, &rows, query, authorID, guildID)
 	if err != nil {
-		r.log.ErrorContext(ctx, "failed to get user quotes", "error", err)
 		return nil, fmt.Errorf("failed to get user quotes: %w", err)
 	}
-	defer rows.Close()
 
-	var quotes []*models.Quote
-	for rows.Next() {
-		quote := &models.Quote{}
-		err = rows.Scan(
-			&quote.AuthorID,
-			&quote.Text,
-			&quote.GuildID,
-			&quote.AddedByID,
-			&quote.Timestamp,
-		)
-		if err != nil {
-			r.log.ErrorContext(ctx, "failed to parse quote", "error", err)
-			return nil, fmt.Errorf("failed to parse quote: %w", err)
-		}
-		quotes = append(quotes, quote)
+	quotes := make([]*models.Quote, 0, len(rows))
+	for _, row := range rows {
+		quotes = append(quotes, r.toModel(row))
 	}
-
-	err = rows.Err()
-	if err != nil {
-		r.log.ErrorContext(ctx, "failed to fetch quotes", "error", err)
-		return nil, fmt.Errorf("failed to fetch quotes: %w", err)
-	}
-
 	return quotes, nil
 }
 
 func (r *QuotesRepo) AddUserQuoteOnGuild(
-	ctx context.Context,
-	quote *models.Quote,
+	ctx context.Context, quote *models.Quote,
 ) error {
 	const query = `
-		insert into quotes(author_id, text, guild_id, added_by_id, timestamp) 
+		insert into quotes(author_id, text, guild_id, added_by_id, timestamp)
 		values ($1, $2, $3, $4, $5)`
 
-	quote.Timestamp = time.Now().UTC()
+	row := r.fromModel(quote)
 
-	err := r.txWrapper.Wrap(
-		ctx, func(ctx context.Context, tx *sql.Tx) error {
+	return withTransaction(
+		ctx, r.db, func(ctx context.Context, tx *sqlx.Tx) error {
 			_, err := tx.ExecContext(
 				ctx,
 				query,
-				quote.AuthorID.String(),
-				quote.Text,
-				quote.GuildID.String(),
-				quote.AddedByID.String(),
-				quote.Timestamp,
+				row.AuthorID,
+				row.Text,
+				row.GuildID,
+				row.AddedByID,
+				row.Timestamp,
 			)
-
 			return err //nolint:wrapcheck // error passthrough
 		},
 	)
-	if err != nil {
-		r.log.ErrorContext(ctx, "failed to insert quote", "error", err)
+}
+
+func (*QuotesRepo) toModel(row quoteRow) *models.Quote {
+	return &models.Quote{
+		Author: discordgo.Member{
+			User: &discordgo.User{
+				ID: row.AuthorID,
+			},
+		},
+		Text:    row.Text,
+		GuildID: models.ID(row.GuildID),
+		AddedBy: discordgo.Member{
+			User: &discordgo.User{
+				ID: row.AddedByID,
+			},
+		},
+		Timestamp: row.Timestamp,
 	}
-	return err
+}
+
+func (*QuotesRepo) fromModel(model *models.Quote) quoteRow {
+	return quoteRow{
+		AuthorID:  model.Author.User.ID,
+		Text:      model.Text,
+		GuildID:   model.GuildID.String(),
+		AddedByID: model.AddedBy.User.ID,
+		Timestamp: model.Timestamp,
+	}
 }

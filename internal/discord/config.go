@@ -7,12 +7,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/bytedance/sonic"
 
-	"github.com/nijeti/cinema-keeper/internal/types"
+	"github.com/nijeti/cinema-keeper/internal/models"
 )
 
 type Config struct {
-	Token string   `conf:"token"`
-	Guild types.ID `conf:"guild"`
+	Token   string    `conf:"token"`
+	GuildID models.ID `conf:"guild_id"`
 }
 
 func Connect(token string) (*discordgo.Session, error) {
@@ -41,7 +41,7 @@ func Connect(token string) (*discordgo.Session, error) {
 func RegisterCommands(
 	session *discordgo.Session,
 	commands map[string]*Command,
-	guildID types.ID,
+	guildID models.ID,
 ) error {
 	appID := session.State.Application.ID
 
@@ -76,7 +76,7 @@ func RegisterCommands(
 func UnregisterCommands(
 	session *discordgo.Session,
 	commands map[string]*Command,
-	guildID types.ID,
+	guildID models.ID,
 ) error {
 	appID := session.State.Application.ID
 

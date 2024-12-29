@@ -2,11 +2,11 @@ package die
 
 type Name string
 
+type Size int
+
 func (n Name) String() string {
 	return string(n)
 }
-
-type Size int
 
 func (s Size) Int() int {
 	return int(s)
