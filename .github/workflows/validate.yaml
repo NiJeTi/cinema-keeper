@@ -9,7 +9,7 @@ on:
       - 'internal/**'
 
 env:
-  MIGRATOR: 'cmd/migrator/main.go'
+  MIGRATOR: './cmd/migrator/'
   SERVICE: 'cmd/service/main.go'
 
 jobs:

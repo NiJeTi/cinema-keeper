@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"strings"
 
 	"github.com/knadh/koanf/parsers/yaml"
@@ -11,18 +11,20 @@ import (
 	"github.com/knadh/koanf/v2"
 )
 
+var logger = slog.Default() //nolint:gochecknoglobals // static package logger
+
 func ReadConfig[T any]() (*T, error) {
 	k := koanf.New(".")
 
 	if err := k.Load(file.Provider("config.yaml"), yaml.Parser()); err != nil {
-		log.Println("config file has not been loaded")
+		logger.Info("config file has not been loaded")
 	}
 
 	cb := func(s string) string {
 		return strings.ReplaceAll(strings.ToLower(s), "__", ".")
 	}
 	if err := k.Load(env.Provider("", ".", cb), nil); err != nil {
-		log.Println("environment variables have not been loaded")
+		logger.Info("environment variables have not been loaded")
 	}
 
 	cfg := new(T)
@@ -31,4 +33,8 @@ func ReadConfig[T any]() (*T, error) {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 	return cfg, nil
+}
+
+func SetLogger(l *slog.Logger) {
+	logger = l
 }

@@ -1,13 +1,14 @@
 package main
 
 import (
-	"log"
+	"embed"
 	"log/slog"
 	"os"
 
+	"github.com/pressly/goose/v3"
+
 	"github.com/nijeti/cinema-keeper/internal/db"
 	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
-	"github.com/nijeti/cinema-keeper/internal/pkg/dbutils"
 )
 
 const (
@@ -19,43 +20,59 @@ type config struct {
 	DB db.Config `conf:"db"`
 }
 
+const migrationsTable = "migrations"
+
+//go:embed *.sql
+var migrations embed.FS
+
 func main() {
 	code := run()
 	os.Exit(code)
 }
 
 func run() int {
-	log.Println("starting")
-
-	cfg, err := cfgpkg.ReadConfig[config]()
-	if err != nil {
-		log.Println("failed to read config:", err)
-		return codeErr
-	}
-
 	// logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	dbLogger := logger.WithGroup("db")
+
+	logger.Info("starting")
+
+	// config
+	cfgpkg.SetLogger(logger)
+	cfg, err := cfgpkg.ReadConfig[config]()
+	if err != nil {
+		logger.Error("failed to read config", "error", err)
+		return codeErr
+	}
 
 	// db
 	dbConn, err := db.Connect(cfg.DB.ConnectionString)
 	if err != nil {
-		log.Println("failed to connect to db:", err)
+		logger.Error("failed to connect to db", "error", err)
 		return codeErr
 	}
 	defer dbConn.Close()
-	txWrapper := dbutils.NewTxWrapper(dbLogger, dbConn)
-	dbMigrator := db.NewMigrator(dbLogger, dbConn, txWrapper)
 
-	// perform migrations
-	log.Println("begin database migration")
+	// migrator
+	goose.SetLogger(gooseLogger{logger})
+	goose.SetBaseFS(migrations)
+	goose.SetTableName(migrationsTable)
+	goose.SetSequential(true)
 
-	err = dbMigrator.Migrate()
+	err = goose.SetDialect(string(goose.DialectPostgres))
 	if err != nil {
-		log.Println("failed to migrate db:", err)
+		logger.Error("failed to set dialect", "error", err)
 		return codeErr
 	}
 
-	log.Println("database migration complete")
+	// run
+	logger.Info("begin database migration")
+
+	err = goose.Up(dbConn.DB, ".")
+	if err != nil {
+		logger.Error("failed to migrate database", "error", err)
+		return codeErr
+	}
+
+	logger.Info("database migration complete")
 	return codeOk
 }
