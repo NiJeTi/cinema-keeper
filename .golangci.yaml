@@ -46,7 +46,6 @@ linters:
     - tagliatelle
     - testifylint
     - testpackage
-    - tparallel
     - unconvert
     - unparam
     - unused
@@ -144,7 +143,7 @@ linters-settings:
       - name: imports-blocklist
         disabled: true
       - name: line-length-limit
-        arguments: [ 80 ]
+        disabled: true
       - name: max-control-nesting
         disabled: true
       - name: max-public-structs
