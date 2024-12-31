@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"log/slog"
 	"os"
@@ -37,7 +38,6 @@ func run() int {
 	logger.Info("starting")
 
 	// config
-	cfgpkg.SetLogger(logger)
 	cfg, err := cfgpkg.ReadConfig[config]()
 	if err != nil {
 		logger.Error("failed to read config", "error", err)
@@ -45,7 +45,7 @@ func run() int {
 	}
 
 	// db
-	dbConn, err := db.Connect(cfg.DB.ConnectionString)
+	dbConn, err := db.Connect(context.Background(), cfg.DB)
 	if err != nil {
 		logger.Error("failed to connect to db", "error", err)
 		return codeErr

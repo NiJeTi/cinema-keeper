@@ -36,16 +36,16 @@ func NewQuotesRepo(
 }
 
 func (r *QuotesRepo) GetUserQuotesOnGuild(
-	ctx context.Context, authorID models.ID, guildID models.ID,
+	ctx context.Context, guildID models.ID, authorID models.ID,
 ) ([]*models.Quote, error) {
 	const query = `
 		select author_id, text, guild_id, added_by_id, timestamp from quotes
-		where author_id = $1 and guild_id = $2
+		where guild_id = $1 and author_id = $2
 		order by timestamp`
 
 	rows := make([]quoteRow, 0)
 
-	err := r.db.SelectContext(ctx, &rows, query, authorID, guildID)
+	err := r.db.SelectContext(ctx, &rows, query, guildID, authorID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user quotes: %w", err)
 	}
@@ -77,21 +77,25 @@ func (r *QuotesRepo) AddUserQuoteOnGuild(
 				row.AddedByID,
 				row.Timestamp,
 			)
-			return err //nolint:wrapcheck // error passthrough
+			if err != nil {
+				return fmt.Errorf("failed to insert quote: %w", err)
+			}
+
+			return nil
 		},
 	)
 }
 
 func (*QuotesRepo) toModel(row quoteRow) *models.Quote {
 	return &models.Quote{
-		Author: discordgo.Member{
+		Author: &discordgo.Member{
 			User: &discordgo.User{
 				ID: row.AuthorID,
 			},
 		},
 		Text:    row.Text,
 		GuildID: models.ID(row.GuildID),
-		AddedBy: discordgo.Member{
+		AddedBy: &discordgo.Member{
 			User: &discordgo.User{
 				ID: row.AddedByID,
 			},
