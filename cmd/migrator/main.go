@@ -5,6 +5,8 @@ import (
 	"embed"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/pressly/goose/v3"
 
@@ -31,23 +33,34 @@ func main() {
 	os.Exit(code)
 }
 
-func run() int {
-	// logging
+func run() (code int) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	defer func() {
+		if err := recover(); err != nil {
+			logger.Error("panic", "error", err)
+			code = codeErr
+		}
+	}()
+
+	ctx, cancel := signal.NotifyContext(
+		context.Background(), syscall.SIGINT, syscall.SIGTERM,
+	)
+	defer cancel()
 
 	logger.Info("starting")
 
 	// config
 	cfg, err := cfgpkg.ReadConfig[config]()
 	if err != nil {
-		logger.Error("failed to read config", "error", err)
+		logger.ErrorContext(ctx, "failed to read config", "error", err)
 		return codeErr
 	}
 
 	// db
-	dbConn, err := db.Connect(context.Background(), cfg.DB)
+	dbConn, err := db.Connect(ctx, cfg.DB)
 	if err != nil {
-		logger.Error("failed to connect to db", "error", err)
+		logger.ErrorContext(ctx, "failed to connect to db", "error", err)
 		return codeErr
 	}
 	defer dbConn.Close()
@@ -60,16 +73,16 @@ func run() int {
 
 	err = goose.SetDialect(string(goose.DialectPostgres))
 	if err != nil {
-		logger.Error("failed to set dialect", "error", err)
+		logger.ErrorContext(ctx, "failed to set dialect", "error", err)
 		return codeErr
 	}
 
 	// run
 	logger.Info("begin database migration")
 
-	err = goose.Up(dbConn.DB, ".")
+	err = goose.UpContext(ctx, dbConn.DB, ".")
 	if err != nil {
-		logger.Error("failed to migrate database", "error", err)
+		logger.ErrorContext(ctx, "failed to migrate database", "error", err)
 		return codeErr
 	}
 

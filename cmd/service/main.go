@@ -49,9 +49,8 @@ func run() (code int) {
 	defer func() {
 		if err := recover(); err != nil {
 			logger.Error("panic", "error", err)
+			code = codeErr
 		}
-
-		code = codeErr
 	}()
 
 	ctx, cancel := signal.NotifyContext(
