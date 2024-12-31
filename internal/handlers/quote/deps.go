@@ -3,15 +3,22 @@ package quote
 import (
 	"context"
 
+	"github.com/bwmarrin/discordgo"
+
 	"github.com/nijeti/cinema-keeper/internal/models"
 )
 
-type db interface {
-	GetUserQuotesOnGuild(
-		ctx context.Context, authorID models.ID, guildID models.ID,
-	) ([]*models.Quote, error)
+type listQuotes interface {
+	Exec(
+		ctx context.Context, i *discordgo.Interaction, authorID models.ID,
+	) error
+}
 
-	AddUserQuoteOnGuild(
-		ctx context.Context, quote *models.Quote,
+type addQuote interface {
+	Exec(
+		ctx context.Context,
+		i *discordgo.Interaction,
+		authorID models.ID,
+		text string,
 	) error
 }

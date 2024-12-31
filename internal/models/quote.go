@@ -7,9 +7,9 @@ import (
 )
 
 type Quote struct {
-	Timestamp time.Time
-	Author    discordgo.Member
-	AddedBy   discordgo.Member
-	GuildID   ID
+	Author    *discordgo.Member
 	Text      string
+	GuildID   ID
+	AddedBy   *discordgo.Member
+	Timestamp time.Time
 }

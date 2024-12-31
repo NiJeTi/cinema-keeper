@@ -35,7 +35,7 @@ linters:
     - nilnil
     - nolintlint
     - paralleltest
-    #    - prealloc # Use in case of performance problems
+    #    - prealloc # premature optimization
     - revive
     - rowserrcheck
     - sloglint
@@ -91,6 +91,8 @@ linters-settings:
     checks: [ "all" ]
   govet:
     enable-all: true
+    disable:
+      - fieldalignment # premature optimization
   ireturn:
     reject:
       - anon
@@ -155,6 +157,11 @@ linters-settings:
         disabled: true
       - name: unchecked-type-assertion
         disabled: true
+      - name: var-naming
+        arguments:
+          - [ ]
+          - [ ]
+          - - skipPackageNameChecks: true
   sloglint:
     no-global: default
     context: scope
@@ -163,7 +170,7 @@ linters-settings:
   staticcheck:
     checks: [ "all", "-S1008" ]
   stylecheck:
-    checks: [ "all" ]
+    checks: [ "all", "-ST1003" ]
   tagliatelle:
     case:
       use-field-name: true

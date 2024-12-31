@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -11,14 +10,22 @@ import (
 	"github.com/nijeti/healthcheck"
 	"github.com/nijeti/healthcheck/servers/fasthttp"
 
+	dcadapter "github.com/nijeti/cinema-keeper/internal/adapters/discord"
 	"github.com/nijeti/cinema-keeper/internal/db"
 	"github.com/nijeti/cinema-keeper/internal/discord"
+	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/handlers/cast"
 	"github.com/nijeti/cinema-keeper/internal/handlers/lock"
 	"github.com/nijeti/cinema-keeper/internal/handlers/quote"
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
+	"github.com/nijeti/cinema-keeper/internal/services/addQuote"
+	"github.com/nijeti/cinema-keeper/internal/services/diceRoll"
+	"github.com/nijeti/cinema-keeper/internal/services/listQuotes"
+	"github.com/nijeti/cinema-keeper/internal/services/lockVoiceChan"
+	"github.com/nijeti/cinema-keeper/internal/services/mentionVoiceChan"
+	"github.com/nijeti/cinema-keeper/internal/services/unlockVoiceChan"
 )
 
 type config struct {
@@ -36,89 +43,106 @@ func main() {
 	os.Exit(code)
 }
 
-func run() int {
-	log.Println("starting")
-	defer log.Println("shutdown complete")
+func run() (code int) {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	defer func() {
+		if err := recover(); err != nil {
+			logger.Error("panic", "error", err)
+		}
+
+		code = codeErr
+	}()
+
+	ctx, cancel := signal.NotifyContext(
+		context.Background(), syscall.SIGINT, syscall.SIGTERM,
+	)
+	defer cancel()
+
+	logger.Info("starting")
+	defer logger.Info("shutdown complete")
 
 	cfg, err := cfgpkg.ReadConfig[config]()
 	if err != nil {
-		log.Println("failed to read config:", err)
+		logger.ErrorContext(ctx, "failed to read config", "error", err)
 		return codeErr
 	}
-
-	// todo: https://github.com/NiJeTi/cinema-keeper/issues/29
-	ctx, cancel := context.WithCancel(context.Background())
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	dbLogger := logger.WithGroup("db")
-	cmdLogger := logger.WithGroup("command")
-	hcLogger := logger.WithGroup("healthcheck")
 
 	// db
-	dbConn, err := db.Connect(cfg.DB.ConnectionString)
+	dbLogger := logger.WithGroup("db")
+
+	dbConn, err := db.Connect(ctx, cfg.DB)
 	if err != nil {
-		log.Println("failed to connect to db:", err)
-		cancel()
+		logger.ErrorContext(ctx, "failed to connect to db", "error", err)
 		return codeErr
 	}
+
 	dbProbe := db.NewProbe(dbConn.DB)
 
 	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn)
 
 	// discord
-	discordSession, err := discord.Connect(cfg.Discord.Token)
-	if err != nil {
-		log.Println("failed to connect to Discord:", err)
-		cancel()
-		return codeErr
-	}
-	defer discordSession.Close()
+	dcLogger := logger.WithGroup("discord")
 
-	commands := map[string]*discord.Command{
-		discord.QuoteName: {
-			Description: discord.Quote,
-			Handler:     quote.New(ctx, cmdLogger, discordSession, quotesRepo),
-		},
-		discord.CastName: {
-			Description: discord.Cast,
-			Handler:     cast.New(ctx, cmdLogger, discordSession),
-		},
-		discord.LockName: {
-			Description: discord.Lock,
-			Handler:     lock.New(ctx, cmdLogger, discordSession),
-		},
-		discord.UnlockName: {
-			Description: discord.Unlock,
-			Handler:     unlock.New(ctx, cmdLogger, discordSession),
-		},
-		discord.RollName: {
-			Description: discord.Roll,
-			Handler:     roll.New(ctx, cmdLogger, discordSession),
-		},
-	}
-
-	err = discord.RegisterCommands(
-		discordSession, commands, cfg.Discord.GuildID,
+	dcRouter, err := discord.NewRouter(
+		cfg.Discord,
+		discord.WithContext(ctx),
+		discord.WithLogger(dcLogger),
 	)
 	if err != nil {
-		log.Println("failed to register commands:", err)
-		cancel()
+		logger.ErrorContext(
+			ctx, "failed to create Discord router", "error", err,
+		)
 		return codeErr
 	}
-	//nolint:errcheck // call is deferred
-	defer discord.UnregisterCommands(
-		discordSession, commands, cfg.Discord.GuildID,
-	)
+	defer dcRouter.Close()
 
-	discordProbe := discord.NewProbe(discordSession)
+	dcAdapter := dcadapter.New(dcRouter.Session())
+
+	addQuoteSvc := addQuote.New(dcAdapter, quotesRepo)
+	listQuotesSvc := listQuotes.New(dcAdapter, quotesRepo)
+	lockVoiceChanSvc := lockVoiceChan.New(dcAdapter)
+	mentionVoiceChanSvc := mentionVoiceChan.New(dcAdapter)
+	rollSvc := diceRoll.New(dcAdapter)
+	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
+
+	err = dcRouter.SetCommands(
+		discord.Command{
+			Description: commands.Quote(),
+			Handler:     quote.New(listQuotesSvc, addQuoteSvc),
+		},
+		discord.Command{
+			Description: commands.Cast(),
+			Handler:     cast.New(mentionVoiceChanSvc),
+		},
+		discord.Command{
+			Description: commands.Lock(),
+			Handler:     lock.New(lockVoiceChanSvc),
+		},
+		discord.Command{
+			Description: commands.Unlock(),
+			Handler:     unlock.New(unlockVoiceChanSvc),
+		},
+		discord.Command{
+			Description: commands.Roll(),
+			Handler:     roll.New(rollSvc),
+		},
+	)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to set commands", "error", err)
+		return codeErr
+	}
+	defer dcRouter.UnsetCommands() //nolint:errcheck // shutdown
+
+	dcProbe := discord.NewProbe(dcRouter.Session())
 
 	// healthcheck
+	hcLogger := logger.WithGroup("healthcheck")
+
 	hc := healthcheck.New(
 		healthcheck.WithLogger(hcLogger),
 		healthcheck.WithProbe("db", dbProbe),
-		healthcheck.WithProbe("discord", discordProbe),
+		healthcheck.WithProbe("discord", dcProbe),
 	)
 	hcs := fasthttp.New(
 		hc,
@@ -130,12 +154,11 @@ func run() int {
 	defer hcs.Stop()
 
 	// run
-	log.Println("startup complete")
-	<-stop
+	logger.Info("startup complete")
+	<-ctx.Done()
 
 	// shutdown
-	log.Println("shutting down")
-	cancel()
+	logger.Info("shutting down")
 
 	return codeOk
 }
