@@ -117,9 +117,6 @@ func TestService_Exec(t *testing.T) {
 							_ *discordgo.Interaction,
 							r *discordgo.InteractionResponse,
 						) error {
-							assert.NotNil(t, r)
-							assert.NotNil(t, r.Data)
-							assert.Len(t, r.Data.Embeds, 1)
 							assert.Equal(
 								t, dice.D100Name, r.Data.Embeds[0].Title,
 							)

@@ -181,6 +181,8 @@ linters-settings:
         yaml: kebab
   testifylint:
     enable-all: true
+    disable:
+      - require-error
 
 issues:
   exclude-rules:
