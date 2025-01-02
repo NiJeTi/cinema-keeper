@@ -32,7 +32,7 @@ func (s *Service) Exec(
 	}
 
 	if channelID == nil {
-		err = s.discord.Respond(ctx, i, responses.UserNotInVoiceChannel())
+		err = s.discord.Respond(ctx, i, responses.CastNoChannel())
 		if err != nil {
 			return fmt.Errorf("failed to respond: %w", err)
 		}
@@ -77,5 +77,8 @@ func (s *Service) verifyChannelID(
 		return nil, fmt.Errorf("failed to get user voice channel: %w", err)
 	}
 
+	if voiceState == nil {
+		return nil, nil //nolint:nilnil // nil is a valid value
+	}
 	return ptr.To(models.ID(voiceState.ChannelID)), nil
 }

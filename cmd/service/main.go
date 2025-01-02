@@ -46,6 +46,9 @@ func main() {
 func run() (code int) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
+	logger.Info("starting")
+	defer logger.Info("shutdown complete")
+
 	defer func() {
 		if err := recover(); err != nil {
 			logger.Error("panic", "error", err)
@@ -57,9 +60,6 @@ func run() (code int) {
 		context.Background(), syscall.SIGINT, syscall.SIGTERM,
 	)
 	defer cancel()
-
-	logger.Info("starting")
-	defer logger.Info("shutdown complete")
 
 	cfg, err := cfgpkg.ReadConfig[config]()
 	if err != nil {
@@ -75,6 +75,7 @@ func run() (code int) {
 		logger.ErrorContext(ctx, "failed to connect to db", "error", err)
 		return codeErr
 	}
+	defer dbConn.Close()
 
 	dbProbe := db.NewProbe(dbConn.DB)
 
@@ -131,7 +132,6 @@ func run() (code int) {
 		logger.ErrorContext(ctx, "failed to set commands", "error", err)
 		return codeErr
 	}
-	defer dcRouter.UnsetCommands() //nolint:errcheck // shutdown
 
 	dcProbe := discord.NewProbe(dcRouter.Session())
 
