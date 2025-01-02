@@ -16,6 +16,14 @@ By using command `/quote` you can store and list quotes of the server members.
 #### Dice roll
 By using command `/roll` you can roll up to 10 dice.
 
+## Requirements
+
+For full operation on a server bot requires the following permissions:
+- Manage Channels
+- View Channels
+- Send Messages
+- Embed Links
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to
