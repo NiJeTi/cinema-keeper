@@ -44,12 +44,7 @@ func (s *Service) Exec(ctx context.Context, i *discordgo.Interaction) error {
 		return fmt.Errorf("failed to unset user limit: %w", err)
 	}
 
-	channel, err := s.discord.Channel(ctx, models.ID(voiceState.ChannelID))
-	if err != nil {
-		return fmt.Errorf("failed to get channel: %w", err)
-	}
-
-	err = s.discord.Respond(ctx, i, responses.UnlockDone(channel))
+	err = s.discord.Respond(ctx, i, responses.UnlockDone())
 	if err != nil {
 		return fmt.Errorf("failed to respond: %w", err)
 	}

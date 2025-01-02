@@ -48,13 +48,8 @@ func (s *Service) Exec(
 		return err
 	}
 
-	channel, err := s.discord.Channel(ctx, models.ID(voiceState.ChannelID))
-	if err != nil {
-		return fmt.Errorf("failed to get voice channel: %w", err)
-	}
-
 	if *limit > commands.LockOptionLimitMaxValue {
-		err = s.discord.Respond(ctx, i, responses.LockSpecifyLimit(channel))
+		err = s.discord.Respond(ctx, i, responses.LockSpecifyLimit())
 		if err != nil {
 			return fmt.Errorf("failed to respond: %w", err)
 		}
@@ -63,13 +58,15 @@ func (s *Service) Exec(
 	}
 
 	err = s.discord.EditChannel(
-		ctx, models.ID(channel.ID), &discordgo.ChannelEdit{UserLimit: *limit},
+		ctx,
+		models.ID(voiceState.ChannelID),
+		&discordgo.ChannelEdit{UserLimit: *limit},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to edit channel user limit: %w", err)
 	}
 
-	err = s.discord.Respond(ctx, i, responses.LockDone(channel, *limit))
+	err = s.discord.Respond(ctx, i, responses.LockDone(*limit))
 	if err != nil {
 		return fmt.Errorf("failed to respond: %w", err)
 	}

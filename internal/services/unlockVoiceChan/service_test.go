@@ -86,29 +86,6 @@ func TestService_Exec(t *testing.T) {
 				return unlockVoiceChan.New(d)
 			},
 		},
-		"channel_error": {
-			err: errors.New("channel error"),
-			setup: func(t *testing.T, err error) *unlockVoiceChan.Service {
-				d := mocks.NewMockDiscord(t)
-
-				vs := &discordgo.VoiceState{ChannelID: "3"}
-				d.EXPECT().UserVoiceState(
-					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
-				).Return(vs, nil)
-
-				d.EXPECT().ChannelUnsetUserLimit(
-					ctx, models.ID(vs.ChannelID),
-				).Return(nil)
-
-				d.EXPECT().Channel(
-					ctx, models.ID(vs.ChannelID),
-				).Return(nil, err)
-
-				return unlockVoiceChan.New(d)
-			},
-		},
 		"respond_error": {
 			err: errors.New("channel error"),
 			setup: func(t *testing.T, err error) *unlockVoiceChan.Service {
@@ -125,10 +102,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(vs.ChannelID),
 				).Return(nil)
 
-				c := &discordgo.Channel{ID: vs.ChannelID}
-				d.EXPECT().Channel(ctx, models.ID(vs.ChannelID)).Return(c, nil)
-
-				d.EXPECT().Respond(ctx, i, responses.UnlockDone(c)).Return(err)
+				d.EXPECT().Respond(ctx, i, responses.UnlockDone()).Return(err)
 
 				return unlockVoiceChan.New(d)
 			},
@@ -167,10 +141,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(vs.ChannelID),
 				).Return(nil)
 
-				c := &discordgo.Channel{ID: vs.ChannelID}
-				d.EXPECT().Channel(ctx, models.ID(vs.ChannelID)).Return(c, nil)
-
-				d.EXPECT().Respond(ctx, i, responses.UnlockDone(c)).Return(nil)
+				d.EXPECT().Respond(ctx, i, responses.UnlockDone()).Return(nil)
 
 				return unlockVoiceChan.New(d)
 			},

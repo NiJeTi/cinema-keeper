@@ -6,33 +6,22 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func LockSpecifyLimit(
-	channel *discordgo.Channel,
-) *discordgo.InteractionResponse {
+func LockSpecifyLimit() *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: fmt.Sprintf(
-				"Please specify a limit for the channel %s",
-				channel.Mention(),
-			),
-			Flags: discordgo.MessageFlagsEphemeral,
+			Content: "Please specify a user limit",
+			Flags:   discordgo.MessageFlagsEphemeral,
 		},
 	}
 }
 
-func LockDone(
-	channel *discordgo.Channel,
-	limit int,
-) *discordgo.InteractionResponse {
+func LockDone(limit int) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: fmt.Sprintf(
-				"Locked channel %s for **%d** user(s)",
-				channel.Mention(), limit,
-			),
-			Flags: discordgo.MessageFlagsEphemeral,
+			Content: fmt.Sprintf("Locked channel for **%d** user(s)", limit),
+			Flags:   discordgo.MessageFlagsEphemeral,
 		},
 	}
 }

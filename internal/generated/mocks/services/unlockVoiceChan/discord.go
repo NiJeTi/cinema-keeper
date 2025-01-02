@@ -24,65 +24,6 @@ func (_m *MockDiscord) EXPECT() *MockDiscord_Expecter {
 	return &MockDiscord_Expecter{mock: &_m.Mock}
 }
 
-// Channel provides a mock function with given fields: ctx, channelID
-func (_m *MockDiscord) Channel(ctx context.Context, channelID models.ID) (*discordgo.Channel, error) {
-	ret := _m.Called(ctx, channelID)
-
-	if len(ret) == 0 {
-		panic("no return value specified for Channel")
-	}
-
-	var r0 *discordgo.Channel
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID) (*discordgo.Channel, error)); ok {
-		return rf(ctx, channelID)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID) *discordgo.Channel); ok {
-		r0 = rf(ctx, channelID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*discordgo.Channel)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID) error); ok {
-		r1 = rf(ctx, channelID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// MockDiscord_Channel_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Channel'
-type MockDiscord_Channel_Call struct {
-	*mock.Call
-}
-
-// Channel is a helper method to define mock.On call
-//   - ctx context.Context
-//   - channelID models.ID
-func (_e *MockDiscord_Expecter) Channel(ctx interface{}, channelID interface{}) *MockDiscord_Channel_Call {
-	return &MockDiscord_Channel_Call{Call: _e.mock.On("Channel", ctx, channelID)}
-}
-
-func (_c *MockDiscord_Channel_Call) Run(run func(ctx context.Context, channelID models.ID)) *MockDiscord_Channel_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID))
-	})
-	return _c
-}
-
-func (_c *MockDiscord_Channel_Call) Return(_a0 *discordgo.Channel, _a1 error) *MockDiscord_Channel_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *MockDiscord_Channel_Call) RunAndReturn(run func(context.Context, models.ID) (*discordgo.Channel, error)) *MockDiscord_Channel_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // ChannelUnsetUserLimit provides a mock function with given fields: ctx, channelID
 func (_m *MockDiscord) ChannelUnsetUserLimit(ctx context.Context, channelID models.ID) error {
 	ret := _m.Called(ctx, channelID)
