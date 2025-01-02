@@ -25,6 +25,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/services/listQuotes"
 	"github.com/nijeti/cinema-keeper/internal/services/lockVoiceChan"
 	"github.com/nijeti/cinema-keeper/internal/services/mentionVoiceChan"
+	"github.com/nijeti/cinema-keeper/internal/services/presence"
 	"github.com/nijeti/cinema-keeper/internal/services/unlockVoiceChan"
 )
 
@@ -103,6 +104,7 @@ func run() (code int) {
 	listQuotesSvc := listQuotes.New(dcAdapter, quotesRepo)
 	lockVoiceChanSvc := lockVoiceChan.New(dcAdapter)
 	mentionVoiceChanSvc := mentionVoiceChan.New(dcAdapter)
+	presenceSvc := presence.New(dcAdapter)
 	rollSvc := diceRoll.New(dcAdapter)
 	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
 
@@ -154,6 +156,12 @@ func run() (code int) {
 
 	// run
 	logger.Info("startup complete")
+
+	err = presenceSvc.Set(ctx)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to set presence", "error", err)
+	}
+
 	<-ctx.Done()
 
 	// shutdown

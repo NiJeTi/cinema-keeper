@@ -114,7 +114,7 @@ linters-settings:
             allowStrs: "\"\""
             allowInts: "-1,0,1,2"
             allowFloats: "-1.0,-1.,0.0,0.,1.0,1.,2.0,2."
-            ignoreFuncs: "os\\.*,fmt\\.Println,make"
+            ignoreFuncs: "os\\.*,fmt\\.Println,make,logger\\.*"
       - name: argument-limit
         disabled: true
       - name: banned-characters
