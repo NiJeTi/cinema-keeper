@@ -6,8 +6,9 @@ import (
 
 func Activity() *discordgo.Activity {
 	return &discordgo.Activity{
-		Name: "Collecting movies and quotes",
-		Type: discordgo.ActivityTypeCustom,
+		Name:  "Movies and Quotes",
+		Type:  discordgo.ActivityTypeCustom,
+		State: "Collecting movies and quotes",
 	}
 }
 

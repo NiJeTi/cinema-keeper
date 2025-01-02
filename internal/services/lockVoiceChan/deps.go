@@ -15,10 +15,6 @@ type discord interface {
 		response *discordgo.InteractionResponse,
 	) error
 
-	Channel(
-		ctx context.Context, channelID models.ID,
-	) (*discordgo.Channel, error)
-
 	UserVoiceState(
 		ctx context.Context, guildID models.ID, userID models.ID,
 	) (*discordgo.VoiceState, error)
