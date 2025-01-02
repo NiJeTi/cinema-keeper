@@ -171,3 +171,19 @@ func (a *Adapter) ChannelUnsetUserLimit(
 
 	return nil
 }
+
+func (a *Adapter) SetActivity(
+	_ context.Context, activity *discordgo.Activity,
+) error {
+	err := a.session.UpdateStatusComplex(
+		discordgo.UpdateStatusData{
+			Status:     string(discordgo.StatusOnline),
+			Activities: []*discordgo.Activity{activity},
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update status: %w", err)
+	}
+
+	return nil
+}
