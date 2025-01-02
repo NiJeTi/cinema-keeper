@@ -6,11 +6,22 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func CastNoChannel() *discordgo.InteractionResponse {
+	return &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: "Either specify a channel or join one",
+			Flags:   discordgo.MessageFlagsEphemeral,
+		},
+	}
+}
+
 func CastNoUsers() *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content: "There are no users in the voice channel",
+			Flags:   discordgo.MessageFlagsEphemeral,
 		},
 	}
 }

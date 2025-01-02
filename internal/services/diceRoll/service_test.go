@@ -1,4 +1,3 @@
-//nolint:dupl // table-driven tests
 package diceRoll_test
 
 import (
@@ -106,7 +105,7 @@ func TestService_Exec(t *testing.T) {
 		"multiple_d100_roll": {
 			args: args{
 				size:  dice.D100,
-				count: 10, //nolint:revive // random value
+				count: 10,
 			},
 			err: nil,
 			setup: func(t *testing.T, args args, err error) *diceRoll.Service {

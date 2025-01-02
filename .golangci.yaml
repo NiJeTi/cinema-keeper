@@ -53,6 +53,7 @@ linters:
     - wastedassign
     - whitespace
     - wrapcheck
+
 linters-settings:
   copyloopvar:
     check-alias: true
@@ -97,6 +98,8 @@ linters-settings:
       - anon
   lll:
     line-length: 80
+  nilnil:
+    detect-opposite: true
   nolintlint:
     require-explanation: true
     require-specific: true
@@ -178,3 +181,11 @@ linters-settings:
         yaml: kebab
   testifylint:
     enable-all: true
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+    - path: _test\.go
+      text: "add-constant:"

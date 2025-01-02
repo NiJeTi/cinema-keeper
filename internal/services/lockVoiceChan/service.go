@@ -63,9 +63,7 @@ func (s *Service) Exec(
 	}
 
 	err = s.discord.EditChannel(
-		ctx,
-		models.ID(voiceState.ChannelID),
-		&discordgo.ChannelEdit{UserLimit: *limit},
+		ctx, models.ID(channel.ID), &discordgo.ChannelEdit{UserLimit: *limit},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to edit channel user limit: %w", err)

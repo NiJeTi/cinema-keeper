@@ -1,4 +1,3 @@
-//nolint:dupl // table-driven tests
 package unlockVoiceChan_test
 
 import (

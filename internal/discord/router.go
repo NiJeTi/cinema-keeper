@@ -54,6 +54,10 @@ func NewRouter(cfg Config, opts ...RouterOpt) (*Router, error) {
 }
 
 func (r *Router) Close() error {
+	if err := r.UnsetCommands(); err != nil {
+		return fmt.Errorf("failed to unset commands: %w", err)
+	}
+
 	if err := r.session.Close(); err != nil {
 		return fmt.Errorf("failed to close Discord session: %w", err)
 	}
@@ -66,6 +70,10 @@ func (r *Router) Session() *discordgo.Session {
 }
 
 func (r *Router) SetCommands(commands ...Command) error {
+	if err := r.UnsetCommands(); err != nil {
+		return fmt.Errorf("failed to unset previous commands: %w", err)
+	}
+
 	for _, cmd := range commands {
 		name := cmd.Description.Name
 

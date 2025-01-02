@@ -3,6 +3,7 @@ package addQuote
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -37,10 +38,11 @@ func (s *Service) Exec(
 	}
 
 	quote := &models.Quote{
-		Author:  author,
-		Text:    text,
-		GuildID: models.ID(i.GuildID),
-		AddedBy: i.Member,
+		Author:    author,
+		Text:      text,
+		GuildID:   models.ID(i.GuildID),
+		AddedBy:   i.Member,
+		Timestamp: time.Now(),
 	}
 	err = s.db.AddUserQuoteOnGuild(ctx, quote)
 	if err != nil {
