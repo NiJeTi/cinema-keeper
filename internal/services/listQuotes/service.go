@@ -6,8 +6,10 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/discord/commands/responses"
 	"github.com/nijeti/cinema-keeper/internal/models"
+	"github.com/nijeti/cinema-keeper/internal/pkg/paginator"
 )
 
 type Service struct {
@@ -81,19 +83,21 @@ func (s *Service) respondList(
 		return fmt.Errorf("failed to respond: %w", err)
 	}
 
-	const pageSize = 10
-	for offset := 0; offset < len(quotes); offset += pageSize {
-		limit := offset + pageSize
-		if offset+pageSize >= len(quotes) {
-			limit = len(quotes)
-		}
+	err = paginator.Paginate(
+		quotes, commands.QuoteMaxQuotesPerPage,
+		func(page []*models.Quote) error {
+			err = s.discord.SendEmbeds(
+				ctx, models.ID(i.ChannelID), responses.Quotes(page),
+			)
+			if err != nil {
+				return fmt.Errorf("failed to send quotes page: %w", err)
+			}
 
-		err = s.discord.SendEmbeds(
-			ctx, models.ID(i.ChannelID), responses.Quotes(quotes[offset:limit]),
-		)
-		if err != nil {
-			return fmt.Errorf("failed to send quotes page: %w", err)
-		}
+			return nil
+		},
+	)
+	if err != nil {
+		return err //nolint:wrapcheck // error passthrough
 	}
 
 	return nil

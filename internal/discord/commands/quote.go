@@ -10,6 +10,8 @@ const (
 	QuoteOptionText   = "text"
 )
 
+const QuoteMaxQuotesPerPage = 10
+
 func Quote() *discordgo.ApplicationCommand {
 	return &discordgo.ApplicationCommand{
 		Name:        QuoteName,
