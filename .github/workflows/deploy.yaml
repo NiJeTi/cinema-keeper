@@ -1,0 +1,59 @@
+name: 'Deploy'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: prod
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Calculate version'
+        run: |
+          LAST_TAG=$(git describe --tags --match "v*.*.*" --abbrev=0)
+          VERSION=${LAST_TAG#v}
+          echo Deploying version $VERSION
+          echo 'VERSION=$VERSION' >> $GITHUB_ENV
+
+      - name: 'Login to container registry'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker login \
+              -u ${{ github.actor }} -p ${{ github.token }} \
+              ghcr.io
+
+      - name: 'Copy docker-compose.yaml'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          source: docker-compose.yaml
+          target: ${{ secrets.PATH }}
+
+      - name: 'Run containers from docker-compose.yaml'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ${{ secrets.PATH }}
+            VERSION=$VERSION docker compose up -d

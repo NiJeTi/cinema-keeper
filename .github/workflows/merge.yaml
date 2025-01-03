@@ -1,0 +1,45 @@
+name: 'Merge'
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'go.*'
+
+env:
+  GO_VERSION: '1.23'
+  COVERAGE_FILE: 'coverage.out'
+
+jobs: 
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: 'Test'
+        run: |
+          go test \
+            -cover \
+            -covermode=atomic \
+            -coverprofile=${{ env.COVERAGE_FILE }} \
+            ./...
+
+      - name: 'Upload coverage result'
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ github.token }}
+          file: ${{ env.COVERAGE_FILE }}
+          format: golang
