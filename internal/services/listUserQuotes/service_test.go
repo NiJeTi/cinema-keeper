@@ -1,4 +1,4 @@
-package listQuotes_test
+package listUserQuotes_test
 
 import (
 	"context"
@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/nijeti/cinema-keeper/internal/discord/commands/responses"
-	mocks "github.com/nijeti/cinema-keeper/internal/generated/mocks/services/listQuotes"
+	mocks "github.com/nijeti/cinema-keeper/internal/generated/mocks/services/listUserQuotes"
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/services/listQuotes"
+	"github.com/nijeti/cinema-keeper/internal/services/listUserQuotes"
 )
 
 func TestService_Exec(t *testing.T) {
@@ -29,7 +29,7 @@ func TestService_Exec(t *testing.T) {
 		},
 	}
 
-	type setup func(t *testing.T, err error) *listQuotes.Service
+	type setup func(t *testing.T, err error) *listUserQuotes.Service
 
 	tests := map[string]struct {
 		err   error
@@ -37,7 +37,7 @@ func TestService_Exec(t *testing.T) {
 	}{
 		"guild_member": {
 			err: errors.New("guild member error"),
-			setup: func(t *testing.T, err error) *listQuotes.Service {
+			setup: func(t *testing.T, err error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -45,12 +45,12 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(nil, err)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"db_error": {
 			err: errors.New("db error"),
-			setup: func(t *testing.T, err error) *listQuotes.Service {
+			setup: func(t *testing.T, err error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -58,16 +58,16 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(author, nil)
 
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(nil, err)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"empty_response_error": {
 			err: errors.New("response error"),
-			setup: func(t *testing.T, err error) *listQuotes.Service {
+			setup: func(t *testing.T, err error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -76,20 +76,20 @@ func TestService_Exec(t *testing.T) {
 				).Return(author, nil)
 
 				quotes := make([]*models.Quote, 0)
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(quotes, nil)
 
 				d.EXPECT().Respond(
-					ctx, i, responses.QuotesEmpty(author),
+					ctx, i, responses.QuoteUserNoQuotes(author),
 				).Return(err)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"guild_member_error": {
 			err: errors.New("guild member error"),
-			setup: func(t *testing.T, err error) *listQuotes.Service {
+			setup: func(t *testing.T, err error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -108,7 +108,7 @@ func TestService_Exec(t *testing.T) {
 						Timestamp: time.Time{},
 					},
 				}
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(quotes, nil)
 
@@ -118,12 +118,12 @@ func TestService_Exec(t *testing.T) {
 					models.ID(quotes[0].AddedBy.User.ID),
 				).Return(nil, err)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"header_response_error": {
 			err: errors.New("header error"),
-			setup: func(t *testing.T, err error) *listQuotes.Service {
+			setup: func(t *testing.T, err error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -144,7 +144,7 @@ func TestService_Exec(t *testing.T) {
 						Timestamp: time.Time{},
 					},
 				}
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(quotes, nil)
 
@@ -156,12 +156,12 @@ func TestService_Exec(t *testing.T) {
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).Return(err)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"send_embeds_error": {
 			err: errors.New("page error"),
-			setup: func(t *testing.T, err error) *listQuotes.Service {
+			setup: func(t *testing.T, err error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -182,7 +182,7 @@ func TestService_Exec(t *testing.T) {
 						Timestamp: time.Time{},
 					},
 				}
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(quotes, nil)
 
@@ -198,12 +198,12 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(i.ChannelID), mock.Anything,
 				).Return(err)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"success_empty": {
 			err: nil,
-			setup: func(t *testing.T, _ error) *listQuotes.Service {
+			setup: func(t *testing.T, _ error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -212,20 +212,20 @@ func TestService_Exec(t *testing.T) {
 				).Return(author, nil)
 
 				quotes := make([]*models.Quote, 0)
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(quotes, nil)
 
 				d.EXPECT().Respond(
-					ctx, i, responses.QuotesEmpty(author),
+					ctx, i, responses.QuoteUserNoQuotes(author),
 				).Return(nil)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 		"success": {
 			err: nil,
-			setup: func(t *testing.T, _ error) *listQuotes.Service {
+			setup: func(t *testing.T, _ error) *listUserQuotes.Service {
 				d := mocks.NewMockDiscord(t)
 				db := mocks.NewMockDb(t)
 
@@ -246,7 +246,7 @@ func TestService_Exec(t *testing.T) {
 						Timestamp: time.Time{},
 					},
 				}
-				db.EXPECT().GetUserQuotesOnGuild(
+				db.EXPECT().GetUserQuotesInGuild(
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(quotes, nil)
 
@@ -291,7 +291,7 @@ func TestService_Exec(t *testing.T) {
 					},
 				)
 
-				return listQuotes.New(d, db)
+				return listUserQuotes.New(d, db)
 			},
 		},
 	}

@@ -23,11 +23,7 @@ lint:
 
 .PHONY: test
 test:
-	go test ./...
-
-.PHONY: cover
-cover:
-	./scripts/cover.sh
+	./scripts/test.sh
 
 .PHONY: debug
 debug:

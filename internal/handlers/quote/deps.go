@@ -8,7 +8,11 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/models"
 )
 
-type listQuotes interface {
+type printRandomQuote interface {
+	Exec(ctx context.Context, i *discordgo.Interaction) error
+}
+
+type listUserQuotes interface {
 	Exec(
 		ctx context.Context, i *discordgo.Interaction, authorID models.ID,
 	) error

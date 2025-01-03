@@ -5,7 +5,11 @@ import (
 )
 
 const (
-	QuoteName         = "quote"
+	QuoteName = "quote"
+
+	QuoteSubCommandGet = "get"
+	QuoteSubCommandAdd = "add"
+
 	QuoteOptionAuthor = "author"
 	QuoteOptionText   = "text"
 )
@@ -15,18 +19,38 @@ const QuoteMaxQuotesPerPage = 10
 func Quote() *discordgo.ApplicationCommand {
 	return &discordgo.ApplicationCommand{
 		Name:        QuoteName,
-		Description: "Manage the most stunning quotes of the specified user",
+		Description: "Collection of users' quotes",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
-				Name:        QuoteOptionAuthor,
-				Description: "The user who said that",
-				Type:        discordgo.ApplicationCommandOptionUser,
-				Required:    true,
+				Type:        discordgo.ApplicationCommandOptionSubCommand,
+				Name:        QuoteSubCommandGet,
+				Description: "Get a random quote or a list of quotes from a user",
+				Options: []*discordgo.ApplicationCommandOption{
+					{
+						Type:        discordgo.ApplicationCommandOptionUser,
+						Name:        QuoteOptionAuthor,
+						Description: "List quotes from this user",
+					},
+				},
 			},
 			{
-				Name:        QuoteOptionText,
-				Description: "The text of the quote",
-				Type:        discordgo.ApplicationCommandOptionString,
+				Type:        discordgo.ApplicationCommandOptionSubCommand,
+				Name:        QuoteSubCommandAdd,
+				Description: "Add a new quote",
+				Options: []*discordgo.ApplicationCommandOption{
+					{
+						Type:        discordgo.ApplicationCommandOptionUser,
+						Name:        QuoteOptionAuthor,
+						Description: "User who said that",
+						Required:    true,
+					},
+					{
+						Type:        discordgo.ApplicationCommandOptionString,
+						Name:        QuoteOptionText,
+						Description: "Text of the quote",
+						Required:    true,
+					},
+				},
 			},
 		},
 	}

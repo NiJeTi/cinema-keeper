@@ -1,4 +1,4 @@
-package listQuotes
+package listUserQuotes
 
 import (
 	"context"
@@ -35,7 +35,7 @@ func (s *Service) Exec(
 		return fmt.Errorf("failed to get author: %w", err)
 	}
 
-	quotes, err := s.db.GetUserQuotesOnGuild(
+	quotes, err := s.db.GetUserQuotesInGuild(
 		ctx, models.ID(i.GuildID), authorID,
 	)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *Service) Exec(
 func (s *Service) respondEmpty(
 	ctx context.Context, i *discordgo.Interaction, author *discordgo.Member,
 ) error {
-	err := s.discord.Respond(ctx, i, responses.QuotesEmpty(author))
+	err := s.discord.Respond(ctx, i, responses.QuoteUserNoQuotes(author))
 	if err != nil {
 		return fmt.Errorf("failed to respond: %w", err)
 	}
@@ -78,7 +78,7 @@ func (s *Service) respondList(
 		q.AddedBy = addedBy
 	}
 
-	err := s.discord.Respond(ctx, i, responses.QuotesHeader(author))
+	err := s.discord.Respond(ctx, i, responses.QuoteListHeader(author))
 	if err != nil {
 		return fmt.Errorf("failed to respond: %w", err)
 	}
@@ -87,7 +87,7 @@ func (s *Service) respondList(
 		quotes, commands.QuoteMaxQuotesPerPage,
 		func(page []*models.Quote) error {
 			err = s.discord.SendEmbeds(
-				ctx, models.ID(i.ChannelID), responses.Quotes(page),
+				ctx, models.ID(i.ChannelID), responses.QuoteList(page),
 			)
 			if err != nil {
 				return fmt.Errorf("failed to send quotes page: %w", err)

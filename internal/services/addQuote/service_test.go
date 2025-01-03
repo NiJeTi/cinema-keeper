@@ -66,7 +66,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(author, nil)
 
-				db.EXPECT().AddUserQuoteOnGuild(ctx, mock.Anything).Return(err)
+				db.EXPECT().AddUserQuoteInGuild(ctx, mock.Anything).Return(err)
 
 				return addQuote.New(d, db)
 			},
@@ -81,7 +81,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(author, nil)
 
-				db.EXPECT().AddUserQuoteOnGuild(ctx, mock.Anything).Return(nil)
+				db.EXPECT().AddUserQuoteInGuild(ctx, mock.Anything).Return(nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).Return(err)
 
@@ -98,7 +98,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
 				).Return(author, nil)
 
-				db.EXPECT().AddUserQuoteOnGuild(
+				db.EXPECT().AddUserQuoteInGuild(
 					ctx, mock.Anything,
 				).RunAndReturn(
 					func(_ context.Context, quote *models.Quote) error {

@@ -1,4 +1,4 @@
-package listQuotes
+package listUserQuotes
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type discord interface {
 }
 
 type db interface {
-	GetUserQuotesOnGuild(
+	GetUserQuotesInGuild(
 		ctx context.Context, guildID models.ID, authorID models.ID,
 	) ([]*models.Quote, error)
 }

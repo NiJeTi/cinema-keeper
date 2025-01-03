@@ -35,7 +35,7 @@ func NewQuotesRepo(
 	}
 }
 
-func (r *QuotesRepo) GetUserQuotesOnGuild(
+func (r *QuotesRepo) GetUserQuotesInGuild(
 	ctx context.Context, guildID models.ID, authorID models.ID,
 ) ([]*models.Quote, error) {
 	const query = `
@@ -43,11 +43,12 @@ func (r *QuotesRepo) GetUserQuotesOnGuild(
 		where guild_id = $1 and author_id = $2
 		order by timestamp`
 
-	rows := make([]quoteRow, 0)
-
+	var rows []quoteRow
 	err := r.db.SelectContext(ctx, &rows, query, guildID, authorID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user quotes: %w", err)
+		return nil, fmt.Errorf(
+			"failed to select user quotes in guild: %w", err,
+		)
 	}
 
 	quotes := make([]*models.Quote, 0, len(rows))
@@ -57,7 +58,31 @@ func (r *QuotesRepo) GetUserQuotesOnGuild(
 	return quotes, nil
 }
 
-func (r *QuotesRepo) AddUserQuoteOnGuild(
+func (r *QuotesRepo) GetRandomQuoteInGuild(
+	ctx context.Context, guildID models.ID,
+) (*models.Quote, error) {
+	const query = `
+		select author_id, text, guild_id, added_by_id, timestamp from quotes
+		where guild_id = $1
+		order by random()
+		limit 1`
+
+	var rows []quoteRow
+	err := r.db.SelectContext(ctx, &rows, query, guildID)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to select random quote in guild: %w", err,
+		)
+	}
+
+	if len(rows) == 0 {
+		return nil, nil //nolint:nilnil // nil is valid if 0 rows were selected
+	}
+
+	return r.toModel(rows[0]), nil
+}
+
+func (r *QuotesRepo) AddUserQuoteInGuild(
 	ctx context.Context, quote *models.Quote,
 ) error {
 	const query = `

@@ -9,43 +9,80 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/models"
 	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
+	"github.com/nijeti/cinema-keeper/internal/pkg/ptr"
 )
 
 type Handler struct {
-	listQuotes listQuotes
-	addQuote   addQuote
+	printRandomQuote printRandomQuote
+	listUserQuotes   listUserQuotes
+	addQuote         addQuote
 }
 
 func New(
-	listQuotes listQuotes,
+	printRandomQuote printRandomQuote,
+	listUserQuotes listUserQuotes,
 	addQuote addQuote,
 ) *Handler {
 	return &Handler{
-		listQuotes: listQuotes,
-		addQuote:   addQuote,
+		printRandomQuote: printRandomQuote,
+		listUserQuotes:   listUserQuotes,
+		addQuote:         addQuote,
 	}
 }
 
 func (h *Handler) Handle(
 	ctx context.Context, i *discordgo.InteractionCreate,
 ) error {
-	optionsMap := discordUtils.OptionsMap(i.Interaction)
+	subCommandsMap := discordUtils.OptionsMap(i.Interaction)
 
-	opt := optionsMap[commands.QuoteOptionAuthor]
-	authorID := models.ID(opt.UserValue(nil).ID)
+	if sc, ok := subCommandsMap[commands.QuoteSubCommandGet]; ok {
+		return h.getSubCommand(ctx, i, sc)
+	}
+	if sc, ok := subCommandsMap[commands.QuoteSubCommandAdd]; ok {
+		return h.addSubCommand(ctx, i, sc)
+	}
 
-	var text string
-	if opt, ok := optionsMap[commands.QuoteOptionText]; ok {
-		text = opt.StringValue()
+	return nil
+}
+
+func (h *Handler) getSubCommand(
+	ctx context.Context,
+	i *discordgo.InteractionCreate,
+	subCommand *discordgo.ApplicationCommandInteractionDataOption,
+) error {
+	optionsMap := discordUtils.SubOptionsMap(subCommand)
+
+	var authorID *models.ID
+	if opt, ok := optionsMap[commands.QuoteOptionAuthor]; ok {
+		authorID = ptr.To(models.ID(opt.UserValue(nil).ID))
 	}
 
 	var err error
-	if text == "" {
-		err = h.listQuotes.Exec(ctx, i.Interaction, authorID)
+	if authorID != nil {
+		err = h.listUserQuotes.Exec(ctx, i.Interaction, *authorID)
 	} else {
-		err = h.addQuote.Exec(ctx, i.Interaction, authorID, text)
+		err = h.printRandomQuote.Exec(ctx, i.Interaction)
 	}
 	if err != nil {
+		return fmt.Errorf("failed to execute service: %w", err)
+	}
+
+	return nil
+}
+
+func (h *Handler) addSubCommand(
+	ctx context.Context,
+	i *discordgo.InteractionCreate,
+	subCommand *discordgo.ApplicationCommandInteractionDataOption,
+) error {
+	optionsMap := discordUtils.SubOptionsMap(subCommand)
+
+	authorID := models.ID(
+		optionsMap[commands.QuoteOptionAuthor].UserValue(nil).ID,
+	)
+	text := optionsMap[commands.QuoteOptionText].StringValue()
+
+	if err := h.addQuote.Exec(ctx, i.Interaction, authorID, text); err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}
 
