@@ -143,6 +143,9 @@ linters-settings:
         disabled: true
       - name: function-result-limit
         arguments: [ 3 ]
+      - name: import-alias-naming
+        arguments:
+          - "^[a-zA-Z][a-zA-Z0-9]{0,}$"
       - name: imports-blocklist
         disabled: true
       - name: line-length-limit

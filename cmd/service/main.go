@@ -10,7 +10,7 @@ import (
 	"github.com/nijeti/healthcheck"
 	"github.com/nijeti/healthcheck/servers/fasthttp"
 
-	dcadapter "github.com/nijeti/cinema-keeper/internal/adapters/discord"
+	dcAdapterPkg "github.com/nijeti/cinema-keeper/internal/adapters/discord"
 	"github.com/nijeti/cinema-keeper/internal/db"
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
@@ -19,13 +19,14 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/quote"
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
-	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
+	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/services/addQuote"
 	"github.com/nijeti/cinema-keeper/internal/services/diceRoll"
-	"github.com/nijeti/cinema-keeper/internal/services/listQuotes"
+	"github.com/nijeti/cinema-keeper/internal/services/listUserQuotes"
 	"github.com/nijeti/cinema-keeper/internal/services/lockVoiceChan"
 	"github.com/nijeti/cinema-keeper/internal/services/mentionVoiceChan"
 	"github.com/nijeti/cinema-keeper/internal/services/presence"
+	"github.com/nijeti/cinema-keeper/internal/services/printRandomQuote"
 	"github.com/nijeti/cinema-keeper/internal/services/unlockVoiceChan"
 )
 
@@ -62,7 +63,7 @@ func run() (code int) {
 	)
 	defer cancel()
 
-	cfg, err := cfgpkg.ReadConfig[config]()
+	cfg, err := cfgPkg.ReadConfig[config]()
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to read config", "error", err)
 		return codeErr
@@ -98,20 +99,23 @@ func run() (code int) {
 	}
 	defer dcRouter.Close()
 
-	dcAdapter := dcadapter.New(dcRouter.Session())
+	dcAdapter := dcAdapterPkg.New(dcRouter.Session())
 
 	addQuoteSvc := addQuote.New(dcAdapter, quotesRepo)
-	listQuotesSvc := listQuotes.New(dcAdapter, quotesRepo)
+	listUserQuotesSvc := listUserQuotes.New(dcAdapter, quotesRepo)
 	lockVoiceChanSvc := lockVoiceChan.New(dcAdapter)
 	mentionVoiceChanSvc := mentionVoiceChan.New(dcAdapter)
 	presenceSvc := presence.New(dcAdapter)
+	printRandomQuoteSvc := printRandomQuote.New(quotesRepo, dcAdapter)
 	rollSvc := diceRoll.New(dcAdapter)
 	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
 
 	err = dcRouter.SetCommands(
 		discord.Command{
 			Description: commands.Quote(),
-			Handler:     quote.New(listQuotesSvc, addQuoteSvc),
+			Handler: quote.New(
+				printRandomQuoteSvc, listUserQuotesSvc, addQuoteSvc,
+			),
 		},
 		discord.Command{
 			Description: commands.Cast(),

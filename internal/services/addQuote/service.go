@@ -44,7 +44,7 @@ func (s *Service) Exec(
 		AddedBy:   i.Member,
 		Timestamp: time.Now(),
 	}
-	err = s.db.AddUserQuoteOnGuild(ctx, quote)
+	err = s.db.AddUserQuoteInGuild(ctx, quote)
 	if err != nil {
 		return fmt.Errorf("failed to save quote: %w", err)
 	}

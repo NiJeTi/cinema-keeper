@@ -22,12 +22,12 @@ func (_m *MockDb) EXPECT() *MockDb_Expecter {
 	return &MockDb_Expecter{mock: &_m.Mock}
 }
 
-// AddUserQuoteOnGuild provides a mock function with given fields: ctx, quote
-func (_m *MockDb) AddUserQuoteOnGuild(ctx context.Context, quote *models.Quote) error {
+// AddUserQuoteInGuild provides a mock function with given fields: ctx, quote
+func (_m *MockDb) AddUserQuoteInGuild(ctx context.Context, quote *models.Quote) error {
 	ret := _m.Called(ctx, quote)
 
 	if len(ret) == 0 {
-		panic("no return value specified for AddUserQuoteOnGuild")
+		panic("no return value specified for AddUserQuoteInGuild")
 	}
 
 	var r0 error
@@ -40,31 +40,31 @@ func (_m *MockDb) AddUserQuoteOnGuild(ctx context.Context, quote *models.Quote) 
 	return r0
 }
 
-// MockDb_AddUserQuoteOnGuild_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddUserQuoteOnGuild'
-type MockDb_AddUserQuoteOnGuild_Call struct {
+// MockDb_AddUserQuoteInGuild_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddUserQuoteInGuild'
+type MockDb_AddUserQuoteInGuild_Call struct {
 	*mock.Call
 }
 
-// AddUserQuoteOnGuild is a helper method to define mock.On call
+// AddUserQuoteInGuild is a helper method to define mock.On call
 //   - ctx context.Context
 //   - quote *models.Quote
-func (_e *MockDb_Expecter) AddUserQuoteOnGuild(ctx interface{}, quote interface{}) *MockDb_AddUserQuoteOnGuild_Call {
-	return &MockDb_AddUserQuoteOnGuild_Call{Call: _e.mock.On("AddUserQuoteOnGuild", ctx, quote)}
+func (_e *MockDb_Expecter) AddUserQuoteInGuild(ctx interface{}, quote interface{}) *MockDb_AddUserQuoteInGuild_Call {
+	return &MockDb_AddUserQuoteInGuild_Call{Call: _e.mock.On("AddUserQuoteInGuild", ctx, quote)}
 }
 
-func (_c *MockDb_AddUserQuoteOnGuild_Call) Run(run func(ctx context.Context, quote *models.Quote)) *MockDb_AddUserQuoteOnGuild_Call {
+func (_c *MockDb_AddUserQuoteInGuild_Call) Run(run func(ctx context.Context, quote *models.Quote)) *MockDb_AddUserQuoteInGuild_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(*models.Quote))
 	})
 	return _c
 }
 
-func (_c *MockDb_AddUserQuoteOnGuild_Call) Return(_a0 error) *MockDb_AddUserQuoteOnGuild_Call {
+func (_c *MockDb_AddUserQuoteInGuild_Call) Return(_a0 error) *MockDb_AddUserQuoteInGuild_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *MockDb_AddUserQuoteOnGuild_Call) RunAndReturn(run func(context.Context, *models.Quote) error) *MockDb_AddUserQuoteOnGuild_Call {
+func (_c *MockDb_AddUserQuoteInGuild_Call) RunAndReturn(run func(context.Context, *models.Quote) error) *MockDb_AddUserQuoteInGuild_Call {
 	_c.Call.Return(run)
 	return _c
 }

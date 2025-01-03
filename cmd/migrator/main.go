@@ -11,7 +11,7 @@ import (
 	"github.com/pressly/goose/v3"
 
 	"github.com/nijeti/cinema-keeper/internal/db"
-	cfgpkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
+	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 )
 
 type config struct {
@@ -51,7 +51,7 @@ func run() (code int) {
 	logger.Info("starting")
 
 	// config
-	cfg, err := cfgpkg.ReadConfig[config]()
+	cfg, err := cfgPkg.ReadConfig[config]()
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to read config", "error", err)
 		return codeErr

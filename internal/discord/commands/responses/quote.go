@@ -10,7 +10,19 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/pkg/utils"
 )
 
-func QuotesEmpty(author *discordgo.Member) *discordgo.InteractionResponse {
+func QuoteGuildNoQuotes() *discordgo.InteractionResponse {
+	return &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: "There are no quotes in this server",
+			Flags:   discordgo.MessageFlagsEphemeral,
+		},
+	}
+}
+
+func QuoteUserNoQuotes(
+	author *discordgo.Member,
+) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -21,7 +33,26 @@ func QuotesEmpty(author *discordgo.Member) *discordgo.InteractionResponse {
 	}
 }
 
-func QuotesHeader(author *discordgo.Member) *discordgo.InteractionResponse {
+func QuoteRandomQuote(quote *models.Quote) *discordgo.InteractionResponse {
+	return &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:     quote.Text,
+					Timestamp: quote.Timestamp.Format(time.RFC3339),
+					Color:     utils.RandomColor(),
+					Author: &discordgo.MessageEmbedAuthor{
+						Name:    quote.Author.DisplayName(),
+						IconURL: quote.Author.AvatarURL("32x32"),
+					},
+				},
+			},
+		},
+	}
+}
+
+func QuoteListHeader(author *discordgo.Member) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -41,7 +72,7 @@ func QuotesHeader(author *discordgo.Member) *discordgo.InteractionResponse {
 	}
 }
 
-func Quotes(quotes []*models.Quote) []*discordgo.MessageEmbed {
+func QuoteList(quotes []*models.Quote) []*discordgo.MessageEmbed {
 	embeds := make([]*discordgo.MessageEmbed, 0, len(quotes))
 	for _, quote := range quotes {
 		embed := &discordgo.MessageEmbed{
