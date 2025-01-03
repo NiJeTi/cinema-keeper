@@ -7,14 +7,23 @@ on:
     paths:
       - 'cmd/**'
       - 'internal/**'
+      - '.golangci.yaml'
+      - '.mockery.yaml'
+      - 'go.*'
 
 env:
+  GO_VERSION: '1.23'
+  LINTER_VERSION: 'v1.62.2'
+  
   MIGRATOR: './cmd/migrator/'
   SERVICE: 'cmd/service/main.go'
 
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
 
     steps:
       - name: 'Checkout'
@@ -23,22 +32,51 @@ jobs:
       - name: 'Setup Go'
         uses: actions/setup-go@v5
         with:
-          go-version: 1.23
+          go-version: ${{ env.GO_VERSION }}
 
-      - name: 'Install dependencies'
-        run: go mod download
+      - name: 'Build migrator'
+        run: go build ${{ env.MIGRATOR }}
+
+      - name: 'Build service'
+        run: go build ${{ env.SERVICE }}
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
 
       - name: 'Run linters'
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.62.2
+          version: ${{ env.LINTER_VERSION }}
           args: --timeout=2m
 
-      - name: 'Build migrator'
-        run: go build ${{ env.MIGRATOR }}
-        
-      - name: 'Build service'
-        run: go build ${{ env.SERVICE }}
+  test:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
 
       - name: 'Test'
-        run: go test -v ./...
+        run: ./scripts/cover.sh
+
+      - name: 'Upload coverage result'
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ github.token }}
+          file: coverage.out
+          format: golang

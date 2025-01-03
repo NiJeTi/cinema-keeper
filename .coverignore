@@ -1,0 +1,14 @@
+cmd/migrator
+cmd/service
+internal/generated
+
+internal/adapters/discord
+
+internal/db
+
+internal/discord
+
+internal/pkg/config
+internal/pkg/ptr
+internal/pkg/dice
+internal/pkg/utils

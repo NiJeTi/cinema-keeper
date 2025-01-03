@@ -4,8 +4,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+type interaction interface {
+	ApplicationCommandData() discordgo.ApplicationCommandInteractionData
+}
+
 func OptionsMap(
-	i *discordgo.Interaction,
+	i interaction,
 ) map[string]*discordgo.ApplicationCommandInteractionDataOption {
 	options := i.ApplicationCommandData().Options
 

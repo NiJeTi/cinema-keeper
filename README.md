@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/NiJeTi/cinema-keeper/badge.svg)](https://coveralls.io/github/NiJeTi/cinema-keeper)
+
 # Cinema Keeper
 
 A Discord bot providing a bunch of useful features.

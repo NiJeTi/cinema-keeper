@@ -23,7 +23,11 @@ lint:
 
 .PHONY: test
 test:
-	go test -coverprofile=coverage.out ./...
+	go test ./...
+
+.PHONY: cover
+cover:
+	./scripts/cover.sh
 
 .PHONY: debug
 debug:
