@@ -15,19 +15,20 @@ type discord interface {
 		response *discordgo.InteractionResponse,
 	) error
 
-	SendEmbeds(
-		ctx context.Context,
-		channelID models.ID,
-		embeds []*discordgo.MessageEmbed,
-	) error
-
 	GuildMember(
 		ctx context.Context, guildID models.ID, userID models.ID,
 	) (*discordgo.Member, error)
 }
 
 type db interface {
-	GetUserQuotesInGuild(
+	CountUserQuotesInGuild(
 		ctx context.Context, guildID models.ID, authorID models.ID,
+	) (int, error)
+
+	GetUserQuotesInGuild(
+		ctx context.Context,
+		guildID models.ID,
+		authorID models.ID,
+		offset, limit int,
 	) ([]*models.Quote, error)
 }

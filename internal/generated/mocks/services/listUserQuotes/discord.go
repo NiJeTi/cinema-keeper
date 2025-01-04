@@ -133,54 +133,6 @@ func (_c *MockDiscord_Respond_Call) RunAndReturn(run func(context.Context, *disc
 	return _c
 }
 
-// SendEmbeds provides a mock function with given fields: ctx, channelID, embeds
-func (_m *MockDiscord) SendEmbeds(ctx context.Context, channelID models.ID, embeds []*discordgo.MessageEmbed) error {
-	ret := _m.Called(ctx, channelID, embeds)
-
-	if len(ret) == 0 {
-		panic("no return value specified for SendEmbeds")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, []*discordgo.MessageEmbed) error); ok {
-		r0 = rf(ctx, channelID, embeds)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// MockDiscord_SendEmbeds_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SendEmbeds'
-type MockDiscord_SendEmbeds_Call struct {
-	*mock.Call
-}
-
-// SendEmbeds is a helper method to define mock.On call
-//   - ctx context.Context
-//   - channelID models.ID
-//   - embeds []*discordgo.MessageEmbed
-func (_e *MockDiscord_Expecter) SendEmbeds(ctx interface{}, channelID interface{}, embeds interface{}) *MockDiscord_SendEmbeds_Call {
-	return &MockDiscord_SendEmbeds_Call{Call: _e.mock.On("SendEmbeds", ctx, channelID, embeds)}
-}
-
-func (_c *MockDiscord_SendEmbeds_Call) Run(run func(ctx context.Context, channelID models.ID, embeds []*discordgo.MessageEmbed)) *MockDiscord_SendEmbeds_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].([]*discordgo.MessageEmbed))
-	})
-	return _c
-}
-
-func (_c *MockDiscord_SendEmbeds_Call) Return(_a0 error) *MockDiscord_SendEmbeds_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *MockDiscord_SendEmbeds_Call) RunAndReturn(run func(context.Context, models.ID, []*discordgo.MessageEmbed) error) *MockDiscord_SendEmbeds_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // NewMockDiscord creates a new instance of MockDiscord. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockDiscord(t interface {

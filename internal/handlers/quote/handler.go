@@ -33,13 +33,41 @@ func New(
 func (h *Handler) Handle(
 	ctx context.Context, i *discordgo.InteractionCreate,
 ) error {
-	subCommandsMap := discordUtils.OptionsMap(i.Interaction)
-
-	if sc, ok := subCommandsMap[commands.QuoteSubCommandGet]; ok {
-		return h.getSubCommand(ctx, i, sc)
+	//nolint:exhaustive // general return instead of default
+	switch i.Interaction.Type {
+	case discordgo.InteractionApplicationCommand:
+		return h.handlerNew(ctx, i.Interaction)
+	case discordgo.InteractionMessageComponent:
+		return h.handleContinue(ctx, i.Interaction)
 	}
-	if sc, ok := subCommandsMap[commands.QuoteSubCommandAdd]; ok {
-		return h.addSubCommand(ctx, i, sc)
+
+	return nil
+}
+
+func (h *Handler) handlerNew(
+	ctx context.Context, i *discordgo.Interaction,
+) error {
+	optionsMap := discordUtils.OptionsMap(i)
+
+	if opt, ok := optionsMap[commands.QuoteSubCommandGet]; ok {
+		return h.getSubCommand(ctx, i, opt)
+	}
+	if opt, ok := optionsMap[commands.QuoteSubCommandAdd]; ok {
+		return h.addSubCommand(ctx, i, opt)
+	}
+
+	return nil
+}
+
+func (h *Handler) handleContinue(
+	ctx context.Context, i *discordgo.Interaction,
+) error {
+	_, subCommand := discordUtils.MustParseCommand(i)
+
+	//nolint:revive,gocritic // extension-ready approach
+	switch subCommand {
+	case commands.QuoteSubCommandGet:
+		return h.getSubCommandContinue(ctx, i)
 	}
 
 	return nil
@@ -47,43 +75,55 @@ func (h *Handler) Handle(
 
 func (h *Handler) getSubCommand(
 	ctx context.Context,
-	i *discordgo.InteractionCreate,
+	i *discordgo.Interaction,
+	opt *discordgo.ApplicationCommandInteractionDataOption,
+) error {
+	subOptionsMap := discordUtils.SubOptionsMap(opt)
+
+	var authorID *models.ID
+	if opt, ok := subOptionsMap[commands.QuoteOptionAuthor]; ok {
+		authorID = ptr.To(models.ID(opt.UserValue(nil).ID))
+	}
+
+	if authorID == nil {
+		if err := h.printRandomQuote.Exec(ctx, i); err != nil {
+			return fmt.Errorf("failed to print random quote: %w", err)
+		}
+		return nil
+	}
+
+	if err := h.listUserQuotes.Exec(ctx, i, *authorID, 0); err != nil {
+		return fmt.Errorf("failed to list user quotes: %w", err)
+	}
+	return nil
+}
+
+func (h *Handler) addSubCommand(
+	ctx context.Context,
+	i *discordgo.Interaction,
 	subCommand *discordgo.ApplicationCommandInteractionDataOption,
 ) error {
 	optionsMap := discordUtils.SubOptionsMap(subCommand)
 
-	var authorID *models.ID
-	if opt, ok := optionsMap[commands.QuoteOptionAuthor]; ok {
-		authorID = ptr.To(models.ID(opt.UserValue(nil).ID))
-	}
+	authorID := models.ID(optionsMap[commands.QuoteOptionAuthor].UserValue(nil).ID)
+	text := optionsMap[commands.QuoteOptionText].StringValue()
 
-	var err error
-	if authorID != nil {
-		err = h.listUserQuotes.Exec(ctx, i.Interaction, *authorID)
-	} else {
-		err = h.printRandomQuote.Exec(ctx, i.Interaction)
-	}
-	if err != nil {
+	if err := h.addQuote.Exec(ctx, i, authorID, text); err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}
 
 	return nil
 }
 
-func (h *Handler) addSubCommand(
-	ctx context.Context,
-	i *discordgo.InteractionCreate,
-	subCommand *discordgo.ApplicationCommandInteractionDataOption,
+func (h *Handler) getSubCommandContinue(
+	ctx context.Context, i *discordgo.Interaction,
 ) error {
-	optionsMap := discordUtils.SubOptionsMap(subCommand)
-
-	authorID := models.ID(
-		optionsMap[commands.QuoteOptionAuthor].UserValue(nil).ID,
+	authorID, page := commands.QuoteParseButtonCustomID(
+		i.MessageComponentData().CustomID,
 	)
-	text := optionsMap[commands.QuoteOptionText].StringValue()
 
-	if err := h.addQuote.Exec(ctx, i.Interaction, authorID, text); err != nil {
-		return fmt.Errorf("failed to execute service: %w", err)
+	if err := h.listUserQuotes.Exec(ctx, i, authorID, page); err != nil {
+		return fmt.Errorf("failed to update user quotes list: %w", err)
 	}
 
 	return nil

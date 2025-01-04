@@ -2,11 +2,13 @@ package discord
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/bytedance/sonic"
+
+	"github.com/nijeti/cinema-keeper/internal/pkg/discordUtils"
 )
 
 type Router struct {
@@ -113,9 +115,6 @@ func (r *Router) UnsetCommands() error {
 }
 
 func (r *Router) configureSession(token string) (*discordgo.Session, error) {
-	discordgo.Marshal = sonic.Marshal
-	discordgo.Unmarshal = sonic.Unmarshal
-
 	session, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Discord client: %w", err)
@@ -140,22 +139,39 @@ func (r *Router) handle(_ *discordgo.Session, i *discordgo.InteractionCreate) {
 	defer func() {
 		if err := recover(); err != nil {
 			r.logger.ErrorContext(
-				r.ctx, "panic in command handler", "error", err,
+				r.ctx, "panic in command router", "error", err,
 			)
 		}
 	}()
 
-	cmdName := i.ApplicationCommandData().Name
-	cmd, ok := r.commands[cmdName]
-	if !ok {
-		r.logger.WarnContext(r.ctx, "unknown command", "command", cmdName)
+	cmdName, _, err := discordUtils.ParseCommand(i.Interaction)
+	if err != nil {
+		if errors.Is(err, discordUtils.ErrUnknownInteractionType) {
+			r.logger.WarnContext(
+				r.ctx, "unknown interaction type", "type", i.Type,
+			)
+		} else {
+			r.logger.WarnContext(
+				r.ctx, "invalid interaction", "error", err,
+			)
+		}
+
 		return
 	}
 
-	err := cmd.Handler.Handle(r.ctx, i)
+	cmd, ok := r.commands[cmdName]
+	if !ok {
+		r.logger.WarnContext(
+			r.ctx, "unknown command", "command", cmdName,
+		)
+		return
+	}
+
+	err = cmd.Handler.Handle(r.ctx, i)
 	if err != nil {
 		r.logger.ErrorContext(
-			r.ctx, "failed to handle command", "command", cmdName, "error", err,
+			r.ctx, "failed to handle command",
+			"command", cmdName, "error", err,
 		)
 	}
 }

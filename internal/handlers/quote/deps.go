@@ -14,7 +14,10 @@ type printRandomQuote interface {
 
 type listUserQuotes interface {
 	Exec(
-		ctx context.Context, i *discordgo.Interaction, authorID models.ID,
+		ctx context.Context,
+		i *discordgo.Interaction,
+		authorID models.ID,
+		page int,
 	) error
 }
 

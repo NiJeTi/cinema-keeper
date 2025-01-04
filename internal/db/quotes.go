@@ -35,16 +35,47 @@ func NewQuotesRepo(
 	}
 }
 
-func (r *QuotesRepo) GetUserQuotesInGuild(
+func (r *QuotesRepo) CountUserQuotesInGuild(
 	ctx context.Context, guildID models.ID, authorID models.ID,
+) (int, error) {
+	const query = `
+		select count(*) from quotes
+		where guild_id = $1 and author_id = $2`
+
+	var rows []int
+	err := r.db.SelectContext(ctx, &rows, query, guildID, authorID)
+	if err != nil {
+		return 0, fmt.Errorf(
+			"failed to select user quotes count in guild: %w", err,
+		)
+	}
+
+	return rows[0], nil
+}
+
+func (r *QuotesRepo) GetUserQuotesInGuild(
+	ctx context.Context,
+	guildID models.ID,
+	authorID models.ID,
+	offset, limit int,
 ) ([]*models.Quote, error) {
+	if offset < 0 {
+		panic("offset must be greater than or equal to 0")
+	}
+	if limit <= 0 {
+		panic("limit must be greater than 0")
+	}
+
 	const query = `
 		select author_id, text, guild_id, added_by_id, timestamp from quotes
 		where guild_id = $1 and author_id = $2
-		order by timestamp`
+		order by timestamp
+		offset $3 limit $4`
 
 	var rows []quoteRow
-	err := r.db.SelectContext(ctx, &rows, query, guildID, authorID)
+	err := r.db.SelectContext(
+		ctx, &rows, query, guildID, authorID, offset, limit,
+	)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to select user quotes in guild: %w", err,

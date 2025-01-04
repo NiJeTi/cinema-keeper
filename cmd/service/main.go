@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/nijeti/healthcheck"
-	"github.com/nijeti/healthcheck/servers/fasthttp"
+	hcHTTP "github.com/nijeti/healthcheck/servers/http"
 
 	dcAdapterPkg "github.com/nijeti/cinema-keeper/internal/adapters/discord"
 	"github.com/nijeti/cinema-keeper/internal/db"
@@ -149,11 +149,11 @@ func run() (code int) {
 		healthcheck.WithProbe("db", dbProbe),
 		healthcheck.WithProbe("discord", dcProbe),
 	)
-	hcs := fasthttp.New(
+	hcs := hcHTTP.New(
 		hc,
-		fasthttp.WithLogger(hcLogger),
-		fasthttp.WithAddress(":8080"),
-		fasthttp.WithRoute("/health"),
+		hcHTTP.WithLogger(hcLogger),
+		hcHTTP.WithAddress(":8080"),
+		hcHTTP.WithRoute("/health"),
 	)
 	hcs.Start()
 	defer hcs.Stop()
