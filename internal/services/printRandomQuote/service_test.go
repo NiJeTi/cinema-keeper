@@ -105,8 +105,7 @@ func TestService_Exec(t *testing.T) {
 					User: &discordgo.User{
 						ID: "1",
 					},
-					Nick:   "author",
-					Avatar: "avatar",
+					Nick: "author",
 				}
 				d.EXPECT().GuildMember(
 					ctx, models.ID(i.GuildID), models.ID(quote.Author.User.ID),
@@ -157,8 +156,7 @@ func TestService_Exec(t *testing.T) {
 					User: &discordgo.User{
 						ID: "1",
 					},
-					Nick:   "author",
-					Avatar: "avatar",
+					Nick: "author",
 				}
 				d.EXPECT().GuildMember(
 					ctx, models.ID(i.GuildID), models.ID(quote.Author.User.ID),
@@ -177,7 +175,7 @@ func TestService_Exec(t *testing.T) {
 						)
 						assert.Equal(
 							t, quote.Author.DisplayName(),
-							r.Data.Embeds[0].Author.Name,
+							r.Data.Embeds[0].Footer.Text,
 						)
 
 						return nil

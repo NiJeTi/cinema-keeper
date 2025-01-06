@@ -26,24 +26,15 @@ func (a *Adapter) Respond(
 	i *discordgo.Interaction,
 	response *discordgo.InteractionResponse,
 ) error {
+	if i.Type == discordgo.InteractionMessageComponent {
+		response.Type = discordgo.InteractionResponseUpdateMessage
+	}
+
 	err := a.session.InteractionRespond(
 		i, response, discordgo.WithContext(ctx),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to respond to interaction: %w", err)
-	}
-
-	return nil
-}
-
-func (a *Adapter) SendEmbeds(
-	ctx context.Context, channelID models.ID, embeds []*discordgo.MessageEmbed,
-) error {
-	_, err := a.session.ChannelMessageSendEmbeds(
-		channelID.String(), embeds, discordgo.WithContext(ctx),
-	)
-	if err != nil {
-		return fmt.Errorf("failed to send embeds: %w", err)
 	}
 
 	return nil

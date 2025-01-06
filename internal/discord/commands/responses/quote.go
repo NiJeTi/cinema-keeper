@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
+	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/models"
 	"github.com/nijeti/cinema-keeper/internal/pkg/utils"
 )
@@ -42,9 +43,9 @@ func QuoteRandomQuote(quote *models.Quote) *discordgo.InteractionResponse {
 					Title:     quote.Text,
 					Timestamp: quote.Timestamp.Format(time.RFC3339),
 					Color:     utils.RandomColor(),
-					Author: &discordgo.MessageEmbedAuthor{
-						Name:    quote.Author.DisplayName(),
-						IconURL: quote.Author.AvatarURL("32x32"),
+					Footer: &discordgo.MessageEmbedFooter{
+						Text:    quote.Author.DisplayName(),
+						IconURL: quote.Author.AvatarURL("16x16"),
 					},
 				},
 			},
@@ -52,28 +53,58 @@ func QuoteRandomQuote(quote *models.Quote) *discordgo.InteractionResponse {
 	}
 }
 
-func QuoteListHeader(author *discordgo.Member) *discordgo.InteractionResponse {
-	return &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title: "Quotes",
-					Description: fmt.Sprintf(
-						"The most stunning quotes of %s", author.Mention(),
-					),
-					Color: utils.RandomColor(),
-					Thumbnail: &discordgo.MessageEmbedThumbnail{
-						URL: author.AvatarURL("64x64"),
-					},
-				},
-			},
+func QuoteList(
+	quotes []*models.Quote, page int, lastPage int,
+) *discordgo.InteractionResponse {
+	if len(quotes) > commands.QuoteMaxQuotesPerPage {
+		panic("too many quotes per page")
+	}
+
+	author := quotes[0].Author
+
+	prevButton := discordgo.Button{
+		Style: discordgo.PrimaryButton,
+		Emoji: &discordgo.ComponentEmoji{
+			Name: "◀️",
 		},
 	}
-}
+	if page == 0 {
+		prevButton.Disabled = true
+		prevButton.CustomID = "prev"
+	} else {
+		prevButton.Disabled = false
+		prevButton.CustomID = commands.QuotesButtonCustomID(
+			models.ID(author.User.ID), page-1,
+		)
+	}
 
-func QuoteList(quotes []*models.Quote) []*discordgo.MessageEmbed {
-	embeds := make([]*discordgo.MessageEmbed, 0, len(quotes))
+	nextButton := discordgo.Button{
+		Style: discordgo.PrimaryButton,
+		Emoji: &discordgo.ComponentEmoji{
+			Name: "▶️",
+		},
+	}
+	if page == lastPage {
+		nextButton.Disabled = true
+		nextButton.CustomID = "next"
+	} else {
+		nextButton.Disabled = false
+		nextButton.CustomID = commands.QuotesButtonCustomID(
+			models.ID(author.User.ID), page+1,
+		)
+	}
+
+	headerEmbed := &discordgo.MessageEmbed{
+		Description: fmt.Sprintf(
+			"The most stunning quotes of %s", author.Mention(),
+		),
+		Color: utils.RandomColor(),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: author.AvatarURL("64x64"),
+		},
+	}
+
+	quoteEmbeds := make([]*discordgo.MessageEmbed, 0, len(quotes))
 	for _, quote := range quotes {
 		embed := &discordgo.MessageEmbed{
 			Title:     quote.Text,
@@ -84,9 +115,24 @@ func QuoteList(quotes []*models.Quote) []*discordgo.MessageEmbed {
 				IconURL: quote.AddedBy.AvatarURL("16x16"),
 			},
 		}
-		embeds = append(embeds, embed)
+		quoteEmbeds = append(quoteEmbeds, embed)
 	}
-	return embeds
+
+	return &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: append(
+				[]*discordgo.MessageEmbed{headerEmbed}, quoteEmbeds...,
+			),
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						prevButton, nextButton,
+					},
+				},
+			},
+		},
+	}
 }
 
 func QuoteAdded(quote *models.Quote) *discordgo.InteractionResponse {
@@ -102,10 +148,6 @@ func QuoteAdded(quote *models.Quote) *discordgo.InteractionResponse {
 					Footer: &discordgo.MessageEmbedFooter{
 						Text:    quote.Author.DisplayName(),
 						IconURL: quote.Author.AvatarURL("16x16"),
-					},
-					Author: &discordgo.MessageEmbedAuthor{
-						Name:    quote.AddedBy.DisplayName(),
-						IconURL: quote.AddedBy.AvatarURL("32x32"),
 					},
 				},
 			},

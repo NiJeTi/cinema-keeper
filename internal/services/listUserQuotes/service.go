@@ -28,25 +28,25 @@ func New(
 }
 
 func (s *Service) Exec(
-	ctx context.Context, i *discordgo.Interaction, authorID models.ID,
+	ctx context.Context, i *discordgo.Interaction, authorID models.ID, page int,
 ) error {
 	author, err := s.discord.GuildMember(ctx, models.ID(i.GuildID), authorID)
 	if err != nil {
 		return fmt.Errorf("failed to get author: %w", err)
 	}
 
-	quotes, err := s.db.GetUserQuotesInGuild(
+	quoteCount, err := s.db.CountUserQuotesInGuild(
 		ctx, models.ID(i.GuildID), authorID,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to get quotes: %w", err)
+		return fmt.Errorf("failed to count quotes: %w", err)
 	}
 
-	if len(quotes) == 0 {
+	if quoteCount == 0 {
 		return s.respondEmpty(ctx, i, author)
 	}
 
-	return s.respondList(ctx, i, author, quotes)
+	return s.respondList(ctx, i, author, quoteCount, page)
 }
 
 func (s *Service) respondEmpty(
@@ -54,13 +54,51 @@ func (s *Service) respondEmpty(
 ) error {
 	err := s.discord.Respond(ctx, i, responses.QuoteUserNoQuotes(author))
 	if err != nil {
-		return fmt.Errorf("failed to respond: %w", err)
+		return fmt.Errorf("failed to send empty response: %w", err)
 	}
 
 	return nil
 }
 
 func (s *Service) respondList(
+	ctx context.Context,
+	i *discordgo.Interaction,
+	author *discordgo.Member,
+	quoteCount int,
+	page int,
+) error {
+	offset := page * commands.QuoteMaxQuotesPerPage
+
+	quotes, err := s.db.GetUserQuotesInGuild(
+		ctx,
+		models.ID(i.GuildID),
+		models.ID(author.User.ID),
+		offset,
+		commands.QuoteMaxQuotesPerPage,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to get quotes: %w", err)
+	}
+
+	err = s.enrichQuotes(ctx, i, author, quotes)
+	if err != nil {
+		return err
+	}
+
+	pageInfo := paginator.Info(
+		quoteCount, commands.QuoteMaxQuotesPerPage, offset,
+	)
+	err = s.discord.Respond(
+		ctx, i, responses.QuoteList(quotes, pageInfo.Page, pageInfo.LastPage),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to send quotes page: %w", err)
+	}
+
+	return nil
+}
+
+func (s *Service) enrichQuotes(
 	ctx context.Context,
 	i *discordgo.Interaction,
 	author *discordgo.Member,
@@ -77,28 +115,5 @@ func (s *Service) respondList(
 		q.Author = author
 		q.AddedBy = addedBy
 	}
-
-	err := s.discord.Respond(ctx, i, responses.QuoteListHeader(author))
-	if err != nil {
-		return fmt.Errorf("failed to respond: %w", err)
-	}
-
-	err = paginator.Paginate(
-		quotes, commands.QuoteMaxQuotesPerPage,
-		func(page []*models.Quote) error {
-			err = s.discord.SendEmbeds(
-				ctx, models.ID(i.ChannelID), responses.QuoteList(page),
-			)
-			if err != nil {
-				return fmt.Errorf("failed to send quotes page: %w", err)
-			}
-
-			return nil
-		},
-	)
-	if err != nil {
-		return err //nolint:wrapcheck // error passthrough
-	}
-
 	return nil
 }

@@ -1,5 +1,5 @@
 MOCKERY_VERSION=github.com/vektra/mockery/v2@v2.50
-GOLANGCI_LINT_IMAGE=golangci/golangci-lint:v1.62-alpine
+GOLANGCI_LINT_IMAGE=golangci/golangci-lint:v1.63-alpine
 GOOSE_VERSION=github.com/pressly/goose/v3/cmd/goose@v3.24
 
 .PHONY: deps
