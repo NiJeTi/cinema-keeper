@@ -33,15 +33,14 @@ func New(
 func (h *Handler) Handle(
 	ctx context.Context, i *discordgo.InteractionCreate,
 ) error {
-	//nolint:exhaustive // general return instead of default
 	switch i.Interaction.Type {
 	case discordgo.InteractionApplicationCommand:
 		return h.handlerNew(ctx, i.Interaction)
 	case discordgo.InteractionMessageComponent:
 		return h.handleContinue(ctx, i.Interaction)
+	default:
+		return nil
 	}
-
-	return nil
 }
 
 func (h *Handler) handlerNew(

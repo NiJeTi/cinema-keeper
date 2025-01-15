@@ -19,7 +19,7 @@ mocks:
 lint:
 	$(MAKE) deps
 
-	docker run -t --rm -v $(PWD):/src -w /src $(GOLANGCI_LINT_IMAGE) golangci-lint run -v
+	docker run -t --rm -v $(PWD):/src -w /src $(GOLANGCI_LINT_IMAGE) golangci-lint run
 
 .PHONY: test
 test:
