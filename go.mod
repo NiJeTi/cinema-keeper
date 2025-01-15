@@ -12,7 +12,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nijeti/healthcheck v1.0.0-beta.2
 	github.com/nijeti/healthcheck/servers/http v1.0.0-beta.4
-	github.com/pressly/goose/v3 v3.24.0
+	github.com/pressly/goose/v3 v3.24.1
 	github.com/stretchr/testify v1.10.0
 )
 
