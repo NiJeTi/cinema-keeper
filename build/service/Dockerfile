@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o service ./cmd/service/main.go
 
-FROM alpine:3.20 AS app
+FROM alpine:3.21 AS app
 
 RUN addgroup -S app-group && adduser -S app-user -G app-group
 
