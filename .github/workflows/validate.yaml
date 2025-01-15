@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
     paths:
+      - '.github/**'
       - 'cmd/**'
       - 'internal/**'
       - '.golangci.yaml'
@@ -13,10 +14,10 @@ on:
 
 env:
   GO_VERSION: '1.23'
-  LINTER_VERSION: 'v1.62.2'
+  LINTER_VERSION: 'v1.62'
   
   MIGRATOR: './cmd/migrator/'
-  SERVICE: 'cmd/service/main.go'
+  SERVICE: './cmd/service/'
 
 jobs:
   build:

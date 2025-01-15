@@ -128,11 +128,11 @@ linters-settings:
       - name: cyclomatic
         arguments: [ 20 ]
       - name: enforce-map-style
-        arguments: [ "make" ]
+        disabled: true
       - name: enforce-repeated-arg-type-style
         disabled: true
       - name: enforce-slice-style
-        arguments: [ "make" ]
+        disabled: true
       - name: file-header
         disabled: true
       - name: file-length-limit

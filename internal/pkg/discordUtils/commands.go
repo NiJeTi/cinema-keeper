@@ -11,14 +11,14 @@ var ErrUnknownInteractionType = errors.New("unknown interaction type")
 func ParseCommand(
 	i *discordgo.Interaction,
 ) (command string, subCommand string, err error) {
-	switch i.Type { //nolint:exhaustive // general return instead of default
+	switch i.Type {
 	case discordgo.InteractionApplicationCommand:
 		return parseInteraction(i.ApplicationCommandData())
 	case discordgo.InteractionMessageComponent:
 		return parseComponentInteraction(i.MessageComponentData())
+	default:
+		return "", "", ErrUnknownInteractionType
 	}
-
-	return "", "", ErrUnknownInteractionType
 }
 
 func MustParseCommand(
