@@ -44,8 +44,8 @@ jobs:
         env:
           KEY_FILE: ssh.key
         run: |
+          umask 600
           echo ${{ secrets.KEY }} > ${{ env.KEY_FILE }}
-          chmod a=X,u=r ${{ env.KEY_FILE }}
           scp -i ${{ env.KEY_FILE }} -P ${{ secrets.PORT }} \
               ${{env.MANIFEST}} ${{ secrets.USER }}@${{secrets.HOST}}:${{ secrets.PATH }}
 
