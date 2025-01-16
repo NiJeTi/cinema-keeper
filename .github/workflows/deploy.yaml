@@ -23,10 +23,10 @@ jobs:
           LAST_TAG=$(git describe --tags --match "v*.*.*" --abbrev=0)
           VERSION=${LAST_TAG#v}
           echo Deploying version $VERSION
-          echo 'VERSION=$VERSION' >> $GITHUB_ENV
+          echo VERSION=$VERSION >> $GITHUB_ENV
 
       - name: 'Login to container registry'
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
@@ -48,7 +48,7 @@ jobs:
           target: ${{ secrets.PATH }}
 
       - name: 'Run containers from docker-compose.yaml'
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
