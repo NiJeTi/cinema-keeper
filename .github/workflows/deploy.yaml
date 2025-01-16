@@ -46,6 +46,7 @@ jobs:
           port: ${{ secrets.PORT }}
           source: docker-compose.yaml
           target: ${{ secrets.PATH }}
+          overwrite: true
 
       - name: 'Run containers from docker-compose.yaml'
         uses: appleboy/ssh-action@v1.0.3
