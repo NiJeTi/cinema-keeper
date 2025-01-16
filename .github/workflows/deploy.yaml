@@ -26,7 +26,7 @@ jobs:
           echo VERSION=$VERSION >> $GITHUB_ENV
 
       - name: 'Login to container registry'
-        uses: appleboy/ssh-action@v1.1.0
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
@@ -48,7 +48,7 @@ jobs:
           target: ${{ secrets.PATH }}
 
       - name: 'Run containers from docker-compose.yaml'
-        uses: appleboy/ssh-action@v1.1.0
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
