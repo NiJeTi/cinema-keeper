@@ -41,13 +41,15 @@ jobs:
               ghcr.io
 
       - name: 'Copy docker-compose.yaml'
-        env:
-          KEY_FILE: ssh.key
-        run: |
-          umask 600
-          echo ${{ secrets.KEY }} > ${{ env.KEY_FILE }}
-          scp -i ${{ env.KEY_FILE }} -P ${{ secrets.PORT }} \
-              ${{env.MANIFEST}} ${{ secrets.USER }}@${{secrets.HOST}}:${{ secrets.PATH }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          source: ${{ env.MANIFEST }}
+          target: ${{ secrets.PATH }}
+          overwrite: true
 
       - name: 'Run containers from docker-compose.yaml'
         uses: appleboy/ssh-action@v1.0.3
