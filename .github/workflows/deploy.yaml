@@ -58,6 +58,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
+          envs: VERSION
           script: |
             cd ${{ secrets.PATH }}
             VERSION=$VERSION docker compose up -d
