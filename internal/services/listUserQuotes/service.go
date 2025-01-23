@@ -80,40 +80,16 @@ func (s *Service) respondList(
 		return fmt.Errorf("failed to get quotes: %w", err)
 	}
 
-	err = s.enrichQuotes(ctx, i, author, quotes)
-	if err != nil {
-		return err
-	}
-
 	pageInfo := paginator.Info(
 		quoteCount, commands.QuoteMaxQuotesPerPage, offset,
 	)
-	err = s.discord.Respond(
-		ctx, i, responses.QuoteList(quotes, pageInfo.Page, pageInfo.LastPage),
+	resp := responses.QuoteList(
+		author, quotes, pageInfo.Page, pageInfo.LastPage,
 	)
+	err = s.discord.Respond(ctx, i, resp)
 	if err != nil {
 		return fmt.Errorf("failed to send quotes page: %w", err)
 	}
 
-	return nil
-}
-
-func (s *Service) enrichQuotes(
-	ctx context.Context,
-	i *discordgo.Interaction,
-	author *discordgo.Member,
-	quotes []*models.Quote,
-) error {
-	for _, q := range quotes {
-		addedBy, err := s.discord.GuildMember(
-			ctx, models.ID(i.GuildID), models.ID(q.AddedBy.User.ID),
-		)
-		if err != nil {
-			return fmt.Errorf("failed to get guild member: %w", err)
-		}
-
-		q.Author = author
-		q.AddedBy = addedBy
-	}
 	return nil
 }

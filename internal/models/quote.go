@@ -2,14 +2,12 @@ package models
 
 import (
 	"time"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 type Quote struct {
-	Author    *discordgo.Member
+	AuthorID  ID
 	Text      string
 	GuildID   ID
-	AddedBy   *discordgo.Member
+	AddedByID ID
 	Timestamp time.Time
 }

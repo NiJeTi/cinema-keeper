@@ -125,47 +125,6 @@ func TestService_Exec(t *testing.T) {
 				return listUserQuotes.New(d, db)
 			},
 		},
-		"quotes_page_guild_member_error": {
-			err: errors.New("guild member error"),
-			setup: func(
-				t *testing.T, _ args, err error,
-			) *listUserQuotes.Service {
-				d := mocks.NewMockDiscord(t)
-				db := mocks.NewMockDb(t)
-
-				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
-				).Return(author, nil)
-
-				count := 1
-				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
-				).Return(count, nil)
-
-				quotes := []*models.Quote{
-					{
-						AddedBy: &discordgo.Member{
-							User: &discordgo.User{ID: "3"},
-						},
-					},
-				}
-				db.EXPECT().GetUserQuotesInGuild(
-					ctx,
-					models.ID(i.GuildID),
-					models.ID(author.User.ID),
-					0,
-					commands.QuoteMaxQuotesPerPage,
-				).Return(quotes, nil)
-
-				d.EXPECT().GuildMember(
-					ctx,
-					models.ID(i.GuildID),
-					models.ID(quotes[0].AddedBy.User.ID),
-				).Return(nil, err)
-
-				return listUserQuotes.New(d, db)
-			},
-		},
 		"quotes_page_response_error": {
 			err: errors.New("response error"),
 			setup: func(
@@ -184,11 +143,7 @@ func TestService_Exec(t *testing.T) {
 				).Return(count, nil)
 
 				quotes := []*models.Quote{
-					{
-						AddedBy: &discordgo.Member{
-							User: &discordgo.User{ID: "3"},
-						},
-					},
+					{AddedByID: "3"},
 				}
 				db.EXPECT().GetUserQuotesInGuild(
 					ctx,
@@ -197,16 +152,6 @@ func TestService_Exec(t *testing.T) {
 					0,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
-
-				addedBy := &discordgo.Member{
-					Nick: "addedBy",
-					User: &discordgo.User{ID: "3"},
-				}
-				d.EXPECT().GuildMember(
-					ctx,
-					models.ID(i.GuildID),
-					models.ID(quotes[0].AddedBy.User.ID),
-				).Return(addedBy, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).Return(err)
 
@@ -255,13 +200,11 @@ func TestService_Exec(t *testing.T) {
 
 				quotes := []*models.Quote{
 					{
-						Author:  author,
-						Text:    "text",
-						GuildID: models.ID(i.GuildID),
-						AddedBy: &discordgo.Member{
-							User: &discordgo.User{ID: "3"},
-						},
-						Timestamp: time.Now(),
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
 					},
 				}
 				db.EXPECT().GetUserQuotesInGuild(
@@ -271,18 +214,6 @@ func TestService_Exec(t *testing.T) {
 					0,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
-
-				addedBy := &discordgo.Member{
-					Nick: "addedBy",
-					User: &discordgo.User{
-						ID: "3",
-					},
-				}
-				d.EXPECT().GuildMember(
-					ctx,
-					models.ID(i.GuildID),
-					models.ID(quotes[0].AddedBy.User.ID),
-				).Return(addedBy, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).RunAndReturn(
 					func(
@@ -295,9 +226,6 @@ func TestService_Exec(t *testing.T) {
 						assert.Equal(
 							t, quotes[0].Timestamp.Format(time.RFC3339),
 							r.Data.Embeds[1].Timestamp,
-						)
-						assert.Equal(
-							t, addedBy.Nick, r.Data.Embeds[1].Footer.Text,
 						)
 
 						return nil
@@ -329,13 +257,11 @@ func TestService_Exec(t *testing.T) {
 
 				quotes := []*models.Quote{
 					{
-						Author:  author,
-						Text:    "text",
-						GuildID: models.ID(i.GuildID),
-						AddedBy: &discordgo.Member{
-							User: &discordgo.User{ID: "3"},
-						},
-						Timestamp: time.Now(),
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
 					},
 				}
 				db.EXPECT().GetUserQuotesInGuild(
@@ -345,18 +271,6 @@ func TestService_Exec(t *testing.T) {
 					args.page*commands.QuoteMaxQuotesPerPage,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
-
-				addedBy := &discordgo.Member{
-					Nick: "addedBy",
-					User: &discordgo.User{
-						ID: "3",
-					},
-				}
-				d.EXPECT().GuildMember(
-					ctx,
-					models.ID(i.GuildID),
-					models.ID(quotes[0].AddedBy.User.ID),
-				).Return(addedBy, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).RunAndReturn(
 					func(
@@ -369,9 +283,6 @@ func TestService_Exec(t *testing.T) {
 						assert.Equal(
 							t, quotes[0].Timestamp.Format(time.RFC3339),
 							r.Data.Embeds[1].Timestamp,
-						)
-						assert.Equal(
-							t, addedBy.Nick, r.Data.Embeds[1].Footer.Text,
 						)
 						assert.Equal(
 							t, "quote_get_2_0",
