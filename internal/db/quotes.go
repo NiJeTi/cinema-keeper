@@ -68,7 +68,7 @@ func (r *QuotesRepo) GetUserQuotesInGuild(
 	const query = `
 		select author_id, text, guild_id, added_by_id, timestamp from quotes
 		where guild_id = $1 and author_id = $2
-		order by timestamp
+		order by timestamp desc
 		offset $3 limit $4`
 
 	var rows []quoteRow
