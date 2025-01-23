@@ -29,7 +29,7 @@ const (
 )
 
 var quotesPageCustomIDRegex = regexp.MustCompile(
-	`^([a-z]+)_([a-z]+)_(\d+)_(\d+)$`,
+	`^([a-z]+)_([a-z]+)_(\d+)_(\d+)_?$`,
 )
 
 func Quote() *discordgo.ApplicationCommand {
@@ -80,6 +80,10 @@ func QuotesButtonCustomID(authorID models.ID, page int) string {
 	return fmt.Sprintf(
 		"%s_%s_%s_%d", QuoteName, QuoteSubCommandGet, authorID, page,
 	)
+}
+
+func QuotesEdgeButtonCustomID(authorID models.ID, page int) string {
+	return QuotesButtonCustomID(authorID, page) + "_"
 }
 
 func QuoteParseButtonCustomID(id string) (authorID models.ID, page int) {

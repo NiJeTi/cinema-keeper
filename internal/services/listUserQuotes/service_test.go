@@ -235,7 +235,7 @@ func TestService_Exec(t *testing.T) {
 				return listUserQuotes.New(d, db)
 			},
 		},
-		"success_page_1": {
+		"success_last_page": {
 			args: args{
 				page: 1,
 			},
@@ -285,16 +285,132 @@ func TestService_Exec(t *testing.T) {
 							r.Data.Embeds[1].Timestamp,
 						)
 						assert.Equal(
-							t, "quote_get_2_0",
+							t, "quote_get_2_0_",
 							r.Data. //nolint:errcheck // panic is ok
 								Components[0].(discordgo.ActionsRow).
 								Components[0].(discordgo.Button).CustomID,
+						)
+						assert.Equal(
+							t, "quote_get_2_0",
+							r.Data. //nolint:errcheck // panic is ok
+								Components[0].(discordgo.ActionsRow).
+								Components[1].(discordgo.Button).CustomID,
+						)
+						assert.True(
+							t,
+							r.Data. //nolint:errcheck // panic is ok
+								Components[0].(discordgo.ActionsRow).
+								Components[2].(discordgo.Button).Disabled,
+						)
+						assert.True(
+							t,
+							r.Data. //nolint:errcheck // panic is ok
+								Components[0].(discordgo.ActionsRow).
+								Components[3].(discordgo.Button).Disabled,
+						)
+
+						return nil
+					},
+				)
+
+				return listUserQuotes.New(d, db)
+			},
+		},
+		"success_first_page": {
+			args: args{
+				page: 0,
+			},
+			err: nil,
+			setup: func(
+				t *testing.T, args args, _ error,
+			) *listUserQuotes.Service {
+				d := mocks.NewMockDiscord(t)
+				db := mocks.NewMockDb(t)
+
+				d.EXPECT().GuildMember(
+					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+				).Return(author, nil)
+
+				count := 6
+				db.EXPECT().CountUserQuotesInGuild(
+					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+				).Return(count, nil)
+
+				quotes := []*models.Quote{
+					{
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text1",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
+					},
+					{
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text2",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
+					},
+					{
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text3",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
+					},
+					{
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text4",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
+					},
+					{
+						AuthorID:  models.ID(author.User.ID),
+						Text:      "text5",
+						GuildID:   models.ID(i.GuildID),
+						AddedByID: "3",
+						Timestamp: time.Now().UTC(),
+					},
+				}
+				db.EXPECT().GetUserQuotesInGuild(
+					ctx,
+					models.ID(i.GuildID),
+					models.ID(author.User.ID),
+					args.page*commands.QuoteMaxQuotesPerPage,
+					commands.QuoteMaxQuotesPerPage,
+				).Return(quotes, nil)
+
+				d.EXPECT().Respond(ctx, i, mock.Anything).RunAndReturn(
+					func(
+						_ context.Context,
+						_ *discordgo.Interaction,
+						r *discordgo.InteractionResponse,
+					) error {
+						assert.Len(t, r.Data.Embeds, 6)
+						assert.True(
+							t,
+							r.Data. //nolint:errcheck // panic is ok
+								Components[0].(discordgo.ActionsRow).
+								Components[0].(discordgo.Button).Disabled,
 						)
 						assert.True(
 							t,
 							r.Data. //nolint:errcheck // panic is ok
 								Components[0].(discordgo.ActionsRow).
 								Components[1].(discordgo.Button).Disabled,
+						)
+						assert.Equal(
+							t, "quote_get_2_1",
+							r.Data. //nolint:errcheck // panic is ok
+								Components[0].(discordgo.ActionsRow).
+								Components[2].(discordgo.Button).CustomID,
+						)
+						assert.Equal(
+							t, "quote_get_2_1_",
+							r.Data. //nolint:errcheck // panic is ok
+								Components[0].(discordgo.ActionsRow).
+								Components[3].(discordgo.Button).CustomID,
 						)
 
 						return nil
