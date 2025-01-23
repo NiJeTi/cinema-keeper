@@ -62,6 +62,12 @@ func QuoteList(
 		panic("too many quotes per page")
 	}
 
+	firstButton := discordgo.Button{
+		Style: discordgo.PrimaryButton,
+		Emoji: &discordgo.ComponentEmoji{
+			Name: "⏪",
+		},
+	}
 	prevButton := discordgo.Button{
 		Style: discordgo.PrimaryButton,
 		Emoji: &discordgo.ComponentEmoji{
@@ -69,15 +75,29 @@ func QuoteList(
 		},
 	}
 	if page == 0 {
+		firstButton.Disabled = true
+		firstButton.CustomID = "first"
+
 		prevButton.Disabled = true
 		prevButton.CustomID = "prev"
 	} else {
+		firstButton.Disabled = false
+		firstButton.CustomID = commands.QuotesEdgeButtonCustomID(
+			models.ID(author.User.ID), 0,
+		)
+
 		prevButton.Disabled = false
 		prevButton.CustomID = commands.QuotesButtonCustomID(
 			models.ID(author.User.ID), page-1,
 		)
 	}
 
+	lastButton := discordgo.Button{
+		Style: discordgo.PrimaryButton,
+		Emoji: &discordgo.ComponentEmoji{
+			Name: "⏩",
+		},
+	}
 	nextButton := discordgo.Button{
 		Style: discordgo.PrimaryButton,
 		Emoji: &discordgo.ComponentEmoji{
@@ -85,9 +105,17 @@ func QuoteList(
 		},
 	}
 	if page == lastPage {
+		lastButton.Disabled = true
+		lastButton.CustomID = "last"
+
 		nextButton.Disabled = true
 		nextButton.CustomID = "next"
 	} else {
+		lastButton.Disabled = false
+		lastButton.CustomID = commands.QuotesEdgeButtonCustomID(
+			models.ID(author.User.ID), lastPage,
+		)
+
 		nextButton.Disabled = false
 		nextButton.CustomID = commands.QuotesButtonCustomID(
 			models.ID(author.User.ID), page+1,
@@ -122,7 +150,7 @@ func QuoteList(
 			Components: []discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
-						prevButton, nextButton,
+						firstButton, prevButton, nextButton, lastButton,
 					},
 				},
 			},
