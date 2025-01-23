@@ -67,18 +67,14 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				q := &models.Quote{
-					Author: &discordgo.Member{
-						User: &discordgo.User{
-							ID: "1",
-						},
-					},
+					AuthorID: "1",
 				}
 				db.EXPECT().GetRandomQuoteInGuild(
 					ctx, models.ID(i.GuildID),
 				).Return(q, nil)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(q.Author.User.ID),
+					ctx, models.ID(i.GuildID), q.AuthorID,
 				).Return(nil, err)
 
 				return printRandomQuote.New(db, d)
@@ -91,11 +87,7 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				quote := &models.Quote{
-					Author: &discordgo.Member{
-						User: &discordgo.User{
-							ID: "1",
-						},
-					},
+					AuthorID: "1",
 				}
 				db.EXPECT().GetRandomQuoteInGuild(
 					ctx, models.ID(i.GuildID),
@@ -108,7 +100,7 @@ func TestService_Exec(t *testing.T) {
 					Nick: "author",
 				}
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(quote.Author.User.ID),
+					ctx, models.ID(i.GuildID), quote.AuthorID,
 				).Return(author, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).Return(err)
@@ -140,11 +132,7 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				quote := &models.Quote{
-					Author: &discordgo.Member{
-						User: &discordgo.User{
-							ID: "1",
-						},
-					},
+					AuthorID:  "1",
 					Text:      "text",
 					Timestamp: time.Now().UTC(),
 				}
@@ -159,7 +147,7 @@ func TestService_Exec(t *testing.T) {
 					Nick: "author",
 				}
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(quote.Author.User.ID),
+					ctx, models.ID(i.GuildID), quote.AuthorID,
 				).Return(author, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).RunAndReturn(
@@ -174,7 +162,7 @@ func TestService_Exec(t *testing.T) {
 							r.Data.Embeds[0].Timestamp,
 						)
 						assert.Equal(
-							t, quote.Author.DisplayName(),
+							t, author.DisplayName(),
 							r.Data.Embeds[0].Footer.Text,
 						)
 

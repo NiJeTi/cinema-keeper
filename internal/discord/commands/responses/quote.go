@@ -34,7 +34,9 @@ func QuoteUserNoQuotes(
 	}
 }
 
-func QuoteRandomQuote(quote *models.Quote) *discordgo.InteractionResponse {
+func QuoteRandomQuote(
+	author *discordgo.Member, quote *models.Quote,
+) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
@@ -44,8 +46,8 @@ func QuoteRandomQuote(quote *models.Quote) *discordgo.InteractionResponse {
 					Timestamp: quote.Timestamp.Format(time.RFC3339),
 					Color:     utils.RandomColor(),
 					Footer: &discordgo.MessageEmbedFooter{
-						Text:    quote.Author.DisplayName(),
-						IconURL: quote.Author.AvatarURL("16x16"),
+						Text:    author.DisplayName(),
+						IconURL: author.AvatarURL("16x16"),
 					},
 				},
 			},
@@ -54,13 +56,11 @@ func QuoteRandomQuote(quote *models.Quote) *discordgo.InteractionResponse {
 }
 
 func QuoteList(
-	quotes []*models.Quote, page int, lastPage int,
+	author *discordgo.Member, quotes []*models.Quote, page, lastPage int,
 ) *discordgo.InteractionResponse {
 	if len(quotes) > commands.QuoteMaxQuotesPerPage {
 		panic("too many quotes per page")
 	}
-
-	author := quotes[0].Author
 
 	prevButton := discordgo.Button{
 		Style: discordgo.PrimaryButton,
@@ -95,10 +95,9 @@ func QuoteList(
 	}
 
 	headerEmbed := &discordgo.MessageEmbed{
-		Description: fmt.Sprintf(
-			"The most stunning quotes of %s", author.Mention(),
-		),
-		Color: utils.RandomColor(),
+		Title:       "Quotes",
+		Description: author.Mention(),
+		Color:       utils.RandomColor(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: author.AvatarURL("64x64"),
 		},
@@ -110,10 +109,6 @@ func QuoteList(
 			Title:     quote.Text,
 			Timestamp: quote.Timestamp.Format(time.RFC3339),
 			Color:     utils.RandomColor(),
-			Footer: &discordgo.MessageEmbedFooter{
-				Text:    quote.AddedBy.DisplayName(),
-				IconURL: quote.AddedBy.AvatarURL("16x16"),
-			},
 		}
 		quoteEmbeds = append(quoteEmbeds, embed)
 	}
@@ -135,19 +130,21 @@ func QuoteList(
 	}
 }
 
-func QuoteAdded(quote *models.Quote) *discordgo.InteractionResponse {
+func QuoteAdded(
+	author *discordgo.Member, quote *models.Quote,
+) *discordgo.InteractionResponse {
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "Quote added",
+					Title:       "New quote",
 					Description: quote.Text,
 					Timestamp:   quote.Timestamp.Format(time.RFC3339),
 					Color:       utils.RandomColor(),
 					Footer: &discordgo.MessageEmbedFooter{
-						Text:    quote.Author.DisplayName(),
-						IconURL: quote.Author.AvatarURL("16x16"),
+						Text:    author.DisplayName(),
+						IconURL: author.AvatarURL("16x16"),
 					},
 				},
 			},

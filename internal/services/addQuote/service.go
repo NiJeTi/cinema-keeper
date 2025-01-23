@@ -38,10 +38,10 @@ func (s *Service) Exec(
 	}
 
 	quote := &models.Quote{
-		Author:    author,
+		AuthorID:  models.ID(author.User.ID),
 		Text:      text,
 		GuildID:   models.ID(i.GuildID),
-		AddedBy:   i.Member,
+		AddedByID: models.ID(i.Member.User.ID),
 		Timestamp: time.Now(),
 	}
 	err = s.db.AddUserQuoteInGuild(ctx, quote)
@@ -49,7 +49,7 @@ func (s *Service) Exec(
 		return fmt.Errorf("failed to save quote: %w", err)
 	}
 
-	err = s.discord.Respond(ctx, i, responses.QuoteAdded(quote))
+	err = s.discord.Respond(ctx, i, responses.QuoteAdded(author, quote))
 	if err != nil {
 		return fmt.Errorf("failed to respond: %w", err)
 	}

@@ -102,10 +102,13 @@ func TestService_Exec(t *testing.T) {
 					ctx, mock.Anything,
 				).RunAndReturn(
 					func(_ context.Context, quote *models.Quote) error {
-						assert.Equal(t, author, quote.Author)
+						assert.Equal(t, author.User.ID, quote.AuthorID.String())
 						assert.Equal(t, text, quote.Text)
 						assert.Equal(t, i.GuildID, quote.GuildID.String())
-						assert.Equal(t, i.Member, quote.AddedBy)
+						assert.Equal(
+							t, i.Member.User.ID,
+							quote.AddedByID.String(),
+						)
 
 						return nil
 					},

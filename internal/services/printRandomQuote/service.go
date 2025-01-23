@@ -53,15 +53,13 @@ func (s *Service) respondQuote(
 	ctx context.Context, i *discordgo.Interaction, quote *models.Quote,
 ) error {
 	author, err := s.discord.GuildMember(
-		ctx, models.ID(i.GuildID), models.ID(quote.Author.User.ID),
+		ctx, models.ID(i.GuildID), quote.AuthorID,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to get author: %w", err)
 	}
 
-	quote.Author = author
-
-	err = s.discord.Respond(ctx, i, responses.QuoteRandomQuote(quote))
+	err = s.discord.Respond(ctx, i, responses.QuoteRandomQuote(author, quote))
 	if err != nil {
 		return fmt.Errorf("failed to respond: %w", err)
 	}

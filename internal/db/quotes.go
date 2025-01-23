@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/nijeti/cinema-keeper/internal/models"
@@ -18,11 +17,11 @@ type QuotesRepo struct {
 }
 
 type quoteRow struct {
-	Timestamp time.Time `db:"timestamp"`
 	AuthorID  string    `db:"author_id"`
-	AddedByID string    `db:"added_by_id"`
-	GuildID   string    `db:"guild_id"`
 	Text      string    `db:"text"`
+	GuildID   string    `db:"guild_id"`
+	AddedByID string    `db:"added_by_id"`
+	Timestamp time.Time `db:"timestamp"`
 }
 
 func NewQuotesRepo(
@@ -144,28 +143,20 @@ func (r *QuotesRepo) AddUserQuoteInGuild(
 
 func (*QuotesRepo) toModel(row quoteRow) *models.Quote {
 	return &models.Quote{
-		Author: &discordgo.Member{
-			User: &discordgo.User{
-				ID: row.AuthorID,
-			},
-		},
-		Text:    row.Text,
-		GuildID: models.ID(row.GuildID),
-		AddedBy: &discordgo.Member{
-			User: &discordgo.User{
-				ID: row.AddedByID,
-			},
-		},
+		AuthorID:  models.ID(row.AuthorID),
+		Text:      row.Text,
+		GuildID:   models.ID(row.GuildID),
+		AddedByID: models.ID(row.AddedByID),
 		Timestamp: row.Timestamp,
 	}
 }
 
 func (*QuotesRepo) fromModel(model *models.Quote) quoteRow {
 	return quoteRow{
-		AuthorID:  model.Author.User.ID,
+		AuthorID:  model.AuthorID.String(),
 		Text:      model.Text,
 		GuildID:   model.GuildID.String(),
-		AddedByID: model.AddedBy.User.ID,
+		AddedByID: model.AddedByID.String(),
 		Timestamp: model.Timestamp,
 	}
 }

@@ -49,7 +49,6 @@ func run() (code int) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	logger.Info("starting")
-	defer logger.Info("shutdown complete")
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -171,5 +170,6 @@ func run() (code int) {
 	// shutdown
 	logger.Info("shutting down")
 
+	logger.Info("shutdown complete")
 	return codeOk
 }
