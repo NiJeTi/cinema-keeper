@@ -1,7 +1,14 @@
 package models
 
-type ID string
+type (
+	ID     string
+	IMDBID string
+)
 
-func (s ID) String() string {
-	return string(s)
+func (id ID) String() string {
+	return string(id)
+}
+
+func (id IMDBID) String() string {
+	return string(id)
 }
