@@ -20,10 +20,16 @@ create table "guild_movies"
     constraint "fk_movies" foreign key ("movie_id")
         references "movies" ("id") on delete cascade
 );
+
+create index "movies_imdb_id" on "movies" ("imdb_id");
+create index "movies_title" on "movies" ("title");
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
+drop index "movies_title";
+drop index "movies_imdb_id";
+
 drop table "guild_movies";
 drop table "movies";
 -- +goose StatementEnd
