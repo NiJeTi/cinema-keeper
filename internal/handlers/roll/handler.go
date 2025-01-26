@@ -24,12 +24,12 @@ func New(
 }
 
 func (h *Handler) Handle(
-	ctx context.Context, i *discordgo.InteractionCreate,
+	ctx context.Context, i *discordgo.Interaction,
 ) error {
 	size := commands.RollOptionSizeDefault
 	count := commands.RollOptionCountDefault
 
-	optionsMap := discordUtils.OptionsMap(i.Interaction)
+	optionsMap := discordUtils.OptionsMap(i)
 	if opt, ok := optionsMap[commands.RollOptionSize]; ok {
 		size = dice.Size(opt.IntValue())
 	}
@@ -37,7 +37,7 @@ func (h *Handler) Handle(
 		count = int(opt.IntValue())
 	}
 
-	err := h.service.Exec(ctx, i.Interaction, size, count)
+	err := h.service.Exec(ctx, i, size, count)
 	if err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}

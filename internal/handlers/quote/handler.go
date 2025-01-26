@@ -31,13 +31,13 @@ func New(
 }
 
 func (h *Handler) Handle(
-	ctx context.Context, i *discordgo.InteractionCreate,
+	ctx context.Context, i *discordgo.Interaction,
 ) error {
-	switch i.Interaction.Type {
+	switch i.Type {
 	case discordgo.InteractionApplicationCommand:
-		return h.handlerNew(ctx, i.Interaction)
+		return h.handlerNew(ctx, i)
 	case discordgo.InteractionMessageComponent:
-		return h.handleContinue(ctx, i.Interaction)
+		return h.handleContinue(ctx, i)
 	default:
 		return nil
 	}

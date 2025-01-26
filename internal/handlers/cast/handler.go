@@ -25,16 +25,16 @@ func New(
 }
 
 func (h *Handler) Handle(
-	ctx context.Context, i *discordgo.InteractionCreate,
+	ctx context.Context, i *discordgo.Interaction,
 ) error {
 	var channelID *models.ID
 
-	optionsMap := discordUtils.OptionsMap(i.Interaction)
+	optionsMap := discordUtils.OptionsMap(i)
 	if opt, ok := optionsMap[commands.CastOptionChannel]; ok {
 		channelID = ptr.To(models.ID(opt.ChannelValue(nil).ID))
 	}
 
-	err := h.service.Exec(ctx, i.Interaction, channelID)
+	err := h.service.Exec(ctx, i, channelID)
 	if err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}

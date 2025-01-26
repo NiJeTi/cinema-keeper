@@ -20,74 +20,68 @@ func TestHandler_Handle(t *testing.T) {
 	ctx := context.Background()
 
 	type setup func(
-		t *testing.T, i *discordgo.InteractionCreate, err error,
+		t *testing.T, i *discordgo.Interaction, err error,
 	) *lock.Handler
 
 	tests := map[string]struct {
-		i     *discordgo.InteractionCreate
+		i     *discordgo.Interaction
 		err   error
 		setup setup
 	}{
 		"service_error": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{},
-				},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{},
 			},
 			err: errors.New("service error"),
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, err error,
+				t *testing.T, i *discordgo.Interaction, err error,
 			) *lock.Handler {
 				s := mocks.NewMockService(t)
 
 				var limit *int
-				s.EXPECT().Exec(ctx, i.Interaction, limit).Return(err)
+				s.EXPECT().Exec(ctx, i, limit).Return(err)
 
 				return lock.New(s)
 			},
 		},
 		"success_limit_nil": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{},
-				},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{},
 			},
 			err: nil,
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, _ error,
+				t *testing.T, i *discordgo.Interaction, _ error,
 			) *lock.Handler {
 				s := mocks.NewMockService(t)
 
 				var limit *int
-				s.EXPECT().Exec(ctx, i.Interaction, limit).Return(nil)
+				s.EXPECT().Exec(ctx, i, limit).Return(nil)
 
 				return lock.New(s)
 			},
 		},
 		"success": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{
-						Options: []*discordgo.ApplicationCommandInteractionDataOption{
-							{
-								Name:  commands.LockOptionLimit,
-								Type:  discordgo.ApplicationCommandOptionInteger,
-								Value: float64(1),
-							},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{
+					Options: []*discordgo.ApplicationCommandInteractionDataOption{
+						{
+							Name:  commands.LockOptionLimit,
+							Type:  discordgo.ApplicationCommandOptionInteger,
+							Value: float64(1),
 						},
 					},
 				},
 			},
 			err: nil,
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, _ error,
+				t *testing.T, i *discordgo.Interaction, _ error,
 			) *lock.Handler {
 				s := mocks.NewMockService(t)
 
-				s.EXPECT().Exec(ctx, i.Interaction, ptr.To(1)).Return(nil)
+				s.EXPECT().Exec(ctx, i, ptr.To(1)).Return(nil)
 
 				return lock.New(s)
 			},

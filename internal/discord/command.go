@@ -7,7 +7,7 @@ import (
 )
 
 type Handler interface {
-	Handle(ctx context.Context, i *discordgo.InteractionCreate) error
+	Handle(ctx context.Context, i *discordgo.Interaction) error
 }
 
 type Command struct {

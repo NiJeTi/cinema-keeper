@@ -79,6 +79,10 @@ func (r *Router) SetCommands(commands ...Command) error {
 	for _, cmd := range commands {
 		name := cmd.Description.Name
 
+		if _, ok := r.commands[name]; ok {
+			return fmt.Errorf("command '%s' already exists", name)
+		}
+
 		createdCmd, err := r.session.ApplicationCommandCreate(
 			r.session.State.Application.ID,
 			r.cfg.GuildID,
@@ -167,7 +171,7 @@ func (r *Router) handle(_ *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	err = cmd.Handler.Handle(r.ctx, i)
+	err = cmd.Handler.Handle(r.ctx, i.Interaction)
 	if err != nil {
 		r.logger.ErrorContext(
 			r.ctx, "failed to handle command",
