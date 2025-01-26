@@ -21,75 +21,69 @@ func TestHandler_Handle(t *testing.T) {
 	ctx := context.Background()
 
 	type setup func(
-		t *testing.T, i *discordgo.InteractionCreate, err error,
+		t *testing.T, i *discordgo.Interaction, err error,
 	) *cast.Handler
 
 	tests := map[string]struct {
-		i     *discordgo.InteractionCreate
+		i     *discordgo.Interaction
 		err   error
 		setup setup
 	}{
 		"service_error": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{},
-				},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{},
 			},
 			err: errors.New("service error"),
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, err error,
+				t *testing.T, i *discordgo.Interaction, err error,
 			) *cast.Handler {
 				s := mocks.NewMockService(t)
 
 				var channelID *models.ID
-				s.EXPECT().Exec(ctx, i.Interaction, channelID).Return(err)
+				s.EXPECT().Exec(ctx, i, channelID).Return(err)
 
 				return cast.New(s)
 			},
 		},
 		"success_channel_id_nil": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{},
-				},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{},
 			},
 			err: nil,
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, _ error,
+				t *testing.T, i *discordgo.Interaction, _ error,
 			) *cast.Handler {
 				s := mocks.NewMockService(t)
 
 				var channelID *models.ID
-				s.EXPECT().Exec(ctx, i.Interaction, channelID).Return(nil)
+				s.EXPECT().Exec(ctx, i, channelID).Return(nil)
 
 				return cast.New(s)
 			},
 		},
 		"success": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{
-						Options: []*discordgo.ApplicationCommandInteractionDataOption{
-							{
-								Name:  commands.CastOptionChannel,
-								Type:  discordgo.ApplicationCommandOptionChannel,
-								Value: "1",
-							},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{
+					Options: []*discordgo.ApplicationCommandInteractionDataOption{
+						{
+							Name:  commands.CastOptionChannel,
+							Type:  discordgo.ApplicationCommandOptionChannel,
+							Value: "1",
 						},
 					},
 				},
 			},
 			err: nil,
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, _ error,
+				t *testing.T, i *discordgo.Interaction, _ error,
 			) *cast.Handler {
 				s := mocks.NewMockService(t)
 
 				s.EXPECT().Exec(
-					ctx, i.Interaction, ptr.To(models.ID("1")),
+					ctx, i, ptr.To(models.ID("1")),
 				).Return(nil)
 
 				return cast.New(s)

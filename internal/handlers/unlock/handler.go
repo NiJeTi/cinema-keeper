@@ -20,9 +20,9 @@ func New(
 }
 
 func (h *Handler) Handle(
-	ctx context.Context, i *discordgo.InteractionCreate,
+	ctx context.Context, i *discordgo.Interaction,
 ) error {
-	err := h.service.Exec(ctx, i.Interaction)
+	err := h.service.Exec(ctx, i)
 	if err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}

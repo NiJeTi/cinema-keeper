@@ -24,16 +24,16 @@ func New(
 }
 
 func (h *Handler) Handle(
-	ctx context.Context, i *discordgo.InteractionCreate,
+	ctx context.Context, i *discordgo.Interaction,
 ) error {
 	var limit *int
 
-	optionsMap := discordUtils.OptionsMap(i.Interaction)
+	optionsMap := discordUtils.OptionsMap(i)
 	if opt, ok := optionsMap[commands.LockOptionLimit]; ok {
 		limit = ptr.To(int(opt.IntValue()))
 	}
 
-	err := h.service.Exec(ctx, i.Interaction, limit)
+	err := h.service.Exec(ctx, i, limit)
 	if err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}

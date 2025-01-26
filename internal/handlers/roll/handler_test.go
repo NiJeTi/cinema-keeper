@@ -20,30 +20,28 @@ func TestHandler_Handle(t *testing.T) {
 	ctx := context.Background()
 
 	type setup func(
-		t *testing.T, i *discordgo.InteractionCreate, err error,
+		t *testing.T, i *discordgo.Interaction, err error,
 	) *roll.Handler
 
 	tests := map[string]struct {
-		i     *discordgo.InteractionCreate
+		i     *discordgo.Interaction
 		err   error
 		setup setup
 	}{
 		"service_error": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{},
-				},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{},
 			},
 			err: errors.New("service error"),
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, err error,
+				t *testing.T, i *discordgo.Interaction, err error,
 			) *roll.Handler {
 				s := mocks.NewMockService(t)
 
 				s.EXPECT().Exec(
 					ctx,
-					i.Interaction,
+					i,
 					commands.RollOptionSizeDefault,
 					commands.RollOptionCountDefault,
 				).Return(err)
@@ -52,21 +50,19 @@ func TestHandler_Handle(t *testing.T) {
 			},
 		},
 		"success_no_options": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{},
-				},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{},
 			},
 			err: nil,
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, _ error,
+				t *testing.T, i *discordgo.Interaction, _ error,
 			) *roll.Handler {
 				s := mocks.NewMockService(t)
 
 				s.EXPECT().Exec(
 					ctx,
-					i.Interaction,
+					i,
 					commands.RollOptionSizeDefault,
 					commands.RollOptionCountDefault,
 				).Return(nil)
@@ -75,33 +71,31 @@ func TestHandler_Handle(t *testing.T) {
 			},
 		},
 		"success": {
-			i: &discordgo.InteractionCreate{
-				Interaction: &discordgo.Interaction{
-					Type: discordgo.InteractionApplicationCommand,
-					Data: discordgo.ApplicationCommandInteractionData{
-						Options: []*discordgo.ApplicationCommandInteractionDataOption{
-							{
-								Name:  commands.RollOptionSize,
-								Type:  discordgo.ApplicationCommandOptionInteger,
-								Value: float64(dice.D20),
-							},
-							{
-								Name:  commands.RollOptionCount,
-								Type:  discordgo.ApplicationCommandOptionInteger,
-								Value: float64(1),
-							},
+			i: &discordgo.Interaction{
+				Type: discordgo.InteractionApplicationCommand,
+				Data: discordgo.ApplicationCommandInteractionData{
+					Options: []*discordgo.ApplicationCommandInteractionDataOption{
+						{
+							Name:  commands.RollOptionSize,
+							Type:  discordgo.ApplicationCommandOptionInteger,
+							Value: float64(dice.D20),
+						},
+						{
+							Name:  commands.RollOptionCount,
+							Type:  discordgo.ApplicationCommandOptionInteger,
+							Value: float64(1),
 						},
 					},
 				},
 			},
 			err: nil,
 			setup: func(
-				t *testing.T, i *discordgo.InteractionCreate, _ error,
+				t *testing.T, i *discordgo.Interaction, _ error,
 			) *roll.Handler {
 				s := mocks.NewMockService(t)
 
 				s.EXPECT().Exec(
-					ctx, i.Interaction, dice.D20, 1,
+					ctx, i, dice.D20, 1,
 				).Return(nil)
 
 				return roll.New(s)

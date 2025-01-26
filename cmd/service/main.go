@@ -16,6 +16,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/handlers/cast"
 	"github.com/nijeti/cinema-keeper/internal/handlers/lock"
+	"github.com/nijeti/cinema-keeper/internal/handlers/movie"
 	"github.com/nijeti/cinema-keeper/internal/handlers/quote"
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
@@ -131,6 +132,10 @@ func run() (code int) {
 		discord.Command{
 			Description: commands.Roll(),
 			Handler:     roll.New(rollSvc),
+		},
+		discord.Command{
+			Description: commands.Movie(),
+			Handler:     movie.New(),
 		},
 	)
 	if err != nil {

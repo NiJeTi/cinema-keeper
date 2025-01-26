@@ -12,7 +12,8 @@ func ParseCommand(
 	i *discordgo.Interaction,
 ) (command string, subCommand string, err error) {
 	switch i.Type {
-	case discordgo.InteractionApplicationCommand:
+	case discordgo.InteractionApplicationCommand,
+		discordgo.InteractionApplicationCommandAutocomplete:
 		return parseInteraction(i.ApplicationCommandData())
 	case discordgo.InteractionMessageComponent:
 		return parseComponentInteraction(i.MessageComponentData())

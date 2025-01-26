@@ -16,7 +16,7 @@ func TestHandler_Handle(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	i := &discordgo.InteractionCreate{}
+	i := &discordgo.Interaction{}
 
 	type setup func(t *testing.T, err error) *unlock.Handler
 
@@ -29,7 +29,7 @@ func TestHandler_Handle(t *testing.T) {
 			setup: func(t *testing.T, err error) *unlock.Handler {
 				s := mocks.NewMockService(t)
 
-				s.EXPECT().Exec(ctx, i.Interaction).Return(err)
+				s.EXPECT().Exec(ctx, i).Return(err)
 
 				return unlock.New(s)
 			},
@@ -39,7 +39,7 @@ func TestHandler_Handle(t *testing.T) {
 			setup: func(t *testing.T, _ error) *unlock.Handler {
 				s := mocks.NewMockService(t)
 
-				s.EXPECT().Exec(ctx, i.Interaction).Return(nil)
+				s.EXPECT().Exec(ctx, i).Return(nil)
 
 				return unlock.New(s)
 			},
