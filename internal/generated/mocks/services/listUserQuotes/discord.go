@@ -26,7 +26,7 @@ func (_m *MockDiscord) EXPECT() *MockDiscord_Expecter {
 }
 
 // GuildMember provides a mock function with given fields: ctx, guildID, userID
-func (_m *MockDiscord) GuildMember(ctx context.Context, guildID models.ID, userID models.ID) (*discordgo.Member, error) {
+func (_m *MockDiscord) GuildMember(ctx context.Context, guildID models.DiscordID, userID models.DiscordID) (*discordgo.Member, error) {
 	ret := _m.Called(ctx, guildID, userID)
 
 	if len(ret) == 0 {
@@ -35,10 +35,10 @@ func (_m *MockDiscord) GuildMember(ctx context.Context, guildID models.ID, userI
 
 	var r0 *discordgo.Member
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) (*discordgo.Member, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) (*discordgo.Member, error)); ok {
 		return rf(ctx, guildID, userID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) *discordgo.Member); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) *discordgo.Member); ok {
 		r0 = rf(ctx, guildID, userID)
 	} else {
 		if ret.Get(0) != nil {
@@ -46,7 +46,7 @@ func (_m *MockDiscord) GuildMember(ctx context.Context, guildID models.ID, userI
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID, models.ID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID, models.DiscordID) error); ok {
 		r1 = rf(ctx, guildID, userID)
 	} else {
 		r1 = ret.Error(1)
@@ -62,15 +62,15 @@ type MockDiscord_GuildMember_Call struct {
 
 // GuildMember is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
-//   - userID models.ID
+//   - guildID models.DiscordID
+//   - userID models.DiscordID
 func (_e *MockDiscord_Expecter) GuildMember(ctx interface{}, guildID interface{}, userID interface{}) *MockDiscord_GuildMember_Call {
 	return &MockDiscord_GuildMember_Call{Call: _e.mock.On("GuildMember", ctx, guildID, userID)}
 }
 
-func (_c *MockDiscord_GuildMember_Call) Run(run func(ctx context.Context, guildID models.ID, userID models.ID)) *MockDiscord_GuildMember_Call {
+func (_c *MockDiscord_GuildMember_Call) Run(run func(ctx context.Context, guildID models.DiscordID, userID models.DiscordID)) *MockDiscord_GuildMember_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(models.DiscordID))
 	})
 	return _c
 }
@@ -80,7 +80,7 @@ func (_c *MockDiscord_GuildMember_Call) Return(_a0 *discordgo.Member, _a1 error)
 	return _c
 }
 
-func (_c *MockDiscord_GuildMember_Call) RunAndReturn(run func(context.Context, models.ID, models.ID) (*discordgo.Member, error)) *MockDiscord_GuildMember_Call {
+func (_c *MockDiscord_GuildMember_Call) RunAndReturn(run func(context.Context, models.DiscordID, models.DiscordID) (*discordgo.Member, error)) *MockDiscord_GuildMember_Call {
 	_c.Call.Return(run)
 	return _c
 }

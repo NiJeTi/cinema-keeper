@@ -26,7 +26,7 @@ func (s *Service) Exec(
 	ctx context.Context, i *discordgo.Interaction, limit *int,
 ) error {
 	voiceState, err := s.discord.UserVoiceState(
-		ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+		ctx, models.DiscordID(i.GuildID), models.DiscordID(i.Member.User.ID),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to get user voice channel: %w", err)
@@ -42,7 +42,10 @@ func (s *Service) Exec(
 	}
 
 	limit, err = s.verifyLimit(
-		ctx, limit, models.ID(i.GuildID), models.ID(voiceState.ChannelID),
+		ctx,
+		limit,
+		models.DiscordID(i.GuildID),
+		models.DiscordID(voiceState.ChannelID),
 	)
 	if err != nil {
 		return err
@@ -59,7 +62,7 @@ func (s *Service) Exec(
 
 	err = s.discord.EditChannel(
 		ctx,
-		models.ID(voiceState.ChannelID),
+		models.DiscordID(voiceState.ChannelID),
 		&discordgo.ChannelEdit{UserLimit: *limit},
 	)
 	if err != nil {
@@ -75,7 +78,10 @@ func (s *Service) Exec(
 }
 
 func (s *Service) verifyLimit(
-	ctx context.Context, limit *int, guildID models.ID, channelID models.ID,
+	ctx context.Context,
+	limit *int,
+	guildID models.DiscordID,
+	channelID models.DiscordID,
 ) (*int, error) {
 	if limit != nil {
 		return limit, nil

@@ -41,10 +41,10 @@ func (a *Adapter) Respond(
 }
 
 func (a *Adapter) GuildMember(
-	ctx context.Context, guildID models.ID, userID models.ID,
+	ctx context.Context, guildID models.DiscordID, userID models.DiscordID,
 ) (*discordgo.Member, error) {
 	member, err := a.session.GuildMember(
-		guildID.String(), userID.String(), discordgo.WithContext(ctx),
+		string(guildID), string(userID), discordgo.WithContext(ctx),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get guild member: %w", err)
@@ -54,10 +54,10 @@ func (a *Adapter) GuildMember(
 }
 
 func (a *Adapter) Channel(
-	ctx context.Context, channelID models.ID,
+	ctx context.Context, channelID models.DiscordID,
 ) (*discordgo.Channel, error) {
 	channel, err := a.session.Channel(
-		channelID.String(), discordgo.WithContext(ctx),
+		string(channelID), discordgo.WithContext(ctx),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get channel: %w", err)
@@ -67,24 +67,24 @@ func (a *Adapter) Channel(
 }
 
 func (a *Adapter) UserVoiceState(
-	_ context.Context, guildID models.ID, userID models.ID,
+	_ context.Context, guildID models.DiscordID, userID models.DiscordID,
 ) (*discordgo.VoiceState, error) {
 	voiceState, err := a.session.State.VoiceState(
-		guildID.String(), userID.String(),
+		string(guildID), string(userID),
 	)
 
 	switch {
 	case err == nil:
 		return voiceState, nil
 	case errors.Is(err, discordgo.ErrStateNotFound):
-		return nil, nil //nolint:nilnil // nil channel ID is a valid result
+		return nil, nil //nolint:nilnil // nil channel DiscordID is a valid result
 	default:
 		return nil, fmt.Errorf("failed to get user voice state: %w", err)
 	}
 }
 
 func (a *Adapter) VoiceChannelUsers(
-	ctx context.Context, guildID models.ID, channelID models.ID,
+	ctx context.Context, guildID models.DiscordID, channelID models.DiscordID,
 ) ([]*discordgo.Member, error) {
 	var users []*discordgo.Member
 
@@ -92,7 +92,7 @@ func (a *Adapter) VoiceChannelUsers(
 	for {
 		const maxMembers = 1000
 		members, err := a.session.GuildMembers(
-			guildID.String(), after, maxMembers, discordgo.WithContext(ctx),
+			string(guildID), after, maxMembers, discordgo.WithContext(ctx),
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get guild members: %w", err)
@@ -104,7 +104,7 @@ func (a *Adapter) VoiceChannelUsers(
 
 		for _, member := range members {
 			voiceState, err := a.session.State.VoiceState(
-				guildID.String(), member.User.ID,
+				string(guildID), member.User.ID,
 			)
 			if err != nil {
 				if errors.Is(err, discordgo.ErrStateNotFound) {
@@ -113,7 +113,7 @@ func (a *Adapter) VoiceChannelUsers(
 				return nil, fmt.Errorf("failed to get voice state: %w", err)
 			}
 
-			if voiceState.ChannelID != channelID.String() {
+			if voiceState.ChannelID != string(channelID) {
 				continue
 			}
 
@@ -127,10 +127,11 @@ func (a *Adapter) VoiceChannelUsers(
 }
 
 func (a *Adapter) EditChannel(
-	ctx context.Context, channelID models.ID, edit *discordgo.ChannelEdit,
+	ctx context.Context, channelID models.DiscordID,
+	edit *discordgo.ChannelEdit,
 ) error {
 	_, err := a.session.ChannelEdit(
-		channelID.String(), edit, discordgo.WithContext(ctx),
+		string(channelID), edit, discordgo.WithContext(ctx),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to edit channel: %w", err)
@@ -143,7 +144,7 @@ func (a *Adapter) EditChannel(
 // Use this method to remove user limit.
 // Package "discordgo" has a flaw which disallows to do it with EditChannel.
 func (a *Adapter) ChannelUnsetUserLimit(
-	ctx context.Context, channelID models.ID,
+	ctx context.Context, channelID models.DiscordID,
 ) error {
 	type request struct {
 		UserLimit int `json:"user_limit"`
@@ -151,9 +152,9 @@ func (a *Adapter) ChannelUnsetUserLimit(
 
 	_, err := a.session.RequestWithBucketID(
 		http.MethodPatch,
-		discordgo.EndpointChannel(channelID.String()),
+		discordgo.EndpointChannel(string(channelID)),
 		request{UserLimit: 0},
-		discordgo.EndpointChannel(channelID.String()),
+		discordgo.EndpointChannel(string(channelID)),
 		discordgo.WithContext(ctx),
 	)
 	if err != nil {

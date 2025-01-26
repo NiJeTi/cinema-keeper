@@ -50,7 +50,9 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(nil, err)
 
 				return addQuote.New(d, db)
@@ -63,7 +65,9 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				db.EXPECT().AddUserQuoteInGuild(ctx, mock.Anything).Return(err)
@@ -78,7 +82,9 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				db.EXPECT().AddUserQuoteInGuild(ctx, mock.Anything).Return(nil)
@@ -95,19 +101,20 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				db.EXPECT().AddUserQuoteInGuild(
 					ctx, mock.Anything,
 				).RunAndReturn(
 					func(_ context.Context, quote *models.Quote) error {
-						assert.Equal(t, author.User.ID, quote.AuthorID.String())
+						assert.Equal(t, author.User.ID, string(quote.AuthorID))
 						assert.Equal(t, text, quote.Text)
-						assert.Equal(t, i.GuildID, quote.GuildID.String())
+						assert.Equal(t, i.GuildID, string(quote.GuildID))
 						assert.Equal(
-							t, i.Member.User.ID,
-							quote.AddedByID.String(),
+							t, i.Member.User.ID, string(quote.AddedByID),
 						)
 
 						return nil
@@ -125,7 +132,7 @@ func TestService_Exec(t *testing.T) {
 		t.Run(
 			name, func(t *testing.T) {
 				s := tt.setup(t, tt.err)
-				err := s.Exec(ctx, i, models.ID(author.User.ID), text)
+				err := s.Exec(ctx, i, models.DiscordID(author.User.ID), text)
 				assert.ErrorIs(t, err, tt.err)
 			},
 		)

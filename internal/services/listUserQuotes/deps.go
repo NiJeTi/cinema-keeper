@@ -16,19 +16,21 @@ type discord interface {
 	) error
 
 	GuildMember(
-		ctx context.Context, guildID models.ID, userID models.ID,
+		ctx context.Context, guildID models.DiscordID, userID models.DiscordID,
 	) (*discordgo.Member, error)
 }
 
 type db interface {
 	CountUserQuotesInGuild(
-		ctx context.Context, guildID models.ID, authorID models.ID,
+		ctx context.Context,
+		guildID models.DiscordID,
+		authorID models.DiscordID,
 	) (int, error)
 
 	GetUserQuotesInGuild(
 		ctx context.Context,
-		guildID models.ID,
-		authorID models.ID,
+		guildID models.DiscordID,
+		authorID models.DiscordID,
 		offset, limit int,
 	) ([]*models.Quote, error)
 }

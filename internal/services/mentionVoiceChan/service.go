@@ -24,7 +24,7 @@ func New(
 }
 
 func (s *Service) Exec(
-	ctx context.Context, i *discordgo.Interaction, channelID *models.ID,
+	ctx context.Context, i *discordgo.Interaction, channelID *models.DiscordID,
 ) error {
 	channelID, err := s.verifyChannelID(ctx, i, channelID)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *Service) Exec(
 	}
 
 	users, err := s.discord.VoiceChannelUsers(
-		ctx, models.ID(i.GuildID), *channelID,
+		ctx, models.DiscordID(i.GuildID), *channelID,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to get voice channel users: %w", err)
@@ -64,14 +64,14 @@ func (s *Service) Exec(
 }
 
 func (s *Service) verifyChannelID(
-	ctx context.Context, i *discordgo.Interaction, channelID *models.ID,
-) (*models.ID, error) {
+	ctx context.Context, i *discordgo.Interaction, channelID *models.DiscordID,
+) (*models.DiscordID, error) {
 	if channelID != nil {
 		return channelID, nil
 	}
 
 	voiceState, err := s.discord.UserVoiceState(
-		ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+		ctx, models.DiscordID(i.GuildID), models.DiscordID(i.Member.User.ID),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user voice channel: %w", err)
@@ -80,5 +80,5 @@ func (s *Service) verifyChannelID(
 	if voiceState == nil {
 		return nil, nil //nolint:nilnil // nil is a valid value
 	}
-	return ptr.To(models.ID(voiceState.ChannelID)), nil
+	return ptr.To(models.DiscordID(voiceState.ChannelID)), nil
 }

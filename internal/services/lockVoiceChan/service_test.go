@@ -50,7 +50,9 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, err)
 
 				return lockVoiceChan.New(d)
@@ -67,7 +69,9 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -89,11 +93,15 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(nil, err)
 
 				return lockVoiceChan.New(d)
@@ -111,14 +119,18 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := make(
 					[]*discordgo.Member, commands.LockOptionLimitMaxValue+1,
 				)
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().Respond(
@@ -140,17 +152,21 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := make([]*discordgo.Member, 1)
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().EditChannel(
 					ctx,
-					models.ID(vs.ChannelID),
+					models.DiscordID(vs.ChannelID),
 					&discordgo.ChannelEdit{UserLimit: len(users)},
 				).Return(err)
 
@@ -169,17 +185,21 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := make([]*discordgo.Member, 1)
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().EditChannel(
 					ctx,
-					models.ID(vs.ChannelID),
+					models.DiscordID(vs.ChannelID),
 					&discordgo.ChannelEdit{UserLimit: len(users)},
 				).Return(nil)
 
@@ -201,7 +221,9 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -223,14 +245,18 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := make(
 					[]*discordgo.Member, commands.LockOptionLimitMaxValue+1,
 				)
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().Respond(
@@ -252,17 +278,21 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := make([]*discordgo.Member, 1)
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().EditChannel(
 					ctx,
-					models.ID(vs.ChannelID),
+					models.DiscordID(vs.ChannelID),
 					&discordgo.ChannelEdit{UserLimit: len(users)},
 				).Return(nil)
 
@@ -285,12 +315,14 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().EditChannel(
 					ctx,
-					models.ID(vs.ChannelID),
+					models.DiscordID(vs.ChannelID),
 					&discordgo.ChannelEdit{UserLimit: *args.limit},
 				).Return(nil)
 

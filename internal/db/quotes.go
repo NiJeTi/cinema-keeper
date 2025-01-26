@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -12,11 +11,11 @@ import (
 )
 
 type QuotesRepo struct {
-	logger *slog.Logger
-	db     *sqlx.DB
+	repoBase
 }
 
 type quoteRow struct {
+	ID        int64     `db:"id"`
 	AuthorID  string    `db:"author_id"`
 	Text      string    `db:"text"`
 	GuildID   string    `db:"guild_id"`
@@ -25,17 +24,17 @@ type quoteRow struct {
 }
 
 func NewQuotesRepo(
-	logger *slog.Logger,
 	db *sqlx.DB,
 ) *QuotesRepo {
 	return &QuotesRepo{
-		logger: logger.With("repo", "quotes"),
-		db:     db,
+		repoBase: repoBase{
+			db: db,
+		},
 	}
 }
 
 func (r *QuotesRepo) CountUserQuotesInGuild(
-	ctx context.Context, guildID models.ID, authorID models.ID,
+	ctx context.Context, guildID models.DiscordID, authorID models.DiscordID,
 ) (int, error) {
 	const query = `
 		select count(*) from quotes
@@ -54,8 +53,8 @@ func (r *QuotesRepo) CountUserQuotesInGuild(
 
 func (r *QuotesRepo) GetUserQuotesInGuild(
 	ctx context.Context,
-	guildID models.ID,
-	authorID models.ID,
+	guildID models.DiscordID,
+	authorID models.DiscordID,
 	offset, limit int,
 ) ([]*models.Quote, error) {
 	if offset < 0 {
@@ -89,7 +88,7 @@ func (r *QuotesRepo) GetUserQuotesInGuild(
 }
 
 func (r *QuotesRepo) GetRandomQuoteInGuild(
-	ctx context.Context, guildID models.ID,
+	ctx context.Context, guildID models.DiscordID,
 ) (*models.Quote, error) {
 	const query = `
 		select author_id, text, guild_id, added_by_id, timestamp from quotes
@@ -121,8 +120,8 @@ func (r *QuotesRepo) AddUserQuoteInGuild(
 
 	row := r.fromModel(quote)
 
-	return withTransaction(
-		ctx, r.db, func(ctx context.Context, tx *sqlx.Tx) error {
+	return r.withTransaction(
+		ctx, func(ctx context.Context, tx *sqlx.Tx) error {
 			_, err := tx.ExecContext(
 				ctx,
 				query,
@@ -143,20 +142,20 @@ func (r *QuotesRepo) AddUserQuoteInGuild(
 
 func (*QuotesRepo) toModel(row quoteRow) *models.Quote {
 	return &models.Quote{
-		AuthorID:  models.ID(row.AuthorID),
+		AuthorID:  models.DiscordID(row.AuthorID),
 		Text:      row.Text,
-		GuildID:   models.ID(row.GuildID),
-		AddedByID: models.ID(row.AddedByID),
+		GuildID:   models.DiscordID(row.GuildID),
+		AddedByID: models.DiscordID(row.AddedByID),
 		Timestamp: row.Timestamp,
 	}
 }
 
 func (*QuotesRepo) fromModel(model *models.Quote) quoteRow {
 	return quoteRow{
-		AuthorID:  model.AuthorID.String(),
+		AuthorID:  string(model.AuthorID),
 		Text:      model.Text,
-		GuildID:   model.GuildID.String(),
-		AddedByID: model.AddedByID.String(),
+		GuildID:   string(model.GuildID),
+		AddedByID: string(model.AddedByID),
 		Timestamp: model.Timestamp,
 	}
 }

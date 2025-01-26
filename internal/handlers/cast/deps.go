@@ -10,6 +10,8 @@ import (
 
 type service interface {
 	Exec(
-		ctx context.Context, i *discordgo.Interaction, channelID *models.ID,
+		ctx context.Context,
+		i *discordgo.Interaction,
+		channelID *models.DiscordID,
 	) error
 }

@@ -24,7 +24,7 @@ func New(
 
 func (s *Service) Exec(ctx context.Context, i *discordgo.Interaction) error {
 	voiceState, err := s.discord.UserVoiceState(
-		ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+		ctx, models.DiscordID(i.GuildID), models.DiscordID(i.Member.User.ID),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to get user voice channel: %w", err)
@@ -39,7 +39,9 @@ func (s *Service) Exec(ctx context.Context, i *discordgo.Interaction) error {
 		return nil
 	}
 
-	err = s.discord.ChannelUnsetUserLimit(ctx, models.ID(voiceState.ChannelID))
+	err = s.discord.ChannelUnsetUserLimit(
+		ctx, models.DiscordID(voiceState.ChannelID),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to unset user limit: %w", err)
 	}

@@ -28,8 +28,10 @@ func New(config Config) *Adapter {
 func (a *Adapter) MoviesByTitle(
 	ctx context.Context, title string,
 ) ([]models.MovieBase, error) {
+	url := a.baseURL() + "&s=" + title
+
 	var dto search
-	if err := a.makeRequest(ctx, a.baseURL()+"&s="+title, &dto); err != nil {
+	if err := a.makeRequest(ctx, url, &dto); err != nil {
 		return nil, err
 	}
 
@@ -37,10 +39,12 @@ func (a *Adapter) MoviesByTitle(
 }
 
 func (a *Adapter) MovieByID(
-	ctx context.Context, id string,
+	ctx context.Context, id models.ImdbID,
 ) (*models.MovieMeta, error) {
+	url := a.baseURL() + "&i=" + string(id)
+
 	var dto movie
-	if err := a.makeRequest(ctx, a.baseURL()+"&i="+id, &dto); err != nil {
+	if err := a.makeRequest(ctx, url, &dto); err != nil {
 		return nil, err
 	}
 

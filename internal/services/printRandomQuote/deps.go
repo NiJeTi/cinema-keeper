@@ -10,13 +10,13 @@ import (
 
 type db interface {
 	GetRandomQuoteInGuild(
-		ctx context.Context, guildID models.ID,
+		ctx context.Context, guildID models.DiscordID,
 	) (*models.Quote, error)
 }
 
 type discord interface {
 	GuildMember(
-		ctx context.Context, guildID models.ID, userID models.ID,
+		ctx context.Context, guildID models.DiscordID, userID models.DiscordID,
 	) (*discordgo.Member, error)
 
 	Respond(

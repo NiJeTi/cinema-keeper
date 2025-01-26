@@ -42,8 +42,8 @@ func TestService_Exec(t *testing.T) {
 
 				d.EXPECT().UserVoiceState(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, err)
 
 				return unlockVoiceChan.New(d)
@@ -56,8 +56,8 @@ func TestService_Exec(t *testing.T) {
 
 				d.EXPECT().UserVoiceState(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -75,12 +75,12 @@ func TestService_Exec(t *testing.T) {
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().ChannelUnsetUserLimit(
-					ctx, models.ID(vs.ChannelID),
+					ctx, models.DiscordID(vs.ChannelID),
 				).Return(err)
 
 				return unlockVoiceChan.New(d)
@@ -94,12 +94,12 @@ func TestService_Exec(t *testing.T) {
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().ChannelUnsetUserLimit(
-					ctx, models.ID(vs.ChannelID),
+					ctx, models.DiscordID(vs.ChannelID),
 				).Return(nil)
 
 				d.EXPECT().Respond(ctx, i, responses.UnlockDone()).Return(err)
@@ -114,8 +114,8 @@ func TestService_Exec(t *testing.T) {
 
 				d.EXPECT().UserVoiceState(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -133,12 +133,12 @@ func TestService_Exec(t *testing.T) {
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(i.Member.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().ChannelUnsetUserLimit(
-					ctx, models.ID(vs.ChannelID),
+					ctx, models.DiscordID(vs.ChannelID),
 				).Return(nil)
 
 				d.EXPECT().Respond(ctx, i, responses.UnlockDone()).Return(nil)

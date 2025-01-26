@@ -16,7 +16,7 @@ type discord interface {
 	) error
 
 	GuildMember(
-		ctx context.Context, guildID models.ID, userID models.ID,
+		ctx context.Context, guildID models.DiscordID, userID models.DiscordID,
 	) (*discordgo.Member, error)
 }
 

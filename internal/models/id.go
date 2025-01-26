@@ -1,14 +1,7 @@
 package models
 
 type (
-	ID     string
-	IMDBID string
+	ID        int64
+	DiscordID string
+	ImdbID    string
 )
-
-func (id ID) String() string {
-	return string(id)
-}
-
-func (id IMDBID) String() string {
-	return string(id)
-}

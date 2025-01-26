@@ -3,9 +3,10 @@
 create table "movies"
 (
     "id"         serial primary key,
-    "imdb_id"    varchar(9)   not null unique,
+    "imdb_id"    varchar(16)  not null unique,
     "title"      varchar(100) not null,
-    "year"       integer      not null,
+    "year"       varchar(10)  not null,
+    "genre"      varchar(50)  not null,
     "director"   varchar(100) not null,
     "plot"       text         not null,
     "poster_url" varchar(256) not null
@@ -19,7 +20,7 @@ create table "guild_movies"
     "added_by_id" varchar(20) not null,
     "added_at"    timestamptz not null,
     "watched_at"  timestamptz,
-    "rating"      smallint check ("rating" in (-1, 1)),
+    "rating"      int2 check ("rating" in (-1, 1)),
 
     constraint "fk_movies" foreign key ("movie_id")
         references "movies" ("id") on delete cascade

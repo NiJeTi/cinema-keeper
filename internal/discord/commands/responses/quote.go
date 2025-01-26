@@ -83,12 +83,12 @@ func QuoteList(
 	} else {
 		firstButton.Disabled = false
 		firstButton.CustomID = commands.QuotesEdgeButtonCustomID(
-			models.ID(author.User.ID), 0,
+			models.DiscordID(author.User.ID), 0,
 		)
 
 		prevButton.Disabled = false
 		prevButton.CustomID = commands.QuotesButtonCustomID(
-			models.ID(author.User.ID), page-1,
+			models.DiscordID(author.User.ID), page-1,
 		)
 	}
 
@@ -113,12 +113,12 @@ func QuoteList(
 	} else {
 		lastButton.Disabled = false
 		lastButton.CustomID = commands.QuotesEdgeButtonCustomID(
-			models.ID(author.User.ID), lastPage,
+			models.DiscordID(author.User.ID), lastPage,
 		)
 
 		nextButton.Disabled = false
 		nextButton.CustomID = commands.QuotesButtonCustomID(
-			models.ID(author.User.ID), page+1,
+			models.DiscordID(author.User.ID), page+1,
 		)
 	}
 

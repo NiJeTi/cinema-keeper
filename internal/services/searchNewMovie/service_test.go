@@ -150,7 +150,7 @@ func TestService_Exec(t *testing.T) {
 				for i := range commands.MovieOptionTitleChoiceLimit + 1 {
 					movies = append(
 						movies, models.MovieBase{
-							ID:    models.IMDBID(fmt.Sprint(i)),
+							ID:    models.ImdbID(fmt.Sprint(i)),
 							Title: title,
 						},
 					)
@@ -180,7 +180,7 @@ func TestService_Exec(t *testing.T) {
 				for i := range commands.MovieOptionTitleChoiceLimit {
 					movies = append(
 						movies, models.MovieBase{
-							ID:    models.IMDBID(fmt.Sprint(i)),
+							ID:    models.ImdbID(fmt.Sprint(i)),
 							Title: title,
 						},
 					)

@@ -16,7 +16,7 @@ type listUserQuotes interface {
 	Exec(
 		ctx context.Context,
 		i *discordgo.Interaction,
-		authorID models.ID,
+		authorID models.DiscordID,
 		page int,
 	) error
 }
@@ -25,7 +25,7 @@ type addQuote interface {
 	Exec(
 		ctx context.Context,
 		i *discordgo.Interaction,
-		authorID models.ID,
+		authorID models.DiscordID,
 		text string,
 	) error
 }

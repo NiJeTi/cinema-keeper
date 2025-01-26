@@ -29,19 +29,21 @@ func New(
 func (s *Service) Exec(
 	ctx context.Context,
 	i *discordgo.Interaction,
-	authorID models.ID,
+	authorID models.DiscordID,
 	text string,
 ) error {
-	author, err := s.discord.GuildMember(ctx, models.ID(i.GuildID), authorID)
+	author, err := s.discord.GuildMember(
+		ctx, models.DiscordID(i.GuildID), authorID,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to get author: %w", err)
 	}
 
 	quote := &models.Quote{
-		AuthorID:  models.ID(author.User.ID),
+		AuthorID:  models.DiscordID(author.User.ID),
 		Text:      text,
-		GuildID:   models.ID(i.GuildID),
-		AddedByID: models.ID(i.Member.User.ID),
+		GuildID:   models.DiscordID(i.GuildID),
+		AddedByID: models.DiscordID(i.Member.User.ID),
 		Timestamp: time.Now(),
 	}
 	err = s.db.AddUserQuoteInGuild(ctx, quote)

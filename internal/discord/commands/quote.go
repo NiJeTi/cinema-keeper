@@ -72,7 +72,7 @@ func Quote() *discordgo.ApplicationCommand {
 	}
 }
 
-func QuotesButtonCustomID(authorID models.ID, page int) string {
+func QuotesButtonCustomID(authorID models.DiscordID, page int) string {
 	if page < 0 {
 		panic("page must be positive")
 	}
@@ -82,17 +82,17 @@ func QuotesButtonCustomID(authorID models.ID, page int) string {
 	)
 }
 
-func QuotesEdgeButtonCustomID(authorID models.ID, page int) string {
+func QuotesEdgeButtonCustomID(authorID models.DiscordID, page int) string {
 	return QuotesButtonCustomID(authorID, page) + "_"
 }
 
-func QuoteParseButtonCustomID(id string) (authorID models.ID, page int) {
+func QuoteParseButtonCustomID(id string) (authorID models.DiscordID, page int) {
 	matches := quotesPageCustomIDRegex.FindStringSubmatch(id)
 	if len(matches) < quotesPageCustomIDRegex.NumSubexp() {
 		panic(discordUtils.ErrInvalidCustomID)
 	}
 
-	authorID = models.ID(matches[quotesPageCustomIDAuthorIDIndex])
+	authorID = models.DiscordID(matches[quotesPageCustomIDAuthorIDIndex])
 
 	page, err := strconv.Atoi(matches[quotesPageCustomIDPageIndex])
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	hcHTTP "github.com/nijeti/healthcheck/servers/http"
 
 	dcAdapterPkg "github.com/nijeti/cinema-keeper/internal/adapters/discord"
+	"github.com/nijeti/cinema-keeper/internal/adapters/omdb"
 	"github.com/nijeti/cinema-keeper/internal/db"
 	"github.com/nijeti/cinema-keeper/internal/discord"
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
@@ -34,6 +35,7 @@ import (
 type config struct {
 	Discord discord.Config `conf:"discord"`
 	DB      db.Config      `conf:"db"`
+	OMDB    omdb.Config    `conf:"omdb"`
 }
 
 const (
@@ -70,8 +72,6 @@ func run() (code int) {
 	}
 
 	// db
-	dbLogger := logger.WithGroup("db")
-
 	dbConn, err := db.Connect(ctx, cfg.DB)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to connect to db", "error", err)
@@ -81,7 +81,7 @@ func run() (code int) {
 
 	dbProbe := db.NewProbe(dbConn.DB)
 
-	quotesRepo := db.NewQuotesRepo(dbLogger, dbConn)
+	quotesRepo := db.NewQuotesRepo(dbConn)
 
 	// discord
 	dcLogger := logger.WithGroup("discord")
@@ -102,12 +102,12 @@ func run() (code int) {
 	dcAdapter := dcAdapterPkg.New(dcRouter.Session())
 
 	addQuoteSvc := addQuote.New(dcAdapter, quotesRepo)
+	diceRollSvc := diceRoll.New(dcAdapter)
 	listUserQuotesSvc := listUserQuotes.New(dcAdapter, quotesRepo)
 	lockVoiceChanSvc := lockVoiceChan.New(dcAdapter)
 	mentionVoiceChanSvc := mentionVoiceChan.New(dcAdapter)
 	presenceSvc := presence.New(dcAdapter)
 	printRandomQuoteSvc := printRandomQuote.New(quotesRepo, dcAdapter)
-	rollSvc := diceRoll.New(dcAdapter)
 	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
 
 	err = dcRouter.SetCommands(
@@ -131,7 +131,7 @@ func run() (code int) {
 		},
 		discord.Command{
 			Description: commands.Roll(),
-			Handler:     roll.New(rollSvc),
+			Handler:     roll.New(diceRollSvc),
 		},
 		discord.Command{
 			Description: commands.Movie(),
