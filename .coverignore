@@ -3,6 +3,7 @@ cmd/service
 internal/generated
 
 internal/adapters/discord
+internal/adapters/omdb
 
 internal/db
 

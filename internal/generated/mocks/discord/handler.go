@@ -24,7 +24,7 @@ func (_m *MockHandler) EXPECT() *MockHandler_Expecter {
 }
 
 // Handle provides a mock function with given fields: ctx, i
-func (_m *MockHandler) Handle(ctx context.Context, i *discordgo.InteractionCreate) error {
+func (_m *MockHandler) Handle(ctx context.Context, i *discordgo.Interaction) error {
 	ret := _m.Called(ctx, i)
 
 	if len(ret) == 0 {
@@ -32,7 +32,7 @@ func (_m *MockHandler) Handle(ctx context.Context, i *discordgo.InteractionCreat
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *discordgo.InteractionCreate) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *discordgo.Interaction) error); ok {
 		r0 = rf(ctx, i)
 	} else {
 		r0 = ret.Error(0)
@@ -48,14 +48,14 @@ type MockHandler_Handle_Call struct {
 
 // Handle is a helper method to define mock.On call
 //   - ctx context.Context
-//   - i *discordgo.InteractionCreate
+//   - i *discordgo.Interaction
 func (_e *MockHandler_Expecter) Handle(ctx interface{}, i interface{}) *MockHandler_Handle_Call {
 	return &MockHandler_Handle_Call{Call: _e.mock.On("Handle", ctx, i)}
 }
 
-func (_c *MockHandler_Handle_Call) Run(run func(ctx context.Context, i *discordgo.InteractionCreate)) *MockHandler_Handle_Call {
+func (_c *MockHandler_Handle_Call) Run(run func(ctx context.Context, i *discordgo.Interaction)) *MockHandler_Handle_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*discordgo.InteractionCreate))
+		run(args[0].(context.Context), args[1].(*discordgo.Interaction))
 	})
 	return _c
 }
@@ -65,7 +65,7 @@ func (_c *MockHandler_Handle_Call) Return(_a0 error) *MockHandler_Handle_Call {
 	return _c
 }
 
-func (_c *MockHandler_Handle_Call) RunAndReturn(run func(context.Context, *discordgo.InteractionCreate) error) *MockHandler_Handle_Call {
+func (_c *MockHandler_Handle_Call) RunAndReturn(run func(context.Context, *discordgo.Interaction) error) *MockHandler_Handle_Call {
 	_c.Call.Return(run)
 	return _c
 }

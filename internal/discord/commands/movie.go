@@ -2,6 +2,8 @@ package commands
 
 import (
 	"github.com/bwmarrin/discordgo"
+
+	"github.com/nijeti/cinema-keeper/internal/pkg/ptr"
 )
 
 const (
@@ -13,7 +15,7 @@ const (
 	MovieSubCommandList    = "list"
 	MovieSubCommandWatched = "watched"
 
-	MovieOptionName = "name"
+	MovieOptionTitle = "title"
 
 	MovieOptionType       = "type"
 	MovieOptionTypeNext   = "next"
@@ -27,6 +29,9 @@ const (
 const (
 	MovieOptionTypeDefault = movieOptionTypeNextValue
 	MovieOptionRateDefault = 0
+
+	MovieOptionTitleMinLength   = 4
+	MovieOptionTitleChoiceLimit = 5
 )
 
 const (
@@ -35,6 +40,11 @@ const (
 
 	movieOptionRateLikeValue    = 1
 	movieOptionRateDislikeValue = -1
+)
+
+const (
+	movieOptionTitleValueMinLength = 9
+	movieOptionTitleValueMaxLength = 9
 )
 
 func Movie() *discordgo.ApplicationCommand {
@@ -71,10 +81,12 @@ func Movie() *discordgo.ApplicationCommand {
 				Options: []*discordgo.ApplicationCommandOption{
 					{
 						Type:         discordgo.ApplicationCommandOptionString,
-						Name:         MovieOptionName,
-						Description:  "Name of the movie",
+						Name:         MovieOptionTitle,
+						Description:  "Title of the movie",
 						Required:     true,
 						Autocomplete: true,
+						MinLength:    ptr.To(movieOptionTitleValueMinLength),
+						MaxLength:    movieOptionTitleValueMaxLength,
 					},
 				},
 			},
@@ -85,10 +97,12 @@ func Movie() *discordgo.ApplicationCommand {
 				Options: []*discordgo.ApplicationCommandOption{
 					{
 						Type:         discordgo.ApplicationCommandOptionString,
-						Name:         MovieOptionName,
-						Description:  "Name of the movie",
+						Name:         MovieOptionTitle,
+						Description:  "Title of the movie",
 						Required:     true,
 						Autocomplete: true,
+						MinLength:    ptr.To(movieOptionTitleValueMinLength),
+						MaxLength:    movieOptionTitleValueMaxLength,
 					},
 				},
 			},
@@ -104,15 +118,17 @@ func Movie() *discordgo.ApplicationCommand {
 				Options: []*discordgo.ApplicationCommandOption{
 					{
 						Type:         discordgo.ApplicationCommandOptionString,
-						Name:         MovieOptionName,
-						Description:  "Name of the movie",
+						Name:         MovieOptionTitle,
+						Description:  "Title of the movie",
 						Required:     true,
 						Autocomplete: true,
+						MinLength:    ptr.To(movieOptionTitleValueMinLength),
+						MaxLength:    movieOptionTitleValueMaxLength,
 					},
 					{
 						Type:        discordgo.ApplicationCommandOptionInteger,
 						Name:        MovieOptionRate,
-						Description: "Rate of the movie",
+						Description: "Rate the movie",
 						Choices: []*discordgo.ApplicationCommandOptionChoice{
 							{
 								Name:  MovieOptionRateLike,
