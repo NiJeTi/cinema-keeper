@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/pkg/ptr"
 )
 
 type Config struct {
@@ -28,8 +27,8 @@ func New(config Config) *Adapter {
 
 func (a *Adapter) MoviesByTitle(
 	ctx context.Context, title string,
-) ([]models.MovieShort, error) {
-	var dto movieSearch
+) ([]models.MovieBase, error) {
+	var dto search
 	if err := a.makeRequest(ctx, a.baseURL()+"&s="+title, &dto); err != nil {
 		return nil, err
 	}
@@ -39,13 +38,13 @@ func (a *Adapter) MoviesByTitle(
 
 func (a *Adapter) MovieByID(
 	ctx context.Context, id string,
-) (*models.MovieShort, error) {
+) (*models.MovieMeta, error) {
 	var dto movie
 	if err := a.makeRequest(ctx, a.baseURL()+"&i="+id, &dto); err != nil {
 		return nil, err
 	}
 
-	return ptr.To(dto.toModel()), nil
+	return dto.toModel(), nil
 }
 
 func (a *Adapter) makeRequest(

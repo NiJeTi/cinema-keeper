@@ -23,23 +23,23 @@ func (_m *MockOmdb) EXPECT() *MockOmdb_Expecter {
 }
 
 // MoviesByTitle provides a mock function with given fields: ctx, title
-func (_m *MockOmdb) MoviesByTitle(ctx context.Context, title string) ([]models.MovieShort, error) {
+func (_m *MockOmdb) MoviesByTitle(ctx context.Context, title string) ([]models.MovieBase, error) {
 	ret := _m.Called(ctx, title)
 
 	if len(ret) == 0 {
 		panic("no return value specified for MoviesByTitle")
 	}
 
-	var r0 []models.MovieShort
+	var r0 []models.MovieBase
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]models.MovieShort, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) ([]models.MovieBase, error)); ok {
 		return rf(ctx, title)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) []models.MovieShort); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) []models.MovieBase); ok {
 		r0 = rf(ctx, title)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]models.MovieShort)
+			r0 = ret.Get(0).([]models.MovieBase)
 		}
 	}
 
@@ -71,12 +71,12 @@ func (_c *MockOmdb_MoviesByTitle_Call) Run(run func(ctx context.Context, title s
 	return _c
 }
 
-func (_c *MockOmdb_MoviesByTitle_Call) Return(_a0 []models.MovieShort, _a1 error) *MockOmdb_MoviesByTitle_Call {
+func (_c *MockOmdb_MoviesByTitle_Call) Return(_a0 []models.MovieBase, _a1 error) *MockOmdb_MoviesByTitle_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockOmdb_MoviesByTitle_Call) RunAndReturn(run func(context.Context, string) ([]models.MovieShort, error)) *MockOmdb_MoviesByTitle_Call {
+func (_c *MockOmdb_MoviesByTitle_Call) RunAndReturn(run func(context.Context, string) ([]models.MovieBase, error)) *MockOmdb_MoviesByTitle_Call {
 	_c.Call.Return(run)
 	return _c
 }

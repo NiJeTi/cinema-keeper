@@ -73,7 +73,7 @@ func TestService_Exec(t *testing.T) {
 
 				omdb.EXPECT().MoviesByTitle(
 					ctx, title,
-				).Return([]models.MovieShort{}, nil)
+				).Return([]models.MovieBase{}, nil)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
@@ -91,7 +91,7 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
-				movies := []models.MovieShort{{ID: "id", Title: title}}
+				movies := []models.MovieBase{{ID: "id", Title: title}}
 				omdb.EXPECT().MoviesByTitle(ctx, title).Return(movies, nil)
 
 				d.EXPECT().Respond(
@@ -128,7 +128,7 @@ func TestService_Exec(t *testing.T) {
 
 				omdb.EXPECT().MoviesByTitle(
 					ctx, title,
-				).Return([]models.MovieShort{}, nil)
+				).Return([]models.MovieBase{}, nil)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
@@ -146,10 +146,10 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
-				var movies []models.MovieShort
+				var movies []models.MovieBase
 				for i := range commands.MovieOptionTitleChoiceLimit + 1 {
 					movies = append(
-						movies, models.MovieShort{
+						movies, models.MovieBase{
 							ID:    models.IMDBID(fmt.Sprint(i)),
 							Title: title,
 						},
@@ -176,10 +176,10 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
-				var movies []models.MovieShort
+				var movies []models.MovieBase
 				for i := range commands.MovieOptionTitleChoiceLimit {
 					movies = append(
-						movies, models.MovieShort{
+						movies, models.MovieBase{
 							ID:    models.IMDBID(fmt.Sprint(i)),
 							Title: title,
 						},

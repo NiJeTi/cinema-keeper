@@ -16,7 +16,7 @@ func MovieAutocompleteEmptySearch() *discordgo.InteractionResponse {
 }
 
 func MovieAutocompleteSearch(
-	movies []models.MovieShort,
+	movies []models.MovieBase,
 ) *discordgo.InteractionResponse {
 	choices := make([]*discordgo.ApplicationCommandOptionChoice, 0, len(movies))
 	for _, movie := range movies {
