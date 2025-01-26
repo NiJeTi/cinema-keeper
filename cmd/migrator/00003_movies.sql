@@ -2,9 +2,13 @@
 -- +goose StatementBegin
 create table "movies"
 (
-    "id"      serial primary key,
-    "imdb_id" varchar(9)   not null unique,
-    "title"   varchar(100) not null
+    "id"         serial primary key,
+    "imdb_id"    varchar(9)   not null unique,
+    "title"      varchar(100) not null,
+    "year"       integer      not null,
+    "director"   varchar(100) not null,
+    "plot"       text         not null,
+    "poster_url" varchar(256) not null
 );
 
 create table "guild_movies"

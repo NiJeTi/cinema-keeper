@@ -19,5 +19,5 @@ type discord interface {
 type omdb interface {
 	MoviesByTitle(
 		ctx context.Context, title string,
-	) ([]models.MovieShort, error)
+	) ([]models.MovieBase, error)
 }

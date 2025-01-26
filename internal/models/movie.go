@@ -4,13 +4,21 @@ import (
 	"time"
 )
 
-type MovieShort struct {
+type MovieBase struct {
 	ID    IMDBID
 	Title string
+	Year  int
+}
+
+type MovieMeta struct {
+	MovieBase
+	Director  string
+	Plot      string
+	PosterURL string
 }
 
 type Movie struct {
-	MovieShort
+	MovieBase
 	AddedByID ID
 	AddedAt   time.Time
 	WatchedAt *time.Time
