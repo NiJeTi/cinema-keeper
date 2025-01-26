@@ -22,6 +22,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
 	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
+	"github.com/nijeti/cinema-keeper/internal/services/addMovie"
 	"github.com/nijeti/cinema-keeper/internal/services/addQuote"
 	"github.com/nijeti/cinema-keeper/internal/services/diceRoll"
 	"github.com/nijeti/cinema-keeper/internal/services/listUserQuotes"
@@ -29,6 +30,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/services/mentionVoiceChan"
 	"github.com/nijeti/cinema-keeper/internal/services/presence"
 	"github.com/nijeti/cinema-keeper/internal/services/printRandomQuote"
+	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovie"
 	"github.com/nijeti/cinema-keeper/internal/services/unlockVoiceChan"
 )
 
@@ -82,6 +84,7 @@ func run() (code int) {
 	dbProbe := db.NewProbe(dbConn.DB)
 
 	quotesRepo := db.NewQuotesRepo(dbConn)
+	moviesRepo := db.NewMoviesRepo(dbConn)
 
 	// discord
 	dcLogger := logger.WithGroup("discord")
@@ -100,7 +103,9 @@ func run() (code int) {
 	defer dcRouter.Close()
 
 	dcAdapter := dcAdapterPkg.New(dcRouter.Session())
+	omdbAdapter := omdb.New(cfg.OMDB)
 
+	addMovieSvc := addMovie.New(dcAdapter, omdbAdapter, moviesRepo)
 	addQuoteSvc := addQuote.New(dcAdapter, quotesRepo)
 	diceRollSvc := diceRoll.New(dcAdapter)
 	listUserQuotesSvc := listUserQuotes.New(dcAdapter, quotesRepo)
@@ -108,6 +113,7 @@ func run() (code int) {
 	mentionVoiceChanSvc := mentionVoiceChan.New(dcAdapter)
 	presenceSvc := presence.New(dcAdapter)
 	printRandomQuoteSvc := printRandomQuote.New(quotesRepo, dcAdapter)
+	searchNewMovieSvc := searchNewMovie.New(dcAdapter, omdbAdapter)
 	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
 
 	err = dcRouter.SetCommands(
@@ -135,7 +141,7 @@ func run() (code int) {
 		},
 		discord.Command{
 			Description: commands.Movie(),
-			Handler:     movie.New(),
+			Handler:     movie.New(searchNewMovieSvc, addMovieSvc),
 		},
 	)
 	if err != nil {

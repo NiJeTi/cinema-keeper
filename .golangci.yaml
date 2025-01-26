@@ -35,7 +35,7 @@ linters:
     - nilnil
     - nolintlint
     - paralleltest
-    #    - prealloc # premature optimization
+    # - prealloc # premature optimization
     - revive
     - rowserrcheck
     - sloglint
@@ -93,6 +93,7 @@ linters-settings:
     enable-all: true
     disable:
       - fieldalignment # premature optimization
+      - shadow
   ireturn:
     reject:
       - anon

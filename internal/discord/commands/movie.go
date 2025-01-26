@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"regexp"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -39,6 +41,8 @@ const (
 	movieOptionRateLikeValue    = 1
 	movieOptionRateDislikeValue = -1
 )
+
+var movieImdbIDRegex = regexp.MustCompile(`^tt\d*$`)
 
 func Movie() *discordgo.ApplicationCommand {
 	return &discordgo.ApplicationCommand{
@@ -131,4 +135,8 @@ func Movie() *discordgo.ApplicationCommand {
 			},
 		},
 	}
+}
+
+func MovieValidateImdbID(id string) bool {
+	return movieImdbIDRegex.MatchString(id)
 }
