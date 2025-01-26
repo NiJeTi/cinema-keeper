@@ -79,9 +79,9 @@ func (h *Handler) getSubCommand(
 ) error {
 	subOptionsMap := discordUtils.SubOptionsMap(opt)
 
-	var authorID *models.ID
+	var authorID *models.DiscordID
 	if opt, ok := subOptionsMap[commands.QuoteOptionAuthor]; ok {
-		authorID = ptr.To(models.ID(opt.UserValue(nil).ID))
+		authorID = ptr.To(models.DiscordID(opt.UserValue(nil).ID))
 	}
 
 	if authorID == nil {
@@ -104,10 +104,11 @@ func (h *Handler) addSubCommand(
 ) error {
 	optionsMap := discordUtils.SubOptionsMap(subCommand)
 
-	authorID := models.ID(optionsMap[commands.QuoteOptionAuthor].UserValue(nil).ID)
+	authorID := optionsMap[commands.QuoteOptionAuthor].UserValue(nil).ID
 	text := optionsMap[commands.QuoteOptionText].StringValue()
 
-	if err := h.addQuote.Exec(ctx, i, authorID, text); err != nil {
+	err := h.addQuote.Exec(ctx, i, models.DiscordID(authorID), text)
+	if err != nil {
 		return fmt.Errorf("failed to execute service: %w", err)
 	}
 

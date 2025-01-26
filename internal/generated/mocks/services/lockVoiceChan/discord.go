@@ -26,7 +26,7 @@ func (_m *MockDiscord) EXPECT() *MockDiscord_Expecter {
 }
 
 // EditChannel provides a mock function with given fields: ctx, channelID, edit
-func (_m *MockDiscord) EditChannel(ctx context.Context, channelID models.ID, edit *discordgo.ChannelEdit) error {
+func (_m *MockDiscord) EditChannel(ctx context.Context, channelID models.DiscordID, edit *discordgo.ChannelEdit) error {
 	ret := _m.Called(ctx, channelID, edit)
 
 	if len(ret) == 0 {
@@ -34,7 +34,7 @@ func (_m *MockDiscord) EditChannel(ctx context.Context, channelID models.ID, edi
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, *discordgo.ChannelEdit) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, *discordgo.ChannelEdit) error); ok {
 		r0 = rf(ctx, channelID, edit)
 	} else {
 		r0 = ret.Error(0)
@@ -50,15 +50,15 @@ type MockDiscord_EditChannel_Call struct {
 
 // EditChannel is a helper method to define mock.On call
 //   - ctx context.Context
-//   - channelID models.ID
+//   - channelID models.DiscordID
 //   - edit *discordgo.ChannelEdit
 func (_e *MockDiscord_Expecter) EditChannel(ctx interface{}, channelID interface{}, edit interface{}) *MockDiscord_EditChannel_Call {
 	return &MockDiscord_EditChannel_Call{Call: _e.mock.On("EditChannel", ctx, channelID, edit)}
 }
 
-func (_c *MockDiscord_EditChannel_Call) Run(run func(ctx context.Context, channelID models.ID, edit *discordgo.ChannelEdit)) *MockDiscord_EditChannel_Call {
+func (_c *MockDiscord_EditChannel_Call) Run(run func(ctx context.Context, channelID models.DiscordID, edit *discordgo.ChannelEdit)) *MockDiscord_EditChannel_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(*discordgo.ChannelEdit))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(*discordgo.ChannelEdit))
 	})
 	return _c
 }
@@ -68,7 +68,7 @@ func (_c *MockDiscord_EditChannel_Call) Return(_a0 error) *MockDiscord_EditChann
 	return _c
 }
 
-func (_c *MockDiscord_EditChannel_Call) RunAndReturn(run func(context.Context, models.ID, *discordgo.ChannelEdit) error) *MockDiscord_EditChannel_Call {
+func (_c *MockDiscord_EditChannel_Call) RunAndReturn(run func(context.Context, models.DiscordID, *discordgo.ChannelEdit) error) *MockDiscord_EditChannel_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -122,7 +122,7 @@ func (_c *MockDiscord_Respond_Call) RunAndReturn(run func(context.Context, *disc
 }
 
 // UserVoiceState provides a mock function with given fields: ctx, guildID, userID
-func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.ID, userID models.ID) (*discordgo.VoiceState, error) {
+func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.DiscordID, userID models.DiscordID) (*discordgo.VoiceState, error) {
 	ret := _m.Called(ctx, guildID, userID)
 
 	if len(ret) == 0 {
@@ -131,10 +131,10 @@ func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.ID, us
 
 	var r0 *discordgo.VoiceState
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) (*discordgo.VoiceState, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) (*discordgo.VoiceState, error)); ok {
 		return rf(ctx, guildID, userID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) *discordgo.VoiceState); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) *discordgo.VoiceState); ok {
 		r0 = rf(ctx, guildID, userID)
 	} else {
 		if ret.Get(0) != nil {
@@ -142,7 +142,7 @@ func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.ID, us
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID, models.ID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID, models.DiscordID) error); ok {
 		r1 = rf(ctx, guildID, userID)
 	} else {
 		r1 = ret.Error(1)
@@ -158,15 +158,15 @@ type MockDiscord_UserVoiceState_Call struct {
 
 // UserVoiceState is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
-//   - userID models.ID
+//   - guildID models.DiscordID
+//   - userID models.DiscordID
 func (_e *MockDiscord_Expecter) UserVoiceState(ctx interface{}, guildID interface{}, userID interface{}) *MockDiscord_UserVoiceState_Call {
 	return &MockDiscord_UserVoiceState_Call{Call: _e.mock.On("UserVoiceState", ctx, guildID, userID)}
 }
 
-func (_c *MockDiscord_UserVoiceState_Call) Run(run func(ctx context.Context, guildID models.ID, userID models.ID)) *MockDiscord_UserVoiceState_Call {
+func (_c *MockDiscord_UserVoiceState_Call) Run(run func(ctx context.Context, guildID models.DiscordID, userID models.DiscordID)) *MockDiscord_UserVoiceState_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(models.DiscordID))
 	})
 	return _c
 }
@@ -176,13 +176,13 @@ func (_c *MockDiscord_UserVoiceState_Call) Return(_a0 *discordgo.VoiceState, _a1
 	return _c
 }
 
-func (_c *MockDiscord_UserVoiceState_Call) RunAndReturn(run func(context.Context, models.ID, models.ID) (*discordgo.VoiceState, error)) *MockDiscord_UserVoiceState_Call {
+func (_c *MockDiscord_UserVoiceState_Call) RunAndReturn(run func(context.Context, models.DiscordID, models.DiscordID) (*discordgo.VoiceState, error)) *MockDiscord_UserVoiceState_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // VoiceChannelUsers provides a mock function with given fields: ctx, guildID, channelID
-func (_m *MockDiscord) VoiceChannelUsers(ctx context.Context, guildID models.ID, channelID models.ID) ([]*discordgo.Member, error) {
+func (_m *MockDiscord) VoiceChannelUsers(ctx context.Context, guildID models.DiscordID, channelID models.DiscordID) ([]*discordgo.Member, error) {
 	ret := _m.Called(ctx, guildID, channelID)
 
 	if len(ret) == 0 {
@@ -191,10 +191,10 @@ func (_m *MockDiscord) VoiceChannelUsers(ctx context.Context, guildID models.ID,
 
 	var r0 []*discordgo.Member
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) ([]*discordgo.Member, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) ([]*discordgo.Member, error)); ok {
 		return rf(ctx, guildID, channelID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) []*discordgo.Member); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) []*discordgo.Member); ok {
 		r0 = rf(ctx, guildID, channelID)
 	} else {
 		if ret.Get(0) != nil {
@@ -202,7 +202,7 @@ func (_m *MockDiscord) VoiceChannelUsers(ctx context.Context, guildID models.ID,
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID, models.ID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID, models.DiscordID) error); ok {
 		r1 = rf(ctx, guildID, channelID)
 	} else {
 		r1 = ret.Error(1)
@@ -218,15 +218,15 @@ type MockDiscord_VoiceChannelUsers_Call struct {
 
 // VoiceChannelUsers is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
-//   - channelID models.ID
+//   - guildID models.DiscordID
+//   - channelID models.DiscordID
 func (_e *MockDiscord_Expecter) VoiceChannelUsers(ctx interface{}, guildID interface{}, channelID interface{}) *MockDiscord_VoiceChannelUsers_Call {
 	return &MockDiscord_VoiceChannelUsers_Call{Call: _e.mock.On("VoiceChannelUsers", ctx, guildID, channelID)}
 }
 
-func (_c *MockDiscord_VoiceChannelUsers_Call) Run(run func(ctx context.Context, guildID models.ID, channelID models.ID)) *MockDiscord_VoiceChannelUsers_Call {
+func (_c *MockDiscord_VoiceChannelUsers_Call) Run(run func(ctx context.Context, guildID models.DiscordID, channelID models.DiscordID)) *MockDiscord_VoiceChannelUsers_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(models.DiscordID))
 	})
 	return _c
 }
@@ -236,7 +236,7 @@ func (_c *MockDiscord_VoiceChannelUsers_Call) Return(_a0 []*discordgo.Member, _a
 	return _c
 }
 
-func (_c *MockDiscord_VoiceChannelUsers_Call) RunAndReturn(run func(context.Context, models.ID, models.ID) ([]*discordgo.Member, error)) *MockDiscord_VoiceChannelUsers_Call {
+func (_c *MockDiscord_VoiceChannelUsers_Call) RunAndReturn(run func(context.Context, models.DiscordID, models.DiscordID) ([]*discordgo.Member, error)) *MockDiscord_VoiceChannelUsers_Call {
 	_c.Call.Return(run)
 	return _c
 }

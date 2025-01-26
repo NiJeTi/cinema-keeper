@@ -25,7 +25,7 @@ func (_m *MockService) EXPECT() *MockService_Expecter {
 }
 
 // Exec provides a mock function with given fields: ctx, i, channelID
-func (_m *MockService) Exec(ctx context.Context, i *discordgo.Interaction, channelID *models.ID) error {
+func (_m *MockService) Exec(ctx context.Context, i *discordgo.Interaction, channelID *models.DiscordID) error {
 	ret := _m.Called(ctx, i, channelID)
 
 	if len(ret) == 0 {
@@ -33,7 +33,7 @@ func (_m *MockService) Exec(ctx context.Context, i *discordgo.Interaction, chann
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *discordgo.Interaction, *models.ID) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *discordgo.Interaction, *models.DiscordID) error); ok {
 		r0 = rf(ctx, i, channelID)
 	} else {
 		r0 = ret.Error(0)
@@ -50,14 +50,14 @@ type MockService_Exec_Call struct {
 // Exec is a helper method to define mock.On call
 //   - ctx context.Context
 //   - i *discordgo.Interaction
-//   - channelID *models.ID
+//   - channelID *models.DiscordID
 func (_e *MockService_Expecter) Exec(ctx interface{}, i interface{}, channelID interface{}) *MockService_Exec_Call {
 	return &MockService_Exec_Call{Call: _e.mock.On("Exec", ctx, i, channelID)}
 }
 
-func (_c *MockService_Exec_Call) Run(run func(ctx context.Context, i *discordgo.Interaction, channelID *models.ID)) *MockService_Exec_Call {
+func (_c *MockService_Exec_Call) Run(run func(ctx context.Context, i *discordgo.Interaction, channelID *models.DiscordID)) *MockService_Exec_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*discordgo.Interaction), args[2].(*models.ID))
+		run(args[0].(context.Context), args[1].(*discordgo.Interaction), args[2].(*models.DiscordID))
 	})
 	return _c
 }
@@ -67,7 +67,7 @@ func (_c *MockService_Exec_Call) Return(_a0 error) *MockService_Exec_Call {
 	return _c
 }
 
-func (_c *MockService_Exec_Call) RunAndReturn(run func(context.Context, *discordgo.Interaction, *models.ID) error) *MockService_Exec_Call {
+func (_c *MockService_Exec_Call) RunAndReturn(run func(context.Context, *discordgo.Interaction, *models.DiscordID) error) *MockService_Exec_Call {
 	_c.Call.Return(run)
 	return _c
 }

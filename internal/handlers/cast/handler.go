@@ -27,11 +27,11 @@ func New(
 func (h *Handler) Handle(
 	ctx context.Context, i *discordgo.Interaction,
 ) error {
-	var channelID *models.ID
+	var channelID *models.DiscordID
 
 	optionsMap := discordUtils.OptionsMap(i)
 	if opt, ok := optionsMap[commands.CastOptionChannel]; ok {
-		channelID = ptr.To(models.ID(opt.ChannelValue(nil).ID))
+		channelID = ptr.To(models.DiscordID(opt.ChannelValue(nil).ID))
 	}
 
 	err := h.service.Exec(ctx, i, channelID)

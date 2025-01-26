@@ -5,22 +5,31 @@ import (
 )
 
 type MovieBase struct {
-	ID    IMDBID
+	ID    ImdbID
 	Title string
-	Year  int
+	Year  string
 }
 
 type MovieMeta struct {
 	MovieBase
+	Genre     string
 	Director  string
 	Plot      string
 	PosterURL string
 }
 
-type Movie struct {
-	MovieBase
-	AddedByID ID
+type GuildMovie struct {
+	MovieMeta
+	GuildID   DiscordID
+	AddedByID DiscordID
 	AddedAt   time.Time
 	WatchedAt *time.Time
-	Rating    *int
+	Rating    *MovieRating
 }
+
+type MovieRating int16
+
+const (
+	MovieRatingDislike MovieRating = -1
+	MovieRatingLike    MovieRating = 1
+)

@@ -1,6 +1,8 @@
 package responses
 
 import (
+	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/nijeti/cinema-keeper/internal/models"
@@ -22,7 +24,7 @@ func MovieAutocompleteSearch(
 	for _, movie := range movies {
 		choices = append(
 			choices, &discordgo.ApplicationCommandOptionChoice{
-				Name:  movie.Title,
+				Name:  fmt.Sprintf("%s (%s)", movie.Title, movie.Year),
 				Value: movie.ID,
 			},
 		)

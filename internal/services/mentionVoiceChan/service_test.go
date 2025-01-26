@@ -29,7 +29,7 @@ func TestService_Exec(t *testing.T) {
 	}
 
 	type args struct {
-		channelID *models.ID
+		channelID *models.DiscordID
 	}
 	type setup func(
 		t *testing.T, args args, err error,
@@ -51,7 +51,9 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, err)
 
 				return mentionVoiceChan.New(d)
@@ -68,7 +70,9 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -90,11 +94,15 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(nil, err)
 
 				return mentionVoiceChan.New(d)
@@ -112,11 +120,15 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(ctx, i, responses.CastNoUsers()).Return(err)
@@ -135,7 +147,9 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -157,11 +171,15 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(ctx, i, responses.CastNoUsers()).Return(nil)
@@ -181,12 +199,16 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := []*discordgo.Member{i.Member}
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().Respond(ctx, i, responses.CastNoUsers()).Return(nil)
@@ -206,7 +228,9 @@ func TestService_Exec(t *testing.T) {
 
 				vs := &discordgo.VoiceState{ChannelID: "3"}
 				d.EXPECT().UserVoiceState(
-					ctx, models.ID(i.GuildID), models.ID(i.Member.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(i.Member.User.ID),
 				).Return(vs, nil)
 
 				users := []*discordgo.Member{
@@ -214,7 +238,9 @@ func TestService_Exec(t *testing.T) {
 					{User: &discordgo.User{ID: "4"}},
 				}
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), models.ID(vs.ChannelID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(vs.ChannelID),
 				).Return(users, nil)
 
 				d.EXPECT().Respond(
@@ -226,7 +252,7 @@ func TestService_Exec(t *testing.T) {
 		},
 		"success": {
 			args: args{
-				channelID: ptr.To(models.ID("3")),
+				channelID: ptr.To(models.DiscordID("3")),
 			},
 			err: nil,
 			setup: func(
@@ -239,7 +265,7 @@ func TestService_Exec(t *testing.T) {
 					{User: &discordgo.User{ID: "4"}},
 				}
 				d.EXPECT().VoiceChannelUsers(
-					ctx, models.ID(i.GuildID), *args.channelID,
+					ctx, models.DiscordID(i.GuildID), *args.channelID,
 				).Return(users, nil)
 
 				d.EXPECT().Respond(

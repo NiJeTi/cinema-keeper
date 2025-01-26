@@ -28,15 +28,20 @@ func New(
 }
 
 func (s *Service) Exec(
-	ctx context.Context, i *discordgo.Interaction, authorID models.ID, page int,
+	ctx context.Context,
+	i *discordgo.Interaction,
+	authorID models.DiscordID,
+	page int,
 ) error {
-	author, err := s.discord.GuildMember(ctx, models.ID(i.GuildID), authorID)
+	author, err := s.discord.GuildMember(
+		ctx, models.DiscordID(i.GuildID), authorID,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to get author: %w", err)
 	}
 
 	quoteCount, err := s.db.CountUserQuotesInGuild(
-		ctx, models.ID(i.GuildID), authorID,
+		ctx, models.DiscordID(i.GuildID), authorID,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to count quotes: %w", err)
@@ -71,8 +76,8 @@ func (s *Service) respondList(
 
 	quotes, err := s.db.GetUserQuotesInGuild(
 		ctx,
-		models.ID(i.GuildID),
-		models.ID(author.User.ID),
+		models.DiscordID(i.GuildID),
+		models.DiscordID(author.User.ID),
 		offset,
 		commands.QuoteMaxQuotesPerPage,
 	)

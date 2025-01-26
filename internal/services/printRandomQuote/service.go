@@ -26,7 +26,7 @@ func New(
 }
 
 func (s *Service) Exec(ctx context.Context, i *discordgo.Interaction) error {
-	quote, err := s.db.GetRandomQuoteInGuild(ctx, models.ID(i.GuildID))
+	quote, err := s.db.GetRandomQuoteInGuild(ctx, models.DiscordID(i.GuildID))
 	if err != nil {
 		return fmt.Errorf("failed to get random quote: %w", err)
 	}
@@ -53,7 +53,7 @@ func (s *Service) respondQuote(
 	ctx context.Context, i *discordgo.Interaction, quote *models.Quote,
 ) error {
 	author, err := s.discord.GuildMember(
-		ctx, models.ID(i.GuildID), quote.AuthorID,
+		ctx, models.DiscordID(i.GuildID), quote.AuthorID,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to get author: %w", err)

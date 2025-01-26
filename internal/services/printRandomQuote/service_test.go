@@ -37,7 +37,7 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				db.EXPECT().GetRandomQuoteInGuild(
-					ctx, models.ID(i.GuildID),
+					ctx, models.DiscordID(i.GuildID),
 				).Return(nil, err)
 
 				return printRandomQuote.New(db, d)
@@ -50,7 +50,7 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				db.EXPECT().GetRandomQuoteInGuild(
-					ctx, models.ID(i.GuildID),
+					ctx, models.DiscordID(i.GuildID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -70,11 +70,11 @@ func TestService_Exec(t *testing.T) {
 					AuthorID: "1",
 				}
 				db.EXPECT().GetRandomQuoteInGuild(
-					ctx, models.ID(i.GuildID),
+					ctx, models.DiscordID(i.GuildID),
 				).Return(q, nil)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), q.AuthorID,
+					ctx, models.DiscordID(i.GuildID), q.AuthorID,
 				).Return(nil, err)
 
 				return printRandomQuote.New(db, d)
@@ -90,7 +90,7 @@ func TestService_Exec(t *testing.T) {
 					AuthorID: "1",
 				}
 				db.EXPECT().GetRandomQuoteInGuild(
-					ctx, models.ID(i.GuildID),
+					ctx, models.DiscordID(i.GuildID),
 				).Return(quote, nil)
 
 				author := &discordgo.Member{
@@ -100,7 +100,7 @@ func TestService_Exec(t *testing.T) {
 					Nick: "author",
 				}
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), quote.AuthorID,
+					ctx, models.DiscordID(i.GuildID), quote.AuthorID,
 				).Return(author, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).Return(err)
@@ -115,7 +115,7 @@ func TestService_Exec(t *testing.T) {
 				d := mocks.NewMockDiscord(t)
 
 				db.EXPECT().GetRandomQuoteInGuild(
-					ctx, models.ID(i.GuildID),
+					ctx, models.DiscordID(i.GuildID),
 				).Return(nil, nil)
 
 				d.EXPECT().Respond(
@@ -137,7 +137,7 @@ func TestService_Exec(t *testing.T) {
 					Timestamp: time.Now().UTC(),
 				}
 				db.EXPECT().GetRandomQuoteInGuild(
-					ctx, models.ID(i.GuildID),
+					ctx, models.DiscordID(i.GuildID),
 				).Return(quote, nil)
 
 				author := &discordgo.Member{
@@ -147,7 +147,7 @@ func TestService_Exec(t *testing.T) {
 					Nick: "author",
 				}
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), quote.AuthorID,
+					ctx, models.DiscordID(i.GuildID), quote.AuthorID,
 				).Return(author, nil)
 
 				d.EXPECT().Respond(ctx, i, mock.Anything).RunAndReturn(

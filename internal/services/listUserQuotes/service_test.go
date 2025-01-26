@@ -49,7 +49,9 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(nil, err)
 
 				return listUserQuotes.New(d, db)
@@ -64,11 +66,15 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(0, err)
 
 				return listUserQuotes.New(d, db)
@@ -83,11 +89,15 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(0, nil)
 
 				d.EXPECT().Respond(
@@ -106,18 +116,22 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				count := 1
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(count, nil)
 
 				db.EXPECT().GetUserQuotesInGuild(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(author.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 					0,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(nil, err)
@@ -134,12 +148,16 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				count := 1
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(count, nil)
 
 				quotes := []*models.Quote{
@@ -147,8 +165,8 @@ func TestService_Exec(t *testing.T) {
 				}
 				db.EXPECT().GetUserQuotesInGuild(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(author.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 					0,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
@@ -167,11 +185,15 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(0, nil)
 
 				d.EXPECT().Respond(
@@ -190,27 +212,31 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				count := 1
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(count, nil)
 
 				quotes := []*models.Quote{
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 				}
 				db.EXPECT().GetUserQuotesInGuild(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(author.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 					0,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
@@ -247,27 +273,31 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				count := 6
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(count, nil)
 
 				quotes := []*models.Quote{
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 				}
 				db.EXPECT().GetUserQuotesInGuild(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(author.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 					args.page*commands.QuoteMaxQuotesPerPage,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
@@ -328,55 +358,59 @@ func TestService_Exec(t *testing.T) {
 				db := mocks.NewMockDb(t)
 
 				d.EXPECT().GuildMember(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(author, nil)
 
 				count := 6
 				db.EXPECT().CountUserQuotesInGuild(
-					ctx, models.ID(i.GuildID), models.ID(author.User.ID),
+					ctx,
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 				).Return(count, nil)
 
 				quotes := []*models.Quote{
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text1",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text2",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text3",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text4",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 					{
-						AuthorID:  models.ID(author.User.ID),
+						AuthorID:  models.DiscordID(author.User.ID),
 						Text:      "text5",
-						GuildID:   models.ID(i.GuildID),
+						GuildID:   models.DiscordID(i.GuildID),
 						AddedByID: "3",
 						Timestamp: time.Now().UTC(),
 					},
 				}
 				db.EXPECT().GetUserQuotesInGuild(
 					ctx,
-					models.ID(i.GuildID),
-					models.ID(author.User.ID),
+					models.DiscordID(i.GuildID),
+					models.DiscordID(author.User.ID),
 					args.page*commands.QuoteMaxQuotesPerPage,
 					commands.QuoteMaxQuotesPerPage,
 				).Return(quotes, nil)
@@ -426,7 +460,9 @@ func TestService_Exec(t *testing.T) {
 		t.Run(
 			name, func(t *testing.T) {
 				s := tt.setup(t, tt.args, tt.err)
-				err := s.Exec(ctx, i, models.ID(author.User.ID), tt.args.page)
+				err := s.Exec(
+					ctx, i, models.DiscordID(author.User.ID), tt.args.page,
+				)
 				assert.ErrorIs(t, err, tt.err)
 			},
 		)

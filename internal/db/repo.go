@@ -7,12 +7,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func withTransaction(
+type repoBase struct {
+	db *sqlx.DB
+}
+
+func (r *repoBase) withTransaction(
 	ctx context.Context,
-	db *sqlx.DB,
 	op func(ctx context.Context, tx *sqlx.Tx) error,
 ) error {
-	tx, err := db.BeginTxx(ctx, nil)
+	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}

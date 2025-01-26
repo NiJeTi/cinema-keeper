@@ -16,14 +16,18 @@ type discord interface {
 	) error
 
 	UserVoiceState(
-		ctx context.Context, guildID models.ID, userID models.ID,
+		ctx context.Context, guildID models.DiscordID, userID models.DiscordID,
 	) (*discordgo.VoiceState, error)
 
 	VoiceChannelUsers(
-		ctx context.Context, guildID models.ID, channelID models.ID,
+		ctx context.Context,
+		guildID models.DiscordID,
+		channelID models.DiscordID,
 	) ([]*discordgo.Member, error)
 
 	EditChannel(
-		ctx context.Context, channelID models.ID, edit *discordgo.ChannelEdit,
+		ctx context.Context,
+		channelID models.DiscordID,
+		edit *discordgo.ChannelEdit,
 	) error
 }

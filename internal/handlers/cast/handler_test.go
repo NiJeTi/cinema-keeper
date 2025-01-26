@@ -40,7 +40,7 @@ func TestHandler_Handle(t *testing.T) {
 			) *cast.Handler {
 				s := mocks.NewMockService(t)
 
-				var channelID *models.ID
+				var channelID *models.DiscordID
 				s.EXPECT().Exec(ctx, i, channelID).Return(err)
 
 				return cast.New(s)
@@ -57,7 +57,7 @@ func TestHandler_Handle(t *testing.T) {
 			) *cast.Handler {
 				s := mocks.NewMockService(t)
 
-				var channelID *models.ID
+				var channelID *models.DiscordID
 				s.EXPECT().Exec(ctx, i, channelID).Return(nil)
 
 				return cast.New(s)
@@ -83,7 +83,7 @@ func TestHandler_Handle(t *testing.T) {
 				s := mocks.NewMockService(t)
 
 				s.EXPECT().Exec(
-					ctx, i, ptr.To(models.ID("1")),
+					ctx, i, ptr.To(models.DiscordID("1")),
 				).Return(nil)
 
 				return cast.New(s)

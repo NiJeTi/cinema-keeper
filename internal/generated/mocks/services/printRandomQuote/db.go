@@ -23,7 +23,7 @@ func (_m *MockDb) EXPECT() *MockDb_Expecter {
 }
 
 // GetRandomQuoteInGuild provides a mock function with given fields: ctx, guildID
-func (_m *MockDb) GetRandomQuoteInGuild(ctx context.Context, guildID models.ID) (*models.Quote, error) {
+func (_m *MockDb) GetRandomQuoteInGuild(ctx context.Context, guildID models.DiscordID) (*models.Quote, error) {
 	ret := _m.Called(ctx, guildID)
 
 	if len(ret) == 0 {
@@ -32,10 +32,10 @@ func (_m *MockDb) GetRandomQuoteInGuild(ctx context.Context, guildID models.ID) 
 
 	var r0 *models.Quote
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID) (*models.Quote, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID) (*models.Quote, error)); ok {
 		return rf(ctx, guildID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID) *models.Quote); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID) *models.Quote); ok {
 		r0 = rf(ctx, guildID)
 	} else {
 		if ret.Get(0) != nil {
@@ -43,7 +43,7 @@ func (_m *MockDb) GetRandomQuoteInGuild(ctx context.Context, guildID models.ID) 
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID) error); ok {
 		r1 = rf(ctx, guildID)
 	} else {
 		r1 = ret.Error(1)
@@ -59,14 +59,14 @@ type MockDb_GetRandomQuoteInGuild_Call struct {
 
 // GetRandomQuoteInGuild is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
+//   - guildID models.DiscordID
 func (_e *MockDb_Expecter) GetRandomQuoteInGuild(ctx interface{}, guildID interface{}) *MockDb_GetRandomQuoteInGuild_Call {
 	return &MockDb_GetRandomQuoteInGuild_Call{Call: _e.mock.On("GetRandomQuoteInGuild", ctx, guildID)}
 }
 
-func (_c *MockDb_GetRandomQuoteInGuild_Call) Run(run func(ctx context.Context, guildID models.ID)) *MockDb_GetRandomQuoteInGuild_Call {
+func (_c *MockDb_GetRandomQuoteInGuild_Call) Run(run func(ctx context.Context, guildID models.DiscordID)) *MockDb_GetRandomQuoteInGuild_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID))
 	})
 	return _c
 }
@@ -76,7 +76,7 @@ func (_c *MockDb_GetRandomQuoteInGuild_Call) Return(_a0 *models.Quote, _a1 error
 	return _c
 }
 
-func (_c *MockDb_GetRandomQuoteInGuild_Call) RunAndReturn(run func(context.Context, models.ID) (*models.Quote, error)) *MockDb_GetRandomQuoteInGuild_Call {
+func (_c *MockDb_GetRandomQuoteInGuild_Call) RunAndReturn(run func(context.Context, models.DiscordID) (*models.Quote, error)) *MockDb_GetRandomQuoteInGuild_Call {
 	_c.Call.Return(run)
 	return _c
 }

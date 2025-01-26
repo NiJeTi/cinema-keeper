@@ -25,7 +25,7 @@ func (_m *MockListUserQuotes) EXPECT() *MockListUserQuotes_Expecter {
 }
 
 // Exec provides a mock function with given fields: ctx, i, authorID, page
-func (_m *MockListUserQuotes) Exec(ctx context.Context, i *discordgo.Interaction, authorID models.ID, page int) error {
+func (_m *MockListUserQuotes) Exec(ctx context.Context, i *discordgo.Interaction, authorID models.DiscordID, page int) error {
 	ret := _m.Called(ctx, i, authorID, page)
 
 	if len(ret) == 0 {
@@ -33,7 +33,7 @@ func (_m *MockListUserQuotes) Exec(ctx context.Context, i *discordgo.Interaction
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *discordgo.Interaction, models.ID, int) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *discordgo.Interaction, models.DiscordID, int) error); ok {
 		r0 = rf(ctx, i, authorID, page)
 	} else {
 		r0 = ret.Error(0)
@@ -50,15 +50,15 @@ type MockListUserQuotes_Exec_Call struct {
 // Exec is a helper method to define mock.On call
 //   - ctx context.Context
 //   - i *discordgo.Interaction
-//   - authorID models.ID
+//   - authorID models.DiscordID
 //   - page int
 func (_e *MockListUserQuotes_Expecter) Exec(ctx interface{}, i interface{}, authorID interface{}, page interface{}) *MockListUserQuotes_Exec_Call {
 	return &MockListUserQuotes_Exec_Call{Call: _e.mock.On("Exec", ctx, i, authorID, page)}
 }
 
-func (_c *MockListUserQuotes_Exec_Call) Run(run func(ctx context.Context, i *discordgo.Interaction, authorID models.ID, page int)) *MockListUserQuotes_Exec_Call {
+func (_c *MockListUserQuotes_Exec_Call) Run(run func(ctx context.Context, i *discordgo.Interaction, authorID models.DiscordID, page int)) *MockListUserQuotes_Exec_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*discordgo.Interaction), args[2].(models.ID), args[3].(int))
+		run(args[0].(context.Context), args[1].(*discordgo.Interaction), args[2].(models.DiscordID), args[3].(int))
 	})
 	return _c
 }
@@ -68,7 +68,7 @@ func (_c *MockListUserQuotes_Exec_Call) Return(_a0 error) *MockListUserQuotes_Ex
 	return _c
 }
 
-func (_c *MockListUserQuotes_Exec_Call) RunAndReturn(run func(context.Context, *discordgo.Interaction, models.ID, int) error) *MockListUserQuotes_Exec_Call {
+func (_c *MockListUserQuotes_Exec_Call) RunAndReturn(run func(context.Context, *discordgo.Interaction, models.DiscordID, int) error) *MockListUserQuotes_Exec_Call {
 	_c.Call.Return(run)
 	return _c
 }

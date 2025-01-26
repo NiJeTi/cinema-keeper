@@ -24,7 +24,7 @@ func (_m *MockDb) EXPECT() *MockDb_Expecter {
 }
 
 // CountUserQuotesInGuild provides a mock function with given fields: ctx, guildID, authorID
-func (_m *MockDb) CountUserQuotesInGuild(ctx context.Context, guildID models.ID, authorID models.ID) (int, error) {
+func (_m *MockDb) CountUserQuotesInGuild(ctx context.Context, guildID models.DiscordID, authorID models.DiscordID) (int, error) {
 	ret := _m.Called(ctx, guildID, authorID)
 
 	if len(ret) == 0 {
@@ -33,16 +33,16 @@ func (_m *MockDb) CountUserQuotesInGuild(ctx context.Context, guildID models.ID,
 
 	var r0 int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) (int, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) (int, error)); ok {
 		return rf(ctx, guildID, authorID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) int); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) int); ok {
 		r0 = rf(ctx, guildID, authorID)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID, models.ID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID, models.DiscordID) error); ok {
 		r1 = rf(ctx, guildID, authorID)
 	} else {
 		r1 = ret.Error(1)
@@ -58,15 +58,15 @@ type MockDb_CountUserQuotesInGuild_Call struct {
 
 // CountUserQuotesInGuild is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
-//   - authorID models.ID
+//   - guildID models.DiscordID
+//   - authorID models.DiscordID
 func (_e *MockDb_Expecter) CountUserQuotesInGuild(ctx interface{}, guildID interface{}, authorID interface{}) *MockDb_CountUserQuotesInGuild_Call {
 	return &MockDb_CountUserQuotesInGuild_Call{Call: _e.mock.On("CountUserQuotesInGuild", ctx, guildID, authorID)}
 }
 
-func (_c *MockDb_CountUserQuotesInGuild_Call) Run(run func(ctx context.Context, guildID models.ID, authorID models.ID)) *MockDb_CountUserQuotesInGuild_Call {
+func (_c *MockDb_CountUserQuotesInGuild_Call) Run(run func(ctx context.Context, guildID models.DiscordID, authorID models.DiscordID)) *MockDb_CountUserQuotesInGuild_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(models.DiscordID))
 	})
 	return _c
 }
@@ -76,13 +76,13 @@ func (_c *MockDb_CountUserQuotesInGuild_Call) Return(_a0 int, _a1 error) *MockDb
 	return _c
 }
 
-func (_c *MockDb_CountUserQuotesInGuild_Call) RunAndReturn(run func(context.Context, models.ID, models.ID) (int, error)) *MockDb_CountUserQuotesInGuild_Call {
+func (_c *MockDb_CountUserQuotesInGuild_Call) RunAndReturn(run func(context.Context, models.DiscordID, models.DiscordID) (int, error)) *MockDb_CountUserQuotesInGuild_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetUserQuotesInGuild provides a mock function with given fields: ctx, guildID, authorID, offset, limit
-func (_m *MockDb) GetUserQuotesInGuild(ctx context.Context, guildID models.ID, authorID models.ID, offset int, limit int) ([]*models.Quote, error) {
+func (_m *MockDb) GetUserQuotesInGuild(ctx context.Context, guildID models.DiscordID, authorID models.DiscordID, offset int, limit int) ([]*models.Quote, error) {
 	ret := _m.Called(ctx, guildID, authorID, offset, limit)
 
 	if len(ret) == 0 {
@@ -91,10 +91,10 @@ func (_m *MockDb) GetUserQuotesInGuild(ctx context.Context, guildID models.ID, a
 
 	var r0 []*models.Quote
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID, int, int) ([]*models.Quote, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID, int, int) ([]*models.Quote, error)); ok {
 		return rf(ctx, guildID, authorID, offset, limit)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID, int, int) []*models.Quote); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID, int, int) []*models.Quote); ok {
 		r0 = rf(ctx, guildID, authorID, offset, limit)
 	} else {
 		if ret.Get(0) != nil {
@@ -102,7 +102,7 @@ func (_m *MockDb) GetUserQuotesInGuild(ctx context.Context, guildID models.ID, a
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID, models.ID, int, int) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID, models.DiscordID, int, int) error); ok {
 		r1 = rf(ctx, guildID, authorID, offset, limit)
 	} else {
 		r1 = ret.Error(1)
@@ -118,17 +118,17 @@ type MockDb_GetUserQuotesInGuild_Call struct {
 
 // GetUserQuotesInGuild is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
-//   - authorID models.ID
+//   - guildID models.DiscordID
+//   - authorID models.DiscordID
 //   - offset int
 //   - limit int
 func (_e *MockDb_Expecter) GetUserQuotesInGuild(ctx interface{}, guildID interface{}, authorID interface{}, offset interface{}, limit interface{}) *MockDb_GetUserQuotesInGuild_Call {
 	return &MockDb_GetUserQuotesInGuild_Call{Call: _e.mock.On("GetUserQuotesInGuild", ctx, guildID, authorID, offset, limit)}
 }
 
-func (_c *MockDb_GetUserQuotesInGuild_Call) Run(run func(ctx context.Context, guildID models.ID, authorID models.ID, offset int, limit int)) *MockDb_GetUserQuotesInGuild_Call {
+func (_c *MockDb_GetUserQuotesInGuild_Call) Run(run func(ctx context.Context, guildID models.DiscordID, authorID models.DiscordID, offset int, limit int)) *MockDb_GetUserQuotesInGuild_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(models.ID), args[3].(int), args[4].(int))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(models.DiscordID), args[3].(int), args[4].(int))
 	})
 	return _c
 }
@@ -138,7 +138,7 @@ func (_c *MockDb_GetUserQuotesInGuild_Call) Return(_a0 []*models.Quote, _a1 erro
 	return _c
 }
 
-func (_c *MockDb_GetUserQuotesInGuild_Call) RunAndReturn(run func(context.Context, models.ID, models.ID, int, int) ([]*models.Quote, error)) *MockDb_GetUserQuotesInGuild_Call {
+func (_c *MockDb_GetUserQuotesInGuild_Call) RunAndReturn(run func(context.Context, models.DiscordID, models.DiscordID, int, int) ([]*models.Quote, error)) *MockDb_GetUserQuotesInGuild_Call {
 	_c.Call.Return(run)
 	return _c
 }

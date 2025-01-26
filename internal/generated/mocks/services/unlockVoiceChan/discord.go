@@ -25,7 +25,7 @@ func (_m *MockDiscord) EXPECT() *MockDiscord_Expecter {
 }
 
 // ChannelUnsetUserLimit provides a mock function with given fields: ctx, channelID
-func (_m *MockDiscord) ChannelUnsetUserLimit(ctx context.Context, channelID models.ID) error {
+func (_m *MockDiscord) ChannelUnsetUserLimit(ctx context.Context, channelID models.DiscordID) error {
 	ret := _m.Called(ctx, channelID)
 
 	if len(ret) == 0 {
@@ -33,7 +33,7 @@ func (_m *MockDiscord) ChannelUnsetUserLimit(ctx context.Context, channelID mode
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID) error); ok {
 		r0 = rf(ctx, channelID)
 	} else {
 		r0 = ret.Error(0)
@@ -49,14 +49,14 @@ type MockDiscord_ChannelUnsetUserLimit_Call struct {
 
 // ChannelUnsetUserLimit is a helper method to define mock.On call
 //   - ctx context.Context
-//   - channelID models.ID
+//   - channelID models.DiscordID
 func (_e *MockDiscord_Expecter) ChannelUnsetUserLimit(ctx interface{}, channelID interface{}) *MockDiscord_ChannelUnsetUserLimit_Call {
 	return &MockDiscord_ChannelUnsetUserLimit_Call{Call: _e.mock.On("ChannelUnsetUserLimit", ctx, channelID)}
 }
 
-func (_c *MockDiscord_ChannelUnsetUserLimit_Call) Run(run func(ctx context.Context, channelID models.ID)) *MockDiscord_ChannelUnsetUserLimit_Call {
+func (_c *MockDiscord_ChannelUnsetUserLimit_Call) Run(run func(ctx context.Context, channelID models.DiscordID)) *MockDiscord_ChannelUnsetUserLimit_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID))
 	})
 	return _c
 }
@@ -66,7 +66,7 @@ func (_c *MockDiscord_ChannelUnsetUserLimit_Call) Return(_a0 error) *MockDiscord
 	return _c
 }
 
-func (_c *MockDiscord_ChannelUnsetUserLimit_Call) RunAndReturn(run func(context.Context, models.ID) error) *MockDiscord_ChannelUnsetUserLimit_Call {
+func (_c *MockDiscord_ChannelUnsetUserLimit_Call) RunAndReturn(run func(context.Context, models.DiscordID) error) *MockDiscord_ChannelUnsetUserLimit_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -120,7 +120,7 @@ func (_c *MockDiscord_Respond_Call) RunAndReturn(run func(context.Context, *disc
 }
 
 // UserVoiceState provides a mock function with given fields: ctx, guildID, userID
-func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.ID, userID models.ID) (*discordgo.VoiceState, error) {
+func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.DiscordID, userID models.DiscordID) (*discordgo.VoiceState, error) {
 	ret := _m.Called(ctx, guildID, userID)
 
 	if len(ret) == 0 {
@@ -129,10 +129,10 @@ func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.ID, us
 
 	var r0 *discordgo.VoiceState
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) (*discordgo.VoiceState, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) (*discordgo.VoiceState, error)); ok {
 		return rf(ctx, guildID, userID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.ID, models.ID) *discordgo.VoiceState); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.DiscordID, models.DiscordID) *discordgo.VoiceState); ok {
 		r0 = rf(ctx, guildID, userID)
 	} else {
 		if ret.Get(0) != nil {
@@ -140,7 +140,7 @@ func (_m *MockDiscord) UserVoiceState(ctx context.Context, guildID models.ID, us
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.ID, models.ID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.DiscordID, models.DiscordID) error); ok {
 		r1 = rf(ctx, guildID, userID)
 	} else {
 		r1 = ret.Error(1)
@@ -156,15 +156,15 @@ type MockDiscord_UserVoiceState_Call struct {
 
 // UserVoiceState is a helper method to define mock.On call
 //   - ctx context.Context
-//   - guildID models.ID
-//   - userID models.ID
+//   - guildID models.DiscordID
+//   - userID models.DiscordID
 func (_e *MockDiscord_Expecter) UserVoiceState(ctx interface{}, guildID interface{}, userID interface{}) *MockDiscord_UserVoiceState_Call {
 	return &MockDiscord_UserVoiceState_Call{Call: _e.mock.On("UserVoiceState", ctx, guildID, userID)}
 }
 
-func (_c *MockDiscord_UserVoiceState_Call) Run(run func(ctx context.Context, guildID models.ID, userID models.ID)) *MockDiscord_UserVoiceState_Call {
+func (_c *MockDiscord_UserVoiceState_Call) Run(run func(ctx context.Context, guildID models.DiscordID, userID models.DiscordID)) *MockDiscord_UserVoiceState_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.ID), args[2].(models.ID))
+		run(args[0].(context.Context), args[1].(models.DiscordID), args[2].(models.DiscordID))
 	})
 	return _c
 }
@@ -174,7 +174,7 @@ func (_c *MockDiscord_UserVoiceState_Call) Return(_a0 *discordgo.VoiceState, _a1
 	return _c
 }
 
-func (_c *MockDiscord_UserVoiceState_Call) RunAndReturn(run func(context.Context, models.ID, models.ID) (*discordgo.VoiceState, error)) *MockDiscord_UserVoiceState_Call {
+func (_c *MockDiscord_UserVoiceState_Call) RunAndReturn(run func(context.Context, models.DiscordID, models.DiscordID) (*discordgo.VoiceState, error)) *MockDiscord_UserVoiceState_Call {
 	_c.Call.Return(run)
 	return _c
 }

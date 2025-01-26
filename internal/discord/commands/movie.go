@@ -2,8 +2,6 @@ package commands
 
 import (
 	"github.com/bwmarrin/discordgo"
-
-	"github.com/nijeti/cinema-keeper/internal/pkg/ptr"
 )
 
 const (
@@ -40,11 +38,6 @@ const (
 
 	movieOptionRateLikeValue    = 1
 	movieOptionRateDislikeValue = -1
-)
-
-const (
-	movieOptionTitleValueMinLength = 9
-	movieOptionTitleValueMaxLength = 9
 )
 
 func Movie() *discordgo.ApplicationCommand {
@@ -85,8 +78,6 @@ func Movie() *discordgo.ApplicationCommand {
 						Description:  "Title of the movie",
 						Required:     true,
 						Autocomplete: true,
-						MinLength:    ptr.To(movieOptionTitleValueMinLength),
-						MaxLength:    movieOptionTitleValueMaxLength,
 					},
 				},
 			},
@@ -101,8 +92,6 @@ func Movie() *discordgo.ApplicationCommand {
 						Description:  "Title of the movie",
 						Required:     true,
 						Autocomplete: true,
-						MinLength:    ptr.To(movieOptionTitleValueMinLength),
-						MaxLength:    movieOptionTitleValueMaxLength,
 					},
 				},
 			},
@@ -122,8 +111,6 @@ func Movie() *discordgo.ApplicationCommand {
 						Description:  "Title of the movie",
 						Required:     true,
 						Autocomplete: true,
-						MinLength:    ptr.To(movieOptionTitleValueMinLength),
-						MaxLength:    movieOptionTitleValueMaxLength,
 					},
 					{
 						Type:        discordgo.ApplicationCommandOptionInteger,

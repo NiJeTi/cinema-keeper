@@ -5,9 +5,9 @@ import (
 )
 
 type Quote struct {
-	AuthorID  ID
+	AuthorID  DiscordID
 	Text      string
-	GuildID   ID
-	AddedByID ID
+	GuildID   DiscordID
+	AddedByID DiscordID
 	Timestamp time.Time
 }
