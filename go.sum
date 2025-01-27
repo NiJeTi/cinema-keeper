@@ -55,8 +55,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/nijeti/healthcheck v1.0.0-beta.2 h1:99dRxvH5rSj7mseQgb4e9nt/PGuAwVeMJW40RTmFWTc=
 github.com/nijeti/healthcheck v1.0.0-beta.2/go.mod h1:YOvJznQqQ7qUbHOJhjS/gNMxEWyBkgsNeYWxLViOi70=
-github.com/nijeti/healthcheck/servers/http v1.0.0-beta.4 h1:1hJfahDfo70a41jVDpZ8IYhhlalU/ubmDLXWw7hJvH0=
-github.com/nijeti/healthcheck/servers/http v1.0.0-beta.4/go.mod h1:7P2cMRoGbsn35cQetvITU6sGHWxJjsqKs2rWrO5W8oE=
+github.com/nijeti/healthcheck/servers/http v1.0.0-beta.5 h1:A5WvJcFdvhhcuSeh6cLWlYnFKuWPpvPBQHaZAtEwWRo=
+github.com/nijeti/healthcheck/servers/http v1.0.0-beta.5/go.mod h1:99rmSFzmqbnhpBg38NerpSbFyGI+9HzHD4E6p4Y9GfQ=
 github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
