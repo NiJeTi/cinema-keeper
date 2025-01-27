@@ -80,7 +80,9 @@ func (s *Service) Exec(
 }
 
 func (s *Service) checkMovieExists(
-	ctx context.Context, i *discordgo.Interaction, movieID *models.ID,
+	ctx context.Context,
+	i *discordgo.Interaction,
+	movieID *models.ID,
 	guildID models.DiscordID,
 ) (bool, error) {
 	exists, err := s.db.GuildMovieExists(ctx, *movieID, guildID)

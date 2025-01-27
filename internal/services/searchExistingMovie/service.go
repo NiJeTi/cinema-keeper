@@ -1,4 +1,4 @@
-package searchNewMovie
+package searchExistingMovie
 
 import (
 	"context"
@@ -8,20 +8,21 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/discord/commands/responses"
+	"github.com/nijeti/cinema-keeper/internal/models"
 )
 
 type Service struct {
 	discord discord
-	omdb    omdb
+	db      db
 }
 
 func New(
 	discord discord,
-	omdb omdb,
+	db db,
 ) *Service {
 	return &Service{
 		discord: discord,
-		omdb:    omdb,
+		db:      db,
 	}
 }
 
@@ -32,17 +33,18 @@ func (s *Service) Exec(
 		return s.respondEmptySearch(ctx, i)
 	}
 
-	movies, err := s.omdb.MoviesByTitle(ctx, title)
+	movies, err := s.db.GuildMoviesByTitle(
+		ctx,
+		models.DiscordID(i.GuildID),
+		title,
+		commands.MovieTitleAutocompleteChoicesLimit,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to search movies: %w", err)
 	}
 
 	if len(movies) == 0 {
 		return s.respondEmptySearch(ctx, i)
-	}
-
-	if len(movies) > commands.MovieTitleAutocompleteChoicesLimit {
-		movies = movies[:commands.MovieTitleAutocompleteChoicesLimit]
 	}
 
 	err = s.discord.Respond(ctx, i, responses.MovieAutocompleteSearch(movies))
