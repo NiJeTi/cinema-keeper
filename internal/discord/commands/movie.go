@@ -30,8 +30,8 @@ const (
 	MovieOptionTypeDefault = movieOptionTypeNextValue
 	MovieOptionRateDefault = 0
 
-	MovieOptionTitleMinLength   = 4
-	MovieOptionTitleChoiceLimit = 5
+	MovieTitleAutocompleteMinLength    = 4
+	MovieTitleAutocompleteChoicesLimit = 5
 )
 
 const (

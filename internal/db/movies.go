@@ -106,6 +106,30 @@ func (r *MoviesRepo) GuildMovieExists(
 	return exists, nil
 }
 
+func (r *MoviesRepo) GuildMoviesByTitle(
+	ctx context.Context, guildID models.DiscordID, title string, limit int,
+) ([]models.MovieBase, error) {
+	const query = `
+		select imdb_id, title, year from guild_movies gm
+		inner join movies m on gm.movie_id = m.id
+		where gm.guild_id = $1 and m.title = $2
+		limit $3`
+
+	var rows []movieRow
+	err := r.db.SelectContext(ctx, &rows, query, guildID, title, limit)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to select guild movie by title: %w", err,
+		)
+	}
+
+	movies := make([]models.MovieBase, 0, len(rows))
+	for _, row := range rows {
+		movies = append(movies, row.toMovieBase())
+	}
+	return movies, nil
+}
+
 func (r *MoviesRepo) AddMovieToGuild(
 	ctx context.Context,
 	movieID models.ID,

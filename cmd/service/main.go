@@ -30,6 +30,7 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/services/mentionVoiceChan"
 	"github.com/nijeti/cinema-keeper/internal/services/presence"
 	"github.com/nijeti/cinema-keeper/internal/services/printRandomQuote"
+	"github.com/nijeti/cinema-keeper/internal/services/searchExistingMovie"
 	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovie"
 	"github.com/nijeti/cinema-keeper/internal/services/unlockVoiceChan"
 )
@@ -114,6 +115,7 @@ func run() (code int) {
 	presenceSvc := presence.New(dcAdapter)
 	printRandomQuoteSvc := printRandomQuote.New(quotesRepo, dcAdapter)
 	searchNewMovieSvc := searchNewMovie.New(dcAdapter, omdbAdapter)
+	searchExistingMovieSvc := searchExistingMovie.New(dcAdapter, moviesRepo)
 	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
 
 	err = dcRouter.SetCommands(
@@ -141,7 +143,9 @@ func run() (code int) {
 		},
 		discord.Command{
 			Description: commands.Movie(),
-			Handler:     movie.New(searchNewMovieSvc, addMovieSvc),
+			Handler: movie.New(
+				searchNewMovieSvc, searchExistingMovieSvc, addMovieSvc,
+			),
 		},
 	)
 	if err != nil {

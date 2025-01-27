@@ -1,9 +1,8 @@
-package searchNewMovie_test
+package searchExistingMovie_test
 
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,55 +10,60 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/discord/commands/responses"
-	mocks "github.com/nijeti/cinema-keeper/internal/generated/mocks/services/searchNewMovie"
+	mocks "github.com/nijeti/cinema-keeper/internal/generated/mocks/services/searchExistingMovie"
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovie"
+	"github.com/nijeti/cinema-keeper/internal/services/searchExistingMovie"
 )
 
 func TestService_Exec(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	i := &discordgo.Interaction{}
+	i := &discordgo.Interaction{
+		GuildID: "1",
+	}
 
 	type setup func(
 		t *testing.T, title string, err error,
-	) *searchNewMovie.Service
+	) *searchExistingMovie.Service
 
 	tests := map[string]struct {
 		title string
 		err   error
 		setup setup
 	}{
-		"empty_title_response_error": {
+		"title_empty_response_error": {
 			title: "",
 			err:   errors.New("response error"),
 			setup: func(
 				t *testing.T, _ string, err error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
-
-		"omdb_error": {
+		"db_error": {
 			title: "title",
-			err:   errors.New("omdb error"),
+			err:   errors.New("db error"),
 			setup: func(
 				t *testing.T, title string, err error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
-				omdb.EXPECT().MoviesByTitle(ctx, title).Return(nil, err)
+				guildID := models.DiscordID(i.GuildID)
+				db.EXPECT().GuildMoviesByTitle(
+					ctx, guildID, title,
+					commands.MovieTitleAutocompleteChoicesLimit,
+				).Return(nil, err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
 		"no_movies_response_error": {
@@ -67,54 +71,62 @@ func TestService_Exec(t *testing.T) {
 			err:   errors.New("response error"),
 			setup: func(
 				t *testing.T, title string, err error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
-				omdb.EXPECT().MoviesByTitle(
-					ctx, title,
+				guildID := models.DiscordID(i.GuildID)
+				db.EXPECT().GuildMoviesByTitle(
+					ctx, guildID, title,
+					commands.MovieTitleAutocompleteChoicesLimit,
 				).Return([]models.MovieBase{}, nil)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
-		"movies_response_error": {
+		"response_error": {
 			title: "title",
 			err:   errors.New("response error"),
 			setup: func(
 				t *testing.T, title string, err error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
-				movies := []models.MovieBase{{ID: "id", Title: title}}
-				omdb.EXPECT().MoviesByTitle(ctx, title).Return(movies, nil)
+				guildID := models.DiscordID(i.GuildID)
+				movies := []models.MovieBase{
+					{ID: "id", Title: title},
+				}
+				db.EXPECT().GuildMoviesByTitle(
+					ctx, guildID, title,
+					commands.MovieTitleAutocompleteChoicesLimit,
+				).Return(movies, nil)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteSearch(movies),
 				).Return(err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
-		"empty_title": {
+		"title_empty": {
 			title: "",
 			err:   nil,
 			setup: func(
 				t *testing.T, _ string, _ error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
 		"no_movies": {
@@ -122,49 +134,21 @@ func TestService_Exec(t *testing.T) {
 			err:   nil,
 			setup: func(
 				t *testing.T, title string, _ error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
-				omdb.EXPECT().MoviesByTitle(
-					ctx, title,
+				guildID := models.DiscordID(i.GuildID)
+				db.EXPECT().GuildMoviesByTitle(
+					ctx, guildID, title,
+					commands.MovieTitleAutocompleteChoicesLimit,
 				).Return([]models.MovieBase{}, nil)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
-			},
-		},
-		"too_many_movies": {
-			title: "title",
-			err:   nil,
-			setup: func(
-				t *testing.T, title string, _ error,
-			) *searchNewMovie.Service {
-				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
-
-				var movies []models.MovieBase
-				for i := range commands.MovieTitleAutocompleteChoicesLimit + 1 {
-					movies = append(
-						movies, models.MovieBase{
-							ID:    models.ImdbID(fmt.Sprint(i)),
-							Title: title,
-						},
-					)
-				}
-				omdb.EXPECT().MoviesByTitle(ctx, title).Return(movies, nil)
-
-				resp := responses.MovieAutocompleteSearch(
-					movies[:commands.MovieTitleAutocompleteChoicesLimit],
-				)
-				d.EXPECT().Respond(
-					ctx, i, resp,
-				).Return(nil)
-
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
 		"success": {
@@ -172,26 +156,24 @@ func TestService_Exec(t *testing.T) {
 			err:   nil,
 			setup: func(
 				t *testing.T, title string, _ error,
-			) *searchNewMovie.Service {
+			) *searchExistingMovie.Service {
 				d := mocks.NewMockDiscord(t)
-				omdb := mocks.NewMockOmdb(t)
+				db := mocks.NewMockDb(t)
 
-				var movies []models.MovieBase
-				for i := range commands.MovieTitleAutocompleteChoicesLimit {
-					movies = append(
-						movies, models.MovieBase{
-							ID:    models.ImdbID(fmt.Sprint(i)),
-							Title: title,
-						},
-					)
+				guildID := models.DiscordID(i.GuildID)
+				movies := []models.MovieBase{
+					{ID: "id", Title: title},
 				}
-				omdb.EXPECT().MoviesByTitle(ctx, title).Return(movies, nil)
+				db.EXPECT().GuildMoviesByTitle(
+					ctx, guildID, title,
+					commands.MovieTitleAutocompleteChoicesLimit,
+				).Return(movies, nil)
 
 				d.EXPECT().Respond(
 					ctx, i, responses.MovieAutocompleteSearch(movies),
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
+				return searchExistingMovie.New(d, db)
 			},
 		},
 	}
