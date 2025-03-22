@@ -5,6 +5,7 @@ mockname: 'Mock{{.InterfaceName | camelcase}}'
 filename: '{{.InterfaceName | camelcase | firstLower}}.go'
 outpkg: '{{.PackageName}}_test'
 issue-845-fix: true
+resolve-type-alias: true
 dir: 'internal/generated/mocks/{{replaceAll .PackagePath "github.com/nijeti/cinema-keeper/internal" ""}}'
 packages:
   github.com/nijeti/cinema-keeper/internal:
