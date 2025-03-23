@@ -42,7 +42,7 @@ jobs:
             type=semver,pattern={{major}}    
 
       - name: 'Build and push'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: ${{ env.MIGRATOR_DOCKERFILE }}
           context: .
@@ -78,7 +78,7 @@ jobs:
             type=semver,pattern={{major}}    
 
       - name: 'Build and push'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: ${{ env.SERVICE_DOCKERFILE }}
           context: .
