@@ -1,19 +1,15 @@
-MOCKERY_VERSION=github.com/vektra/mockery/v2@v2.50
-GOLANGCI_LINT_IMAGE=golangci/golangci-lint:v1.63-alpine
-GOOSE_VERSION=github.com/pressly/goose/v3/cmd/goose@v3.24
+# cannot be migrated to go tool
+# reason: https://golangci-lint.run/welcome/install/#install-from-sources
+GOLANGCI_LINT_IMAGE=golangci/golangci-lint:v1.64-alpine
 
 .PHONY: deps
 deps:
-	go install $(MOCKERY_VERSION)
 	docker pull $(GOLANGCI_LINT_IMAGE)
-	go install $(GOOSE_VERSION)
 
 .PHONY: mocks
 mocks:
-	$(MAKE) deps
-
 	rm -rf ./internal/generated/mocks
-	mockery
+	go tool mockery
 
 .PHONY: lint
 lint:

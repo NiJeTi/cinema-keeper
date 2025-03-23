@@ -13,8 +13,8 @@ on:
       - 'go.*'
 
 env:
-  GO_VERSION: '1.23'
-  LINTER_VERSION: 'v1.62'
+  GO_VERSION: '1.24'
+  LINTER_VERSION: 'v1.64'
   
   MIGRATOR: './cmd/migrator/'
   SERVICE: './cmd/service/'

@@ -11,3 +11,8 @@ updates:
       - /build/service/
     schedule: 
       interval: monthly
+      
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
