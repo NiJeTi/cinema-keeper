@@ -42,7 +42,7 @@ func (r *MoviesRepo) MovieByImdbID(
 	ctx context.Context, id models.ImdbID,
 ) (*models.ID, *models.MovieMeta, error) {
 	const query = `
-		select * from movies
+		select imdb_id, title, year, genre, director, plot, poster_url from movies
 		where imdb_id = $1`
 
 	var row movieRow
@@ -106,26 +106,54 @@ func (r *MoviesRepo) GuildMovieExists(
 	return exists, nil
 }
 
+func (r *MoviesRepo) GuildMovies(
+	ctx context.Context, guildID models.DiscordID, offset, limit int,
+) ([]models.MovieBase, error) {
+	const query = `
+		select imdb_id, title, year from guild_movies gm
+		inner join movies m on gm.movie_id = m.id
+		where gm.guild_id = $1
+		order by gm.added_at desc
+		offset $2 limit $3`
+
+	var rows []movieRow
+	err := r.db.SelectContext(ctx, &rows, query, guildID, offset, limit)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to select guild movies: %w", err,
+		)
+	}
+
+	movies := make([]models.MovieBase, 0, len(rows))
+	for i := range rows {
+		movies = append(movies, rows[i].toMovieBase())
+	}
+	return movies, nil
+}
+
 func (r *MoviesRepo) GuildMoviesByTitle(
 	ctx context.Context, guildID models.DiscordID, title string, limit int,
 ) ([]models.MovieBase, error) {
 	const query = `
 		select imdb_id, title, year from guild_movies gm
 		inner join movies m on gm.movie_id = m.id
-		where gm.guild_id = $1 and m.title = $2
+		where gm.guild_id = $1 and m.title ilike '%' || $2 || '%' 
+		order by m.title desc
 		limit $3`
 
 	var rows []movieRow
-	err := r.db.SelectContext(ctx, &rows, query, guildID, title, limit)
+	err := r.db.SelectContext(
+		ctx, &rows, query, guildID, title, limit,
+	)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"failed to select guild movie by title: %w", err,
+			"failed to select guild movies by title: %w", err,
 		)
 	}
 
 	movies := make([]models.MovieBase, 0, len(rows))
-	for _, row := range rows {
-		movies = append(movies, row.toMovieBase())
+	for i := range rows {
+		movies = append(movies, rows[i].toMovieBase())
 	}
 	return movies, nil
 }

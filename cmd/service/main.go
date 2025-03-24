@@ -30,8 +30,8 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/services/mentionVoiceChan"
 	"github.com/nijeti/cinema-keeper/internal/services/presence"
 	"github.com/nijeti/cinema-keeper/internal/services/printRandomQuote"
-	"github.com/nijeti/cinema-keeper/internal/services/searchExistingMovie"
-	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovie"
+	"github.com/nijeti/cinema-keeper/internal/services/searchGuildMovies"
+	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovies"
 	"github.com/nijeti/cinema-keeper/internal/services/unlockVoiceChan"
 )
 
@@ -52,7 +52,15 @@ func main() {
 }
 
 func run() (code int) {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	loggerOpts := &slog.HandlerOptions{
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				a.Value = slog.TimeValue(a.Value.Time().UTC())
+			}
+			return a
+		},
+	}
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, loggerOpts))
 
 	logger.Info("starting")
 
@@ -114,8 +122,8 @@ func run() (code int) {
 	mentionVoiceChanSvc := mentionVoiceChan.New(dcAdapter)
 	presenceSvc := presence.New(dcAdapter)
 	printRandomQuoteSvc := printRandomQuote.New(quotesRepo, dcAdapter)
-	searchNewMovieSvc := searchNewMovie.New(dcAdapter, omdbAdapter)
-	searchExistingMovieSvc := searchExistingMovie.New(dcAdapter, moviesRepo)
+	searchNewMoviesSvc := searchNewMovies.New(dcAdapter, omdbAdapter)
+	searchGuildMoviesSvc := searchGuildMovies.New(dcAdapter, moviesRepo)
 	unlockVoiceChanSvc := unlockVoiceChan.New(dcAdapter)
 
 	err = dcRouter.SetCommands(
@@ -144,7 +152,7 @@ func run() (code int) {
 		discord.Command{
 			Description: commands.Movie(),
 			Handler: movie.New(
-				searchNewMovieSvc, searchExistingMovieSvc, addMovieSvc,
+				searchNewMoviesSvc, searchGuildMoviesSvc, addMovieSvc,
 			),
 		},
 	)

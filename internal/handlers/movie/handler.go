@@ -11,20 +11,20 @@ import (
 )
 
 type Handler struct {
-	searchNewMovie      searchNewMovie
-	searchExistingMovie searchExistingMovie
-	addMovie            addMovie
+	searchNewMovies   searchNewMovies
+	searchGuildMovies searchGuildMovies
+	addMovie          addMovie
 }
 
 func New(
-	searchNewMovie searchNewMovie,
-	searchExistingMovie searchExistingMovie,
+	searchNewMovies searchNewMovies,
+	searchGuildMovies searchGuildMovies,
 	addMovie addMovie,
 ) *Handler {
 	return &Handler{
-		searchNewMovie:      searchNewMovie,
-		searchExistingMovie: searchExistingMovie,
-		addMovie:            addMovie,
+		searchNewMovies:   searchNewMovies,
+		searchGuildMovies: searchGuildMovies,
+		addMovie:          addMovie,
 	}
 }
 
@@ -80,7 +80,7 @@ func (h *Handler) remove(
 func (h *Handler) newAutocomplete(
 	ctx context.Context, i *discordgo.Interaction, title string,
 ) error {
-	if err := h.searchNewMovie.Exec(ctx, i, title); err != nil {
+	if err := h.searchNewMovies.Exec(ctx, i, title); err != nil {
 		return fmt.Errorf("failed to autocomplete movie title: %w", err)
 	}
 	return nil
@@ -89,7 +89,7 @@ func (h *Handler) newAutocomplete(
 func (h *Handler) existingAutocomplete(
 	ctx context.Context, i *discordgo.Interaction, title string,
 ) error {
-	if err := h.searchExistingMovie.Exec(ctx, i, title); err != nil {
+	if err := h.searchGuildMovies.Exec(ctx, i, title); err != nil {
 		return fmt.Errorf("failed to autocomplete movie title: %w", err)
 	}
 	return nil
