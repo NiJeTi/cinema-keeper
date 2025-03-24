@@ -6,11 +6,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type searchNewMovie interface {
+type searchNewMovies interface {
 	Exec(ctx context.Context, i *discordgo.Interaction, title string) error
 }
 
-type searchExistingMovie interface {
+type searchGuildMovies interface {
 	Exec(ctx context.Context, i *discordgo.Interaction, title string) error
 }
 

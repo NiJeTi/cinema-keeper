@@ -1,4 +1,4 @@
-package searchNewMovie_test
+package searchNewMovies_test
 
 import (
 	"context"
@@ -11,9 +11,9 @@ import (
 
 	"github.com/nijeti/cinema-keeper/internal/discord/commands"
 	"github.com/nijeti/cinema-keeper/internal/discord/commands/responses"
-	mocks "github.com/nijeti/cinema-keeper/internal/generated/mocks/services/searchNewMovie"
+	mocks "github.com/nijeti/cinema-keeper/internal/generated/mocks/services/searchNewMovies"
 	"github.com/nijeti/cinema-keeper/internal/models"
-	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovie"
+	"github.com/nijeti/cinema-keeper/internal/services/searchNewMovies"
 )
 
 func TestService_Exec(t *testing.T) {
@@ -24,7 +24,7 @@ func TestService_Exec(t *testing.T) {
 
 	type setup func(
 		t *testing.T, title string, err error,
-	) *searchNewMovie.Service
+	) *searchNewMovies.Service
 
 	tests := map[string]struct {
 		title string
@@ -36,7 +36,7 @@ func TestService_Exec(t *testing.T) {
 			err:   errors.New("response error"),
 			setup: func(
 				t *testing.T, _ string, err error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -44,7 +44,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 
@@ -53,13 +53,13 @@ func TestService_Exec(t *testing.T) {
 			err:   errors.New("omdb error"),
 			setup: func(
 				t *testing.T, title string, err error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
 				omdb.EXPECT().MoviesByTitle(ctx, title).Return(nil, err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 		"no_movies_response_error": {
@@ -67,7 +67,7 @@ func TestService_Exec(t *testing.T) {
 			err:   errors.New("response error"),
 			setup: func(
 				t *testing.T, title string, err error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -79,7 +79,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 		"movies_response_error": {
@@ -87,7 +87,7 @@ func TestService_Exec(t *testing.T) {
 			err:   errors.New("response error"),
 			setup: func(
 				t *testing.T, title string, err error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -98,7 +98,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, responses.MovieAutocompleteSearch(movies),
 				).Return(err)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 		"empty_title": {
@@ -106,7 +106,7 @@ func TestService_Exec(t *testing.T) {
 			err:   nil,
 			setup: func(
 				t *testing.T, _ string, _ error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -114,7 +114,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 		"no_movies": {
@@ -122,7 +122,7 @@ func TestService_Exec(t *testing.T) {
 			err:   nil,
 			setup: func(
 				t *testing.T, title string, _ error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -134,7 +134,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, responses.MovieAutocompleteEmptySearch(),
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 		"too_many_movies": {
@@ -142,7 +142,7 @@ func TestService_Exec(t *testing.T) {
 			err:   nil,
 			setup: func(
 				t *testing.T, title string, _ error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -164,7 +164,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, resp,
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 		"success": {
@@ -172,7 +172,7 @@ func TestService_Exec(t *testing.T) {
 			err:   nil,
 			setup: func(
 				t *testing.T, title string, _ error,
-			) *searchNewMovie.Service {
+			) *searchNewMovies.Service {
 				d := mocks.NewMockDiscord(t)
 				omdb := mocks.NewMockOmdb(t)
 
@@ -191,7 +191,7 @@ func TestService_Exec(t *testing.T) {
 					ctx, i, responses.MovieAutocompleteSearch(movies),
 				).Return(nil)
 
-				return searchNewMovie.New(d, omdb)
+				return searchNewMovies.New(d, omdb)
 			},
 		},
 	}

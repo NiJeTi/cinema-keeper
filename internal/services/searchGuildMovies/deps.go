@@ -1,4 +1,4 @@
-package searchExistingMovie
+package searchGuildMovies
 
 import (
 	"context"
@@ -17,6 +17,10 @@ type discord interface {
 }
 
 type db interface {
+	GuildMovies(
+		ctx context.Context, guildID models.DiscordID, offset, limit int,
+	) ([]models.MovieBase, error)
+
 	GuildMoviesByTitle(
 		ctx context.Context, guildID models.DiscordID, title string, limit int,
 	) ([]models.MovieBase, error)

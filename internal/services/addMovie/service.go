@@ -66,6 +66,8 @@ func (s *Service) Exec(
 
 	addedByID := models.DiscordID(i.Member.User.ID)
 
+	// todo: add check for duplicates
+
 	err = s.db.AddMovieToGuild(ctx, *movieID, guildID, addedByID)
 	if err != nil {
 		return fmt.Errorf("failed to add movie to guild: %w", err)
