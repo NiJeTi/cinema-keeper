@@ -41,7 +41,7 @@ jobs:
               ghcr.io
 
       - name: 'Copy docker-compose.yaml'
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
