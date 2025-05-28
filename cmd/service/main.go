@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/nijeti/cfgext"
 	"github.com/nijeti/healthcheck"
 	hcHTTP "github.com/nijeti/healthcheck/servers/http"
 
@@ -21,7 +22,6 @@ import (
 	"github.com/nijeti/cinema-keeper/internal/handlers/quote"
 	"github.com/nijeti/cinema-keeper/internal/handlers/roll"
 	"github.com/nijeti/cinema-keeper/internal/handlers/unlock"
-	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 	"github.com/nijeti/cinema-keeper/internal/services/addMovie"
 	"github.com/nijeti/cinema-keeper/internal/services/addQuote"
 	"github.com/nijeti/cinema-keeper/internal/services/diceRoll"
@@ -76,7 +76,7 @@ func run() (code int) {
 	)
 	defer cancel()
 
-	cfg, err := cfgPkg.ReadConfig[config]()
+	cfg, err := cfgext.Load[config]()
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to read config", "error", err)
 		return codeErr

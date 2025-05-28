@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/nijeti/cfgext"
 	"github.com/pressly/goose/v3"
 
 	"github.com/nijeti/cinema-keeper/internal/db"
-	cfgPkg "github.com/nijeti/cinema-keeper/internal/pkg/config"
 )
 
 type config struct {
@@ -51,7 +51,7 @@ func run() (code int) {
 	logger.Info("starting")
 
 	// config
-	cfg, err := cfgPkg.ReadConfig[config]()
+	cfg, err := cfgext.Load[config]()
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to read config", "error", err)
 		return codeErr

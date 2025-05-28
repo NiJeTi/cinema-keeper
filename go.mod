@@ -5,11 +5,8 @@ go 1.24
 require (
 	github.com/bwmarrin/discordgo v0.28.1
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/knadh/koanf/parsers/yaml v1.0.0
-	github.com/knadh/koanf/providers/env v1.0.0
-	github.com/knadh/koanf/providers/file v1.2.0
-	github.com/knadh/koanf/v2 v2.1.2
 	github.com/lib/pq v1.10.9
+	github.com/nijeti/cfgext v1.0.0
 	github.com/nijeti/healthcheck v1.0.0-beta.2
 	github.com/nijeti/healthcheck/servers/http v1.0.0-beta.5
 	github.com/pressly/goose/v3 v3.24.2
@@ -49,7 +46,11 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/knadh/koanf/maps v0.1.1 // indirect
+	github.com/knadh/koanf/maps v0.1.2 // indirect
+	github.com/knadh/koanf/parsers/yaml v1.0.0 // indirect
+	github.com/knadh/koanf/providers/env v1.1.0 // indirect
+	github.com/knadh/koanf/providers/file v1.2.0 // indirect
+	github.com/knadh/koanf/v2 v2.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
@@ -95,7 +96,7 @@ require (
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/tools v0.31.0 // indirect
