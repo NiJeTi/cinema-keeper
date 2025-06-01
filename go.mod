@@ -3,7 +3,7 @@ module github.com/nijeti/cinema-keeper
 go 1.24
 
 require (
-	github.com/bwmarrin/discordgo v0.28.1
+	github.com/bwmarrin/discordgo v0.29.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/nijeti/cfgext v1.0.0
