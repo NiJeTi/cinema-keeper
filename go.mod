@@ -7,7 +7,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/nijeti/cfgext v1.0.0
-	github.com/nijeti/healthcheck v1.0.0-beta.2
+	github.com/nijeti/healthcheck v1.0.0-beta.3
 	github.com/nijeti/healthcheck/servers/http v1.0.0-beta.5
 	github.com/pressly/goose/v3 v3.24.2
 	github.com/stretchr/testify v1.10.0
