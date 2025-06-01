@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o migrator ./cmd/migrator/
 
-FROM alpine:3.21 AS app
+FROM alpine:3.22 AS app
 
 RUN addgroup -S app-group && adduser -S app-user -G app-group
 
