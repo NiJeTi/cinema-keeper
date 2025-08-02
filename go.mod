@@ -8,7 +8,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nijeti/cfgext v1.0.0
 	github.com/nijeti/healthcheck v1.0.0
-	github.com/nijeti/healthcheck/servers/http v1.0.0-beta.6
+	github.com/nijeti/healthcheck/servers/http v1.1.0
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/stretchr/testify v1.10.0
 )
