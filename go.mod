@@ -10,7 +10,7 @@ require (
 	github.com/nijeti/healthcheck v1.0.0
 	github.com/nijeti/healthcheck/servers/http v1.1.0
 	github.com/pressly/goose/v3 v3.24.3
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 )
 
 require (
