@@ -202,8 +202,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/nijeti/cfgext v1.0.1 h1:vAnoVlmpMbSWYqx/vmW+iNMcgW0QVWfG2bXBE5a2e/E=
 github.com/nijeti/cfgext v1.0.1/go.mod h1:lIrpXRVwqGLesclj/wWuhfLFHmqsmKbfSXhI1sEg56A=
-github.com/nijeti/healthcheck v1.0.0 h1:9UPGVC1oy3/wXOWWdSbXBPqaZVbf+tx2VxlV8DK38os=
-github.com/nijeti/healthcheck v1.0.0/go.mod h1:S8+LZH09p15FoAUTII4FmYTZPBw8Zrq0r/Xf21G4FPA=
+github.com/nijeti/healthcheck v1.2.0 h1:FiqlEJPXkAaEBR0ELt+sT/PdfXfhozKf47hJBVjGfo0=
+github.com/nijeti/healthcheck v1.2.0/go.mod h1:A4OjaEKAZ21wR2Y0yVKkO/wbgmYwfEXbvt6IaP+DrPg=
 github.com/nijeti/healthcheck/servers/http v1.1.0 h1:e9H6iFY6P6e6Gaf6S5nXyQp8iO1Yno+rjMg644JIR90=
 github.com/nijeti/healthcheck/servers/http v1.1.0/go.mod h1:CIT5IYCDT65l7P8DZvEB+iAtXUvnxr2QjlalHNnhbPQ=
 github.com/paulmach/orb v0.11.1 h1:3koVegMC4X/WeiXYz9iswopaTwMem53NzTJuTF20JzU=
@@ -264,8 +264,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOfJA=
-github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
+github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
+github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
 github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8=
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
